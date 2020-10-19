@@ -3,7 +3,7 @@ public class RiskModel {
         CommandParser cp = new CommandParser();
         Continent con = new Continent();
         Country country = new Country();
-        Player pl = new Player();
+        Player pl = new Player("Kevin", 0);
         System.out.println(cp);
         System.out.println(con);
         System.out.println(country);
