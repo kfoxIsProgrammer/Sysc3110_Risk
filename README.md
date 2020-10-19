@@ -8,4 +8,3 @@ Teammates (Add your name and email):
 1. Kevin Fox : kevinfox@cmail.carleton.ca
 2. Dimitry Koutchine : DimitryKoutchine@cmail.carleton.ca
 3. Omar Hashmi : OmarHashmi@cmail.carleton.ca @belt#8711
-4. Kshitij Sawhney : kshitijsawhney@cmail.carleton.ca
