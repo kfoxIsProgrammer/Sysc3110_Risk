@@ -378,17 +378,36 @@ public class RiskModel {
         while(!addStack.empty()){
             for(Player play: players){
                 if(!addStack.empty()){
-                    play.addCountry(addStack.pop());
+                    play.addCountry(addStack.peek());
+                    addStack.pop().setOwner(play);
                 }
             }
 
         }
-       /* for (Player play: players){
+        for (Player play: players){
            System.out.println(play.getOwnedCountries());
-        }*/
+        }
 
 
     }
+    public void deploy(Player currentPlayer){
+
+
+
+    }
+    public void play(){
+
+        for(Player currentPlayer: players){
+            System.out.println(currentPlayer.getName()+"'s turn, deploy phase, please enter command:");
+
+
+        }
+    }
+
+
+
+
+
 
     public static void main(String[] args) {
        /* CommandParser cp = new CommandParser();
@@ -407,6 +426,7 @@ public class RiskModel {
        RiskModel main = new RiskModel();
        main.createMap();
        main.newGame();
+       main.play();
 
 
 
