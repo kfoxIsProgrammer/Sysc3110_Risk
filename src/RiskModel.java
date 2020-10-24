@@ -1,5 +1,7 @@
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Risk Model class used to model the ongoing game
  * @author Dimitry Koutchine
@@ -439,6 +441,78 @@ public class RiskModel {
     }
 
 
+    /**
+     * This method is the attack phase controller for the game of risk
+     * @param attacker The attacking country
+     * @param defender The defending country
+     * @param unitsToAttack number of attackers from the attacking country
+     */
+    public void Attack(Country attacker, Country defender, int unitsToAttack){
+        if(attacker.getAdjancentCountries().contains(defender)){
+
+            int defenders = defender.getArmy();
+            int attackers = unitsToAttack;
+
+            Integer[] attackRolls = new Integer[Math.max(unitsToAttack, defender.getArmy())];
+            Integer[] defenderRolls = new Integer[Math.max(unitsToAttack, defender.getArmy())];
+
+            //Get int array of dice rolls
+            for(int i=0; i< attackRolls.length; i++){
+                attackRolls[i] = ThreadLocalRandom.current().nextInt(0, 6 + 1);
+                defenderRolls[i] = ThreadLocalRandom.current().nextInt(0, 6 + 1);
+            }
+
+            //Sort each array in desc order
+            Arrays.sort(attackRolls, Collections.reverseOrder());
+            Arrays.sort(defenderRolls, Collections.reverseOrder());
+
+            //Compare rolls until someone loses
+            while(defenders > 0 & unitsToAttack > 0){
+                for(int i=0; i< attackRolls.length; i++){
+                    if(attackRolls[i] > defenderRolls[i]){
+                        defenders--;
+                    }
+                    else{
+                        attackers--;
+                    }
+                }
+            }
+
+            //Add the description of the battle
+            System.out.println("The outcome of the battle\nAttacker country: "+defender);
+            //Attacker wins
+            if(defenders == 0){
+                System.out.println("Attacking Country:"+attacker.getName()+"won! +\nHow many units do you want to transfer: " + attackers);
+                System.out.println("Select between 1-"+attackers);
+                Scanner scan = new Scanner(System.in);
+
+
+                //Get the number from the parser
+
+                int numsToSend =0;
+                while(numsToSend > 0 & numsToSend <= attackers){
+                    System.out.println("Select between 1-"+attackers);
+                    numsToSend = scan.nextInt();
+                }
+
+                //Set the new owner and intial value
+                defender.setInitialArmy(numsToSend);
+                attacker.removeArmy(unitsToAttack-attackers+numsToSend);
+                defender.setOwner(attacker.getOwner());
+                defender.getOwner().removeCountry(defender);
+                attacker.getOwner().addCountry(defender);
+            }
+            //Attacker loses
+            if(attackers == 0){
+                System.out.println("Defending Country:"+defender.getName()+"has won!");
+                System.out.println("Defenders left:"+defender);
+                attacker.removeArmy(unitsToAttack);
+                defender.removeArmy(defender.getArmy()-defenders);
+            }
+
+        }
+
+    }
 
 
 
