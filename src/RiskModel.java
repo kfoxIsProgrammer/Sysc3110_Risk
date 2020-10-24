@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.*;
 /**
  * Risk Model class used to model the ongoing game
@@ -9,7 +10,7 @@ public class RiskModel {
     ArrayList<Country> countries;
     ArrayList<Continent> continents;
 
-    public RiskModel(){
+    private RiskModel(){
         players = new ArrayList<Player>();
         countries = new ArrayList<Country>();
         continents = new ArrayList<Continent>();
@@ -19,7 +20,7 @@ public class RiskModel {
      * Initialize the countries and there adjacency's, continents, and setup the game board
      *
      */
-    public void createMap(){
+    private void createMap(){
         //test
         ArrayList<Country> adjacent;
         Continent northAmerica, southAmerica, europe, africa, asia, australia;
@@ -334,7 +335,7 @@ public class RiskModel {
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
      */
-    public void newGame(){
+    private void newGame(){
         int x = 0;
         int startingArmySize;
 
@@ -379,25 +380,58 @@ public class RiskModel {
             for(Player play: players){
                 if(!addStack.empty()){
                     play.addCountry(addStack.peek());
+                    addStack.peek().setInitialArmy(1);
+                    play.removeArmy(1);
                     addStack.pop().setOwner(play);
                 }
             }
 
         }
-       /* for (Player play: players){
-           System.out.println(play.getOwnedCountries());
+        for(Player play: players){
+            while (play.getArmiesToAllocate() > 0){
+                ArrayList<Country> temp = new ArrayList<Country>(play.getOwnedCountries().values());
+                Collections.shuffle(temp);
+                for(Country count: temp){
+                    if (play.getArmiesToAllocate() >0) {
+                        count.addArmy(1);
+                        play.removeArmy(1);
+                    }
+                }
+
+
+            }
+        }
+        //Testing if armies allocated correctly
+        /*for (Player play: players){
+            Iterator it = play.getOwnedCountries().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                Country count =((Country)pair.getValue());
+                System.out.println(play.getName()+" "+count.getArmy());
+
+
+            }
+            System.out.println(play.getName()+" =" + play.getArmiesToAllocate());
+
         }*/
 
 
     }
-    public void deploy(Player currentPlayer){
-
-
-
+    private void deploy(Player currentPlayer){
     }
-    public void play(){
+
+    public ArrayList<Country> getCountries(){
+        return this.countries;
+    }
+    public ArrayList<Country> getPlayerCountries(Player play){
+        ArrayList<Country> temp = new ArrayList<Country>(play.getOwnedCountries().values());
+        return temp;
+    }
+
+    private void play(){
 
         for(Player currentPlayer: players){
+
             System.out.println(currentPlayer.getName()+"'s turn, deploy phase, please enter command:");
 
 
