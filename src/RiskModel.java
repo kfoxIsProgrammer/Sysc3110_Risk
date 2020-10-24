@@ -436,10 +436,44 @@ public class RiskModel {
 
             System.out.println(currentPlayer.getName()+"'s turn, deploy phase, please enter command:");
 
+            /*for(Country country: currentPlayer.getOwnedCountries().values()){
+                System.out.println("Country: "+country.getName()+"  Army: "+country.getArmy()+" Can attack");
+                for(Country attackable: country.getAdjancentCountries()){
+                    if(attackable.getOwner() != currentPlayer){
+                        System.out.println("Country: "+attackable.getName()+"Army: "+attackable.getArmy());
+                    }
+                }
+                System.out.println();
+            }
+
+            Scanner scan = new Scanner(System.in);
+            System.out.println("Pick your country to attack from");
+            String attackCountry = scan.nextLine();
+            System.out.println("Pick a country to attack");
+            String defendCountry = scan.nextLine();
+            System.out.println("How many units to attack");
+            int num = scan.nextInt();
+
+
+
+            Attack(currentPlayer.getOwnedCountries().get(attackCountry),
+                    searchForCountryByString(defendCountry,currentPlayer.getOwnedCountries().get(attackCountry)),
+                    num);
+
+            System.out.println("Finished");
+            break;*/
 
         }
     }
 
+    private Country searchForCountryByString(String findThis, Country original){
+        for(Country c: original.getAdjancentCountries()){
+            if(c.getName().equals(findThis)){
+                return c;
+            }
+        }
+        return null;
+    }
 
     /**
      * This method is the attack phase controller for the game of risk
@@ -448,18 +482,19 @@ public class RiskModel {
      * @param unitsToAttack number of attackers from the attacking country
      */
     public void Attack(Country attacker, Country defender, int unitsToAttack){
-        if(attacker.getAdjancentCountries().contains(defender)){
+
 
             int defenders = defender.getArmy();
             int attackers = unitsToAttack;
+
 
             Integer[] attackRolls = new Integer[Math.max(unitsToAttack, defender.getArmy())];
             Integer[] defenderRolls = new Integer[Math.max(unitsToAttack, defender.getArmy())];
 
             //Get int array of dice rolls
             for(int i=0; i< attackRolls.length; i++){
-                attackRolls[i] = ThreadLocalRandom.current().nextInt(0, 6 + 1);
-                defenderRolls[i] = ThreadLocalRandom.current().nextInt(0, 6 + 1);
+                attackRolls[i] = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+                defenderRolls[i] = ThreadLocalRandom.current().nextInt(1, 6 + 1);
             }
 
             //Sort each array in desc order
@@ -468,7 +503,7 @@ public class RiskModel {
 
             System.out.println("Attacker: "+attacker.getName()+"    Defender: "+defender.getName());
             //Compare rolls until someone loses
-            while(defenders > 0 & unitsToAttack > 0){
+            while(defenders > 0 && attackers > 0){
                 for(int i=0; i< attackRolls.length; i++){
                     if(attackRolls[i] > defenderRolls[i]){
                         defenders--;
@@ -486,15 +521,15 @@ public class RiskModel {
 
             //Attacker wins
             if(defenders == 0){
-                System.out.println("Attacking Country:"+attacker.getName()+"won! +\nHow many units do you want to transfer: " + attackers);
+                System.out.println("Attacking Country: "+attacker.getName()+" won! +\nHow many units do you want to transfer: " + attackers);
                 System.out.println("Select between 1-"+attackers);
                 Scanner scan = new Scanner(System.in);
 
 
                 //Get the number from the parser
 
-                int numsToSend =0;
-                while(numsToSend > 0 & numsToSend <= attackers){
+                int numsToSend = -1;
+                while(numsToSend <= 0 && numsToSend > attackers){
                     System.out.println("Select between 1-"+attackers);
                     numsToSend = scan.nextInt();
                 }
@@ -508,15 +543,15 @@ public class RiskModel {
             }
             //Attacker loses
             if(attackers == 0){
-                System.out.println("Defending Country:"+defender.getName()+"has won!");
-                System.out.println("Defenders left:"+defender);
+                System.out.println("Defending Country: "+defender.getName()+" has won!");
+                System.out.println("Defenders left: "+defenders);
                 attacker.removeArmy(unitsToAttack);
                 defender.removeArmy(defender.getArmy()-defenders);
             }
 
         }
 
-    }
+
 
 
 
