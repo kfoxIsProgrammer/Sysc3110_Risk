@@ -384,9 +384,9 @@ public class RiskModel {
             }
 
         }
-        for (Player play: players){
+       /* for (Player play: players){
            System.out.println(play.getOwnedCountries());
-        }
+        }*/
 
 
     }
