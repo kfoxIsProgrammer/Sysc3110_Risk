@@ -122,23 +122,23 @@ public class Player {
      * Remove an owned country to this player
      * @param countryToRemove the owned country to remove
      */
-   /* public void removeCountry(Country countryToRemove){
+    public void removeCountry(Country countryToRemove){
         getOwnedCountries().remove(countryToRemove.getName());
-    }*/
+    }
 
     /**
      * Add an owned continent to this player
      * @param continentToAdd the owned continent to add
      */
-   /* public void addContinent(Continent continentToAdd){
+    public void addContinent(Continent continentToAdd){
         getOwnedContinents().put(continentToAdd.getName(), continentToAdd);
-    }*/
+    }
 
     /**
      * Remove an owned continent to this player
      * @param continentToRemove the owned continent to remove
      */
- /*   public void removeContinent(Continent continentToRemove){
+   public void removeContinent(Continent continentToRemove){
         getOwnedContinents().remove(continentToRemove.getName());
-    }*/
+    }
 }
