@@ -466,20 +466,24 @@ public class RiskModel {
             Arrays.sort(attackRolls, Collections.reverseOrder());
             Arrays.sort(defenderRolls, Collections.reverseOrder());
 
+            System.out.println("Attacker: "+attacker.getName()+"    Defender: "+defender.getName());
             //Compare rolls until someone loses
             while(defenders > 0 & unitsToAttack > 0){
                 for(int i=0; i< attackRolls.length; i++){
                     if(attackRolls[i] > defenderRolls[i]){
                         defenders--;
+                        System.out.println("   "+attackRolls[i]+"      "+defenderRolls[i] +"    Attacker win");
                     }
                     else{
                         attackers--;
+                        System.out.println("   "+attackRolls[i]+"      "+defenderRolls[i] +"    Defender win");
+
                     }
                 }
             }
 
             //Add the description of the battle
-            System.out.println("The outcome of the battle\nAttacker country: "+defender);
+
             //Attacker wins
             if(defenders == 0){
                 System.out.println("Attacking Country:"+attacker.getName()+"won! +\nHow many units do you want to transfer: " + attackers);
