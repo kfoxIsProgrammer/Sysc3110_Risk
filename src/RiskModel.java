@@ -20,6 +20,7 @@ public class RiskModel {
      *
      */
     public void createMap(){
+        //test
         ArrayList<Country> adjacent;
         Continent northAmerica, southAmerica, europe, africa, asia, australia;
         //Constructing countries
