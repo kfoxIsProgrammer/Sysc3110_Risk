@@ -138,7 +138,7 @@ public class Player {
      * Remove an owned continent to this player
      * @param continentToRemove the owned continent to remove
      */
-   public void removeContinent(Continent continentToRemove){
+ public void removeContinent(Continent continentToRemove){
         getOwnedContinents().remove(continentToRemove.getName());
     }
 }
