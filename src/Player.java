@@ -114,9 +114,9 @@ public class Player {
      * Add an owned country to this player
      * @param countryToAdd the owned country to add
      */
-  /*  public void addCountry(Country countryToAdd){
+    public void addCountry(Country countryToAdd){
         getOwnedCountries().put(countryToAdd.getName(), countryToAdd);
-    }*/
+    }
 
     /**
      * Remove an owned country to this player
