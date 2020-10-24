@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class CommandParser {
@@ -177,25 +176,21 @@ public class CommandParser {
             else if(command.commandCode==CommandCode._FOCUS){
                 Country country=this.stringToCountry(command.countrySrc);
 
-                while(true){
-                    this.showNeighbors(player,country);
+                this.showNeighbors(player,country);
 
-                    System.out.printf("What do you want to do?\n\n");
+                System.out.printf("What do you want to do?\n\n");
+                command=getInput();
+
+                if(command.commandCode==CommandCode._BACK){
+                    System.out.printf("Back at the attack menu. What do you want to do?\n\n");
                     command=getInput();
-
-                    if(command.commandCode==CommandCode._BACK){
-                        System.out.printf("Back at the attack menu. What do you want to do?\n\n");
-                        command=getInput();
-                        break;
-                    }
-                    else if(command.commandCode==CommandCode.ATTACK){
-                        return command;
-                    }
-                    else{
-                        System.out.printf("That command is invalid. For a list of commands type 'help'. What do you want to do?\n\n");
-                        command=getInput();
-                        break;
-                    }
+                }
+                else if(command.commandCode==CommandCode.ATTACK){
+                    break;
+                }
+                else{
+                    System.out.printf("That command is invalid. For a list of commands type 'help'. What do you want to do?\n\n");
+                    command=getInput();
                 }
             }
             else{
