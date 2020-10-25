@@ -30,7 +30,7 @@ public class BattleObject {
         return defendingArmy;
     }
 
-    public boolean isDidAttackerWin() {
+    public boolean didAttackerWin() {
         return didAttackerWin;
     }
 }
