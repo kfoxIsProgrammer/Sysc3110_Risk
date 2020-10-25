@@ -23,10 +23,14 @@ public class RiskModel {
 
     /** Contructor of Risk Model*/
     private RiskModel(){
-        players = new ArrayList<Player>();
-        countries = new ArrayList<Country>();
-        continents = new ArrayList<Continent>();
+        this.players = new ArrayList<Player>();
+        this.countries = new ArrayList<Country>();
+        this.continents = new ArrayList<Continent>();
+        this.createMap();
+        this.parser=new CommandParser(this.countries);
 
+        this.newGame();
+        this.play();
     }
     /**
      * Initialize the countries and there adjacency's, continents, and setup the game board
