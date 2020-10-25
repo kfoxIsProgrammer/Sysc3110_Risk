@@ -15,6 +15,12 @@ public class Command {
     public int numTroops;
 
     /**
+     *
+     */
+    public Command(){
+
+    }
+    /**
      * Packages all command information into a Command object
      *
      * @param commandCode The type of command
