@@ -269,7 +269,9 @@ public class CommandParser {
      * Give the outcome of a battle to the parser
      * @param outcome the object containing battle outcomes
      */
-    public void sendBattleObject(BattleObject outcome);
+    public void sendBattleOutcome(BattleObject outcome){
+
+    }
 
     /**
      * Get the number of units to send back once an attacker wins

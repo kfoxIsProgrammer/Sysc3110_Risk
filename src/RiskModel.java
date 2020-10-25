@@ -592,7 +592,7 @@ public class RiskModel {
                 defender.removeArmy(defender.getArmy()-defenders);
             }
 
-            //toDo Send battleOutcome to Parser
+
         }
 
 
