@@ -549,7 +549,7 @@ public class RiskModel {
 
             //Attacker wins
             if(defenders == 0){
-                //Get the number from the parser
+
 
                 finalBattleOutcome = new BattleObject(attacker,
                         defender,
@@ -559,15 +559,17 @@ public class RiskModel {
                         defenders,
                         true);
 
+                //Send the battle data to parser
                 parser.sendBattleOutcome(finalBattleOutcome);
 
+                //Get number of units to send to new country
                 int numsToSend = -1;
                 while(numsToSend <= 0 && numsToSend > attackers){
                     numsToSend = getNumberOfUnitsToSendAfterAttackerWin();
                 }
 
                 //Set the new owner and intial value
-                defender.setInitialArmy(numsToSend);
+                defender.setInitialArmy(attackers - numsToSend);
                 attacker.removeArmy(unitsToAttack-attackers+numsToSend);
                 defender.setOwner(attacker.getOwner());
                 defender.getOwner().removeCountry(defender);
