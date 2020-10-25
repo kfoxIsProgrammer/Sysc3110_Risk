@@ -109,8 +109,7 @@ public class RiskModel {
         greenLand.addAdjacentCountries(adjacent);
 
         temp = Arrays.asList(alaska, greenLand, ontario, alberta);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
+        adjacent = new ArrayList<Country>(temp);
         northwestTerritory.addAdjacentCountries(adjacent);
 
         temp = Arrays.asList(northwestTerritory, greenLand,quebec, easternUnitedStates, westernUnitedSates, alberta);
@@ -436,9 +435,17 @@ public class RiskModel {
     }
 
     private void play(){
-
         for(Player currentPlayer: players){
-            commandParser.Attack(currentPlayer);
+            while(true) {
+                Command command=commandParser.Attack(currentPlayer);
+
+                if(command.commandCode==CommandCode.SKIP){
+                    break;
+                }
+                else if(command.commandCode==CommandCode.ATTACK){
+                    Attack(command.countrySrc,command.countryDst,command.numTroops);
+                }
+            }
         }
     }
 
@@ -526,11 +533,6 @@ public class RiskModel {
             }
 
         }
-
-
-
-
-
 
     public static void main(String[] args) {
        /* CommandParser cp = new CommandParser();

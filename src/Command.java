@@ -8,9 +8,9 @@ public class Command {
     /** The type of command*/
     public CommandCode commandCode;
     /** The source country the command will act on*/
-    public String countrySrc;
+    public Country countrySrc;
     /** The destination country the command will act on*/
-    public String countryDst;
+    public Country countryDst;
     /** The number of troops involved in the operation*/
     public int numTroops;
 
@@ -22,7 +22,7 @@ public class Command {
      * @param countryDst The destination country the command will act on
      * @param numTroops The number of troops involved in the operation
      */
-    Command(CommandCode commandCode, String countrySrc, String countryDst, int numTroops){
+    Command(CommandCode commandCode, Country countrySrc, Country countryDst, int numTroops){
         this.commandCode=commandCode;
         this.countrySrc=countrySrc;
         this.countryDst=countryDst;

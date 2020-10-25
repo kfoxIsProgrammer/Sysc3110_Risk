@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -12,6 +14,8 @@ public class CommandParser {
     private ArrayList<Country> countries;
     /** List of the Country names*/
     private ArrayList<String> countryNames;
+    /** List of Country names that are more than one word*/
+    private String longCountryNames;
 
     /**
      * Initializes the command parser and stores relevant information in the object
@@ -21,9 +25,15 @@ public class CommandParser {
     CommandParser(ArrayList<Country> countries){
         this.countries=countries;
         this.countryNames=new ArrayList<>();
+        this.longCountryNames="";
 
         for(Country country : this.countries) {
-            this.countryNames.add(country.getName().toLowerCase());
+            String lowercaseCountryName=country.getName().toLowerCase();
+            this.countryNames.add(lowercaseCountryName);
+
+            if(lowercaseCountryName.split(" ").length>1){
+                this.longCountryNames+=lowercaseCountryName+",";
+            }
         }
     }
 
@@ -112,6 +122,41 @@ public class CommandParser {
         return true;
     }
 
+    private String[] longCountryToString(String[]  s){
+        String processedOutputString="";
+        String[] processedOutputArray;
+        List<String> longCountryNamesArray= Arrays.asList(this.longCountryNames.split(","));
+
+        for(int i=0;i<s.length;i++){
+            if (this.longCountryNames.contains(s[i])){
+                for(int j=0;j<longCountryNamesArray.size();j++){
+                    String[] splitNames=longCountryNamesArray.get(j).split(" ");
+                    if(splitNames.length==2&&
+                       s.length-i>=2&&
+                       splitNames[0].equals(s[ i ])&&
+                       splitNames[1].equals(s[i+1])){
+                        processedOutputString+=s[i]+" "+s[i+1]+",";
+                        break;
+                    }
+                    else if(splitNames.length==3&&
+                            s.length-i>=3&&
+                            splitNames[0].equals(s[ i ])&&
+                            splitNames[1].equals(s[i+1])&&
+                            splitNames[2].equals(s[i+2])){
+                        processedOutputString+=s[i]+" "+s[i+1]+" "+s[i+2]+",";
+                        break;
+                    }
+                }
+            }
+            else{
+                processedOutputString+=s[i]+",";
+            }
+        }
+        processedOutputArray=processedOutputString.split(",");
+
+        return processedOutputArray;
+    }
+
     /**
      * Finds and returns a country object when given it's name
      *
@@ -134,13 +179,12 @@ public class CommandParser {
      */
     private Command getInput(){
         CommandCode commandCode=null;
-        String countrySrc=null;
-        String countryDst=null;
+        Country countrySrc=null;
+        Country countryDst=null;
         int numTroops=0;
 
         Scanner scanner=new Scanner(System.in);
-        String[] input=scanner.nextLine().toLowerCase().split(" ");
-
+        String[] input=longCountryToString(scanner.nextLine().toLowerCase().split(" "));
 
         if(input.length==1){
             if (input[0].equals("skip")) {
@@ -155,7 +199,7 @@ public class CommandParser {
             if(input[0].equals("focus")&&
                this.countryNames.contains(input[1])){
                 commandCode=CommandCode._FOCUS;
-                countrySrc=input[1];
+                countrySrc=stringToCountry(input[1]);
             }
         }
         else if(input.length==3){
@@ -173,7 +217,7 @@ public class CommandParser {
                     this.countryNames.contains(input[1])&&
                     isInt(input[2])){
                 commandCode=CommandCode.ATTACK;
-                countrySrc=input[1];
+                countrySrc=stringToCountry(input[1]);
                 numTroops=Integer.parseInt(input[2]);
             }
         }
@@ -181,10 +225,10 @@ public class CommandParser {
             if(input[0].equals("send")&&
                this.isInt(input[1])&&
                input[2].equals("to")&&
-                    this.countryNames.contains(input[3])){
-                commandCode=CommandCode.DEPLOY;
-                numTroops=Integer.parseInt(input[1]);
-                countryDst=input[3];
+               this.countryNames.contains(input[3])){
+               commandCode=CommandCode.DEPLOY;
+               numTroops=Integer.parseInt(input[1]);
+               countryDst=stringToCountry(input[3]);
             }
         }
         else if(input.length==6){
@@ -196,8 +240,8 @@ public class CommandParser {
                this.countryNames.contains(input[5])){
                 commandCode=CommandCode.FORTIFY;
                 numTroops=Integer.parseInt(input[1]);
-                countrySrc=input[3];
-                countryDst=input[5];
+                countrySrc=stringToCountry(input[3]);
+                countryDst=stringToCountry(input[5]);
             }
         }
 
@@ -277,8 +321,7 @@ public class CommandParser {
                 break;
             }
             else if(command.commandCode==CommandCode._FOCUS){
-                Country country=this.stringToCountry(command.countrySrc);
-                this.showNeighbors(player,country);
+                this.showNeighbors(player,command.countrySrc);
 
                 command=getInput();
 
