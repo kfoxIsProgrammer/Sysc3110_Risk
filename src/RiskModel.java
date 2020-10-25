@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -466,9 +468,11 @@ public class RiskModel {
 
     private void play(){
 
-        for(Player currentPlayer: players){
+        while(gameIsNotOver().getKey())
 
-            System.out.println(currentPlayer.getName()+"'s turn, deploy phase, please enter command:");
+            for(Player currentPlayer: players){
+            if(!currentPlayer.getHasLost()) {
+                System.out.println(currentPlayer.getName() + "'s turn, deploy phase, please enter command:");
 
             /*for(Country country: currentPlayer.getOwnedCountries().values()){
                 System.out.println("Country: "+country.getName()+"  Army: "+country.getArmy()+" Can attack");
@@ -497,16 +501,42 @@ public class RiskModel {
             System.out.println("Finished");
             break;*/
 
+
+
+            }
+            //1 or more players are left and game is over
+        }
+        //The game is over
+        if(gameIsNotOver().getValue() == 1 ){
+            for(Player play: players) {
+                if (!play.getHasLost())
+                    parser.gameIsOver(players, play;
+            }
+        }
+        else{
+            Player mostCountry = players.get(0);
+            for(Player play: players) {
+                if(mostCountry.getOwnedCountries().size() < play.getOwnedCountries().size()){
+                    mostCountry = play;
+                }
+            }
+            parser.gameIsOver(players, players.get(players.indexOf(mostCountry)));
         }
     }
 
-    private Country searchForCountryByString(String findThis, Country original){
-        for(Country c: original.getAdjancentCountries()){
-            if(c.getName().equals(findThis)){
-                return c;
+    private Pair<Boolean, Integer> gameIsNotOver(){
+        int count = 0;
+        for(Player player: players)
+            if(player.getHasLost()){
+                count++;
             }
+
+        if(count == players.size() || count == players.size() - 1){
+            return new Pair<Boolean, Integer>(false, 1);
         }
-        return null;
+        else
+            return new Pair<Boolean, Integer>(true, 0);
+
     }
 
     /**
@@ -553,7 +583,6 @@ public class RiskModel {
 
             //Attacker wins
             if(defenders == 0){
-
 
                 finalBattleOutcome = new BattleObject(attacker,
                         defender,

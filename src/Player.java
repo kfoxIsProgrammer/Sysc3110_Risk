@@ -151,4 +151,5 @@ public class Player {
     public void hasLost(){
      this.hasLost = true;
     }
+    public boolean getHasLost(){return this.hasLost;}
 }
