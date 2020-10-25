@@ -469,6 +469,9 @@ public class RiskModel {
     }
 
     private void play(){
+        for(Country country: players.get(1).getOwnedCountries().values()){
+            country.setInitialArmy(1);
+        }
         Command command;
         while(gameIsNotOver().getKey())
             for(Player currentPlayer: players){
@@ -488,7 +491,9 @@ public class RiskModel {
                     }
                 }
                 */
-                while(true) {
+                hasAnyoneLost(currentPlayer,currentPlayer);
+                while(true && gameIsNotOver().getKey()) {
+
                     command = parser.Attack(currentPlayer);
                     if (command.commandCode==CommandCode.SKIP) {
                         break;
@@ -658,6 +663,7 @@ public class RiskModel {
                 for(Country country: player.getOwnedCountries().values()){
                     sumOfUnits += country.getArmy();
                 }
+                System.out.println(sumOfUnits +":" +player.getOwnedCountries().size());
                 if(sumOfUnits == player.getOwnedCountries().size()){
                     player.hasLost();
                     parser.playerHasLost(player, "Has no more available moves");
@@ -670,17 +676,7 @@ public class RiskModel {
 
 
     public static void main(String[] args) {
-       /* CommandParser cp = new CommandParser();
-        Country country = new Country("Canada");
-        ArrayList<Country> countrylist = new ArrayList<>();
-        countrylist.add(country);
-        Continent con = new Continent("North America", countrylist,69);
-        Player pl = new Player("Kevin", 0);
-        System.out.println(cp);
-        System.out.println(con);
-        System.out.println(country);
-        System.out.println(pl);\
-        */
+
 
 
 
