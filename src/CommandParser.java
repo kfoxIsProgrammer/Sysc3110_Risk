@@ -317,7 +317,7 @@ public class CommandParser {
     public Command Attack(Player player){
         Command command = new Command();
 
-       this.showFocusMap(player);
+      // this.showFocusMap(player);
        System.out.println();
        this.showCommands();
 

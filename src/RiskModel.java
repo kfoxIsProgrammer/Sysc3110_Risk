@@ -1,13 +1,12 @@
 import javafx.util.Pair;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.Random;
 
 /**
  * Risk Model class used to model the ongoing game
- * @author Dimitry Koutchine
- * @version 10/23/20
+ * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi
+ * @version 10/25/20/
  */
 public class RiskModel {
     /**List of all the players in the game **/
@@ -432,20 +431,6 @@ public class RiskModel {
 
             }
         }
-        //Testing if armies allocated correctly
-        /*for (Player play: players){
-            Iterator it = play.getOwnedCountries().entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                Country count =((Country)pair.getValue());
-                System.out.println(play.getName()+" "+count.getName());
-
-
-            }
-            System.out.println(play.getName()+" =" + play.getArmiesToAllocate());
-
-            }*/
-
 
     }
 
@@ -469,9 +454,6 @@ public class RiskModel {
     }
 
     private void play(){
-        for(Country country: players.get(1).getOwnedCountries().values()){
-            country.setInitialArmy(1);
-        }
         Command command;
         while(gameIsNotOver().getKey())
             for(Player currentPlayer: players){
