@@ -57,7 +57,7 @@ public class CommandParser {
     private void showFocusMap(Player player){
         System.out.printf("Here are all your countries, their army sizes, and neighboring army sizes:\n");
         System.out.printf("<---------------------------------------------------------------------------------------------->\n");
-        for(Country country : this.countries){
+        for(Country country : player.getOwnedCountries().values()){
             System.out.printf("\t%s: %d\n\t\t",country.getName(),country.getArmy());
             for(Country neighbor : country.getAdjancentCountries()){
                 if(!neighbor.getOwner().equals(player)){
@@ -283,21 +283,20 @@ public class CommandParser {
         Command command;
 
         this.showFocusMap(player);
-        System.out.printf("What do you want to do?\n\n");
-        command = getInput();
 
         while(true){
-            System.out.printf("What do you want to do?\n\n");
+            System.out.printf("%s, what do you want to do?\n\n",player.getName());
             command=getInput();
 
             if(globalCommands(command, player)){
                 break;
             }
-
-            if(command.commandCode==CommandCode.DEPLOY){
+            else if(command.commandCode==CommandCode.DEPLOY){
                 break;
             }
-            System.out.printf("That command is invalid. For a list of commands type 'help'. ");
+            else{
+                System.out.printf("That command is invalid. For a list of commands type 'help'. ");
+            }
         }
 
         return command;
@@ -353,21 +352,20 @@ public class CommandParser {
         Command command;
 
         this.showFocusMap(player);
-        System.out.printf("What do you want to do?\n\n");
-        command = getInput();
 
         while(true){
-            System.out.printf("What do you want to do?\n\n");
+            System.out.printf("%s, what do you want to do?\n\n",player.getName());
             command=getInput();
 
             if(globalCommands(command, player)){
                 break;
             }
-
-            if(command.commandCode==CommandCode.FORTIFY){
+            else if(command.commandCode==CommandCode.FORTIFY){
                 break;
             }
-            System.out.printf("That command is invalid. For a list of commands type 'help'. ");
+            else{
+                System.out.printf("That command is invalid. For a list of commands type 'help'. ");
+            }
         }
 
         return command;
@@ -376,16 +374,11 @@ public class CommandParser {
     /**
      * Give the outcome of a battle to the parser
      * @param outcome the object containing battle outcomes
+     * @return
      */
-    public void sendBattleOutcome(BattleObject outcome){
-
+    public int battleOutcome(BattleObject outcome){
+        return 0;
     }
-
-    /**
-     * Get the number of units to send back once an attacker wins
-     * @return the number of units between 0 - finalAttackers -1
-     */
-    public int getNumberOfUnitsToSendAfterAttackerWin();
 
     /**
      * This prints out when a player has met a lost condition
@@ -415,5 +408,4 @@ public class CommandParser {
         }
 
     }
-
 }

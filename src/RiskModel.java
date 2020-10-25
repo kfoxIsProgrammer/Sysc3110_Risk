@@ -1,6 +1,5 @@
 import javafx.util.Pair;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Random;
@@ -50,7 +49,7 @@ public class RiskModel {
         Country northwestTerritory = new Country("Northwest Territory");
         Country ontario = new Country("Ontario");
         Country quebec = new Country("Quebec");
-        Country westernUnitedSates = new Country("Western United States");
+        Country westernUnitedStates = new Country("Western United States");
         //South America
         Country argentina = new Country("Argentina");
         Country brazil = new Country("Brazil");
@@ -97,17 +96,17 @@ public class RiskModel {
         adjacent.addAll(temp);
         alaska.addAdjacentCountries(adjacent);
 
-        temp = Arrays.asList(alaska, northwestTerritory, ontario, westernUnitedSates);
+        temp = Arrays.asList(alaska, northwestTerritory, ontario, westernUnitedStates);
         adjacent = new ArrayList<Country>();
         adjacent.addAll(temp);
         alberta.addAdjacentCountries(adjacent);
 
-        temp = Arrays.asList(westernUnitedSates, venezuela, easternUnitedStates);
+        temp = Arrays.asList(westernUnitedStates, venezuela, easternUnitedStates);
         adjacent = new ArrayList<Country>();
         adjacent.addAll(temp);
         centralAmerica.addAdjacentCountries(adjacent);
 
-        temp = Arrays.asList(westernUnitedSates, ontario,quebec, centralAmerica);
+        temp = Arrays.asList(westernUnitedStates, ontario,quebec, centralAmerica);
         adjacent = new ArrayList<Country>();
         adjacent.addAll(temp);
         easternUnitedStates.addAdjacentCountries(adjacent);
@@ -122,7 +121,7 @@ public class RiskModel {
         adjacent.addAll(temp);
         northwestTerritory.addAdjacentCountries(adjacent);
 
-        temp = Arrays.asList(northwestTerritory, greenLand,quebec, easternUnitedStates, westernUnitedSates, alberta);
+        temp = Arrays.asList(northwestTerritory, greenLand,quebec, easternUnitedStates, westernUnitedStates, alberta);
         adjacent = new ArrayList<Country>();
         adjacent.addAll(temp);
         ontario.addAdjacentCountries(adjacent);
@@ -135,7 +134,7 @@ public class RiskModel {
         temp = Arrays.asList(alberta, ontario, easternUnitedStates, centralAmerica);
         adjacent = new ArrayList<Country>();
         adjacent.addAll(temp);
-        westernUnitedSates.addAdjacentCountries(adjacent);
+        westernUnitedStates.addAdjacentCountries(adjacent);
 
         //South America-----------------------------------------------------------------------------
 
@@ -307,7 +306,7 @@ public class RiskModel {
         adjacent.addAll(temp);
         westernAustralia.addAdjacentCountries(adjacent);
         //--------------------------------------------adding to continents
-        temp = Arrays.asList(alaska,alberta,centralAmerica,easternUnitedStates,greenLand, northwestTerritory, ontario,quebec , westernUnitedSates);
+        temp = Arrays.asList(alaska,alberta,centralAmerica,easternUnitedStates,greenLand, northwestTerritory, ontario,quebec , westernUnitedStates);
         adjacent = new ArrayList<Country>();
         countries.addAll(temp);
         adjacent.addAll(temp);
@@ -449,8 +448,7 @@ public class RiskModel {
 
 
     }
-    private void deploy(Player currentPlayer){
-    }
+
 
     /**
      * Return the ArrayList of countries.
@@ -471,50 +469,50 @@ public class RiskModel {
     }
 
     private void play(){
-
+        Command command;
         while(gameIsNotOver().getKey())
-
             for(Player currentPlayer: players){
-            if(!currentPlayer.getHasLost()) {
-                System.out.println(currentPlayer.getName() + "'s turn, deploy phase, please enter command:");
+            if(!currentPlayer.getHasLost()){
+                parser.Deploy(currentPlayer);
 
-            /*for(Country country: currentPlayer.getOwnedCountries().values()){
-                System.out.println("Country: "+country.getName()+"  Army: "+country.getArmy()+" Can attack");
-                for(Country attackable: country.getAdjancentCountries()){
-                    if(attackable.getOwner() != currentPlayer){
-                        System.out.println("Country: "+attackable.getName()+"Army: "+attackable.getArmy());
+                /*
+                while(true) {
+                    command = parser.Deploy(currentPlayer);
+                    if (command.commandCode==CommandCode.SKIP) {
+                        break;
+                    }
+                    else if (command.commandCode==CommandCode.DEPLOY) {
+                        //TODO deploy method
                     }
                 }
-                System.out.println();
-            }
-
-            Scanner scan = new Scanner(System.in);
-            System.out.println("Pick your country to attack from");
-            String attackCountry = scan.nextLine();
-            System.out.println("Pick a country to attack");
-            String defendCountry = scan.nextLine();
-            System.out.println("How many units to attack");
-            int num = scan.nextInt();
-
-
-
-            Attack(currentPlayer.getOwnedCountries().get(attackCountry),
-                    searchForCountryByString(defendCountry,currentPlayer.getOwnedCountries().get(attackCountry)),
-                    num);
-
-            System.out.println("Finished");
-            break;*/
-
-
-
+                */
+                while(true) {
+                    command = parser.Attack(currentPlayer);
+                    if (command.commandCode==CommandCode.SKIP) {
+                        break;
+                    }
+                    else if (command.commandCode==CommandCode.ATTACK) {
+                        this.attack(command.countrySrc,command.countryDst,command.numTroops);
+                    }
+                }
+                /*
+                parser.Fortify(currentPlayer);
+                if (command.commandCode==CommandCode.SKIP) {
+                    continue;
+                }
+                else if (command.commandCode==CommandCode.FORTIFY) {
+                    //TODO fortify method
+                }
+                */
             }
             //1 or more players are left and game is over
         }
+
         //The game is over
         if(gameIsNotOver().getValue() == 1 ){
             for(Player play: players) {
                 if (!play.getHasLost())
-                    parser.gameIsOver(players, play;
+                    parser.gameIsOver(players, play);
             }
         }
         else{
@@ -549,7 +547,7 @@ public class RiskModel {
      * @param defender The defending country
      * @param unitsToAttack number of attackers from the attacking country
      */
-    public void Attack(Country attacker, Country defender, int unitsToAttack){
+    public void attack(Country attacker, Country defender, int unitsToAttack){
 
 
             int defenders = defender.getArmy();
@@ -596,13 +594,10 @@ public class RiskModel {
                         defenders,
                         true);
 
-                //Send the battle data to parser
-                parser.sendBattleOutcome(finalBattleOutcome);
-
-                //Get number of units to send to new country
+                //Send the battle data to parser and get number of units to send to new country
                 int numsToSend = -1;
                 while(numsToSend <= 0 && numsToSend > attackers){
-                    numsToSend = getNumberOfUnitsToSendAfterAttackerWin();
+                    numsToSend = parser.battleOutcome(finalBattleOutcome);
                 }
 
                 //Set the new owner and intial value
@@ -623,7 +618,7 @@ public class RiskModel {
                         defenders,
                         false);
 
-                parser.sendBattleObject(finalBattleOutcome);
+                parser.battleOutcome(finalBattleOutcome);
 
                 attacker.removeArmy(unitsToAttack);
                 defender.removeArmy(defender.getArmy()-defenders);
