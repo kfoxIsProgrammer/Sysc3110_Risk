@@ -473,7 +473,9 @@ public class RiskModel {
         while(gameIsNotOver().getKey())
             for(Player currentPlayer: players){
             if(!currentPlayer.getHasLost()){
-                parser.Deploy(currentPlayer);
+
+
+                //parser.Deploy(currentPlayer);
 
                 /*
                 while(true) {
@@ -492,7 +494,11 @@ public class RiskModel {
                         break;
                     }
                     else if (command.commandCode==CommandCode.ATTACK) {
-                        this.attack(command.countrySrc,command.countryDst,command.numTroops);
+                        if(!this.attack(command.countrySrc,command.countryDst,command.numTroops)){
+                            System.out.println("Error you sent too many units");
+                            continue;
+                        }
+
                     }
                 }
                 /*
@@ -546,21 +552,23 @@ public class RiskModel {
      * @param attacker The attacking country
      * @param defender The defending country
      * @param unitsToAttack number of attackers from the attacking country
+     * @return Boolean true = no error, false = units to attack error
      */
-    public void attack(Country attacker, Country defender, int unitsToAttack){
+    public boolean attack(Country attacker, Country defender, int unitsToAttack){
 
+            if(attacker.getArmy() - unitsToAttack <= 0)return false;
 
             int defenders = defender.getArmy();
             int attackers = unitsToAttack;
 
 
-            Integer[] attackRolls = new Integer[Math.max(unitsToAttack, defender.getArmy())];
-            Integer[] defenderRolls = new Integer[Math.max(unitsToAttack, defender.getArmy())];
+            Integer[] attackRolls = new Integer[Math.max(unitsToAttack-1, defender.getArmy()-1)];
+            Integer[] defenderRolls = new Integer[Math.max(unitsToAttack-1, defender.getArmy()-1)];
 
             //Get int array of dice rolls
             for(int i=0; i< attackRolls.length; i++){
-                attackRolls[i] = ThreadLocalRandom.current().nextInt(1, 6 + 1);
-                defenderRolls[i] = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+                attackRolls[i] = (int)(Math.ceil(Math.random()*5));
+                defenderRolls[i] = (int)(Math.ceil(Math.random()*5));
             }
 
             //Sort each array in desc order
@@ -588,7 +596,7 @@ public class RiskModel {
 
                 finalBattleOutcome = new BattleObject(attacker,
                         defender,
-                        attacker.getArmy(),
+                        unitsToAttack,
                         defender.getArmy(),
                         attackers,
                         defenders,
@@ -596,13 +604,13 @@ public class RiskModel {
 
                 //Send the battle data to parser and get number of units to send to new country
                 int numsToSend = -1;
-                while(numsToSend <= 0 && numsToSend > attackers){
+                while(numsToSend <= 0 && numsToSend < attackers){
                     numsToSend = parser.battleOutcome(finalBattleOutcome);
                 }
 
-                //Set the new owner and intial value
-                defender.setInitialArmy(attackers - numsToSend);
-                attacker.removeArmy(unitsToAttack-attackers+numsToSend);
+                //Set the new owner and initial value
+                defender.setInitialArmy(attackers-numsToSend);
+                attacker.removeArmy(attackers-numsToSend);
                 defender.setOwner(attacker.getOwner());
                 defender.getOwner().removeCountry(defender);
                 attacker.getOwner().addCountry(defender);
@@ -612,7 +620,7 @@ public class RiskModel {
 
                 finalBattleOutcome = new BattleObject(attacker,
                         defender,
-                        attacker.getArmy(),
+                        unitsToAttack,
                         defender.getArmy(),
                         attackers,
                         defenders,
@@ -625,6 +633,7 @@ public class RiskModel {
             }
 
             hasAnyoneLost(attacker.getOwner(), defender.getOwner());
+            return true;
         }
 
     /**

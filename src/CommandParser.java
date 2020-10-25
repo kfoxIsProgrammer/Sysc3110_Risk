@@ -177,48 +177,45 @@ public class CommandParser {
      *
      * @return A command object that reflects the user's input
      */
-    private Command getInput(){
-        CommandCode commandCode=null;
-        Country countrySrc=null;
-        Country countryDst=null;
-        int numTroops=0;
+    private Command getInput(Command command){
+
 
         Scanner scanner=new Scanner(System.in);
         String[] input=longCountryToString(scanner.nextLine().toLowerCase().split(" "));
 
         if(input.length==1){
             if (input[0].equals("skip")) {
-                commandCode = CommandCode.SKIP;
+                command.commandCode = CommandCode.SKIP;
             } else if (input[0].equals("back")) {
-                commandCode = CommandCode._BACK;
+                command.commandCode = CommandCode._BACK;
             } else if (input[0].equals("help")) {
-                commandCode = CommandCode._HELP;
+                command.commandCode = CommandCode._HELP;
             }
         }
         else if(input.length==2){
             if(input[0].equals("focus")&&
                this.countryNames.contains(input[1])){
-                commandCode=CommandCode._FOCUS;
-                countrySrc=stringToCountry(input[1]);
+                command.commandCode=CommandCode._FOCUS;
+                command.countrySrc=stringToCountry(input[1]);
             }
         }
         else if(input.length==3){
             if(input[0].equals("show")&&
                input[1].equals("full")&&
                input[2].equals("map")){
-                commandCode=CommandCode._FULL_MAP;
+                command.commandCode=CommandCode._FULL_MAP;
             }
             else if(input[0].equals("show")&&
                      input[1].equals("focus")&&
                      input[2].equals("map")) {
-                commandCode = CommandCode._FOCUS_MAP;
+                command.commandCode = CommandCode._FOCUS_MAP;
             }
             else if(input[0].equals("attack")&&
                     this.countryNames.contains(input[1])&&
                     isInt(input[2])){
-                commandCode=CommandCode.ATTACK;
-                countrySrc=stringToCountry(input[1]);
-                numTroops=Integer.parseInt(input[2]);
+                command.commandCode=CommandCode.ATTACK;
+                command.countryDst=stringToCountry(input[1]);
+                command.numTroops=Integer.parseInt(input[2]);
             }
         }
         else if(input.length==4){
@@ -226,9 +223,9 @@ public class CommandParser {
                this.isInt(input[1])&&
                input[2].equals("to")&&
                this.countryNames.contains(input[3])){
-               commandCode=CommandCode.DEPLOY;
-               numTroops=Integer.parseInt(input[1]);
-               countryDst=stringToCountry(input[3]);
+               command.commandCode=CommandCode.DEPLOY;
+               command.numTroops=Integer.parseInt(input[1]);
+               command.countryDst=stringToCountry(input[3]);
             }
         }
         else if(input.length==6){
@@ -238,14 +235,13 @@ public class CommandParser {
                this.countryNames.contains(input[3])&&
                input[4].equals("to")&&
                this.countryNames.contains(input[5])){
-                commandCode=CommandCode.FORTIFY;
-                numTroops=Integer.parseInt(input[1]);
-                countrySrc=stringToCountry(input[3]);
-                countryDst=stringToCountry(input[5]);
+                command.commandCode=CommandCode.FORTIFY;
+                command.numTroops=Integer.parseInt(input[1]);
+                command.countrySrc=stringToCountry(input[3]);
+                command.countryDst=stringToCountry(input[5]);
             }
         }
 
-        Command command=new Command(commandCode,countrySrc,countryDst,numTroops);
         //command.print();
 
         return command;
@@ -280,13 +276,12 @@ public class CommandParser {
      * @return A Command object containing the users move
      */
     public Command Deploy(Player player){
-        Command command;
-
-        this.showFocusMap(player);
+        Command command = new Command();
 
         while(true){
             System.out.printf("%s, what do you want to do?\n\n",player.getName());
-            command=getInput();
+            this.showCommands();
+            getInput(command);
 
             if(globalCommands(command, player)){
                 break;
@@ -302,19 +297,34 @@ public class CommandParser {
         return command;
     }
 
+    private void showCommands() {
+        System.out.printf("%s",
+                "List of Commands\n"+
+                "1.Show Full Map\n" +
+                "2.Show Focus Map\n" +
+                "3.Skip\n" +
+                "4.Focus [COUNTRY]\n" +
+                        "5.help\n");
+
+
+    }
+
     /**
      * Asks the player what they want to do during the attack phase then returns their command
      *
      * @return A Command object containing the users move
      */
     public Command Attack(Player player){
-        Command command;
+        Command command = new Command();
 
-        this.showFocusMap(player);
+       this.showFocusMap(player);
+       System.out.println();
+       this.showCommands();
 
         while(true){
+            command = new Command();
             System.out.printf("%s, what do you want to do?\n\n",player.getName());
-            command=getInput();
+            getInput(command);
 
             if(globalCommands(command, player)){
                 break;
@@ -322,20 +332,24 @@ public class CommandParser {
             else if(command.commandCode==CommandCode._FOCUS){
                 this.showNeighbors(player,command.countrySrc);
 
-                command=getInput();
+                getInput(command);
 
                 if(command.commandCode==CommandCode._BACK){
-                    System.out.printf("Back at the attack menu. ");
+                    System.out.printf("Back at the attack menu. \n");
                     continue;
                 }
                 else if(command.commandCode==CommandCode.ATTACK){
                     break;
                 }
-                else{
-                    System.out.printf("That command is invalid. Returning to attack menu. For a list of commands type 'help'. ");
-                }
             }
-            else{
+            else {
+                boolean notCommand = true;
+                for(CommandCode commandCode: CommandCode.values()){
+                    if(command.commandCode == commandCode){
+                        notCommand = false;
+                    }
+                }
+                if(notCommand)
                 System.out.printf("That command is invalid. For a list of commands type 'help'. ");
             }
         }
@@ -349,13 +363,13 @@ public class CommandParser {
      * @return A Command object containing the users move
      */
     public Command Fortify(Player player){
-        Command command;
+        Command command = new Command();
 
         this.showFocusMap(player);
 
         while(true){
             System.out.printf("%s, what do you want to do?\n\n",player.getName());
-            command=getInput();
+            getInput(command);
 
             if(globalCommands(command, player)){
                 break;
@@ -377,6 +391,21 @@ public class CommandParser {
      * @return
      */
     public int battleOutcome(BattleObject outcome){
+
+        System.out.println("Country: "+ outcome.getAttackingCountry().getName() +" won? "+outcome.didAttackerWin());
+        System.out.println("Attacker start "+outcome.getAttackingCountry().getName() +" ->" + outcome.getInitialAttackers()+" final-> "+outcome.getFinalAttackingArmy());
+        System.out.println("Defender start "+outcome.getDefendingCountry().getName() +" ->" + outcome.getInitialDefenders()+" final-> "+outcome.getFinalDefendingArmy());
+        System.out.println();
+
+        if(outcome.didAttackerWin()){
+
+            if(outcome.getFinalAttackingArmy() > 1){
+                Scanner scanner=new Scanner(System.in);
+                System.out.println("Please Enter how many troops to send back to "+outcome.getAttackingCountry().getName());
+                System.out.println("(0 - "+(outcome.getFinalAttackingArmy()-1)+")");
+                return scanner.nextInt();
+            }
+        }
         return 0;
     }
 
