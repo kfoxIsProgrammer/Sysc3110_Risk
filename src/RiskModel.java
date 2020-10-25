@@ -531,37 +531,39 @@ public class RiskModel {
             Arrays.sort(attackRolls, Collections.reverseOrder());
             Arrays.sort(defenderRolls, Collections.reverseOrder());
 
-            System.out.println("Attacker: "+attacker.getName()+"    Defender: "+defender.getName());
+
             //Compare rolls until someone loses
             while(defenders > 0 && attackers > 0){
                 for(int i=0; i< attackRolls.length; i++){
                     if(attackRolls[i] > defenderRolls[i]){
                         defenders--;
-                        System.out.println("   "+attackRolls[i]+"      "+defenderRolls[i] +"    Attacker win");
                     }
                     else{
                         attackers--;
-                        System.out.println("   "+attackRolls[i]+"      "+defenderRolls[i] +"    Defender win");
-
                     }
                 }
             }
 
             //Add the description of the battle
+            BattleObject finalBattleOutcome;
 
             //Attacker wins
             if(defenders == 0){
-                System.out.println("Attacking Country: "+attacker.getName()+" won! +\nHow many units do you want to transfer: " + attackers);
-                System.out.println("Select between 1-"+attackers);
-                Scanner scan = new Scanner(System.in);
-
-
                 //Get the number from the parser
+
+                finalBattleOutcome = new BattleObject(attacker,
+                        defender,
+                        attacker.getArmy(),
+                        defender.getArmy(),
+                        attackers,
+                        defenders,
+                        true);
+
+                parser.sendBattleOutcome(finalBattleOutcome);
 
                 int numsToSend = -1;
                 while(numsToSend <= 0 && numsToSend > attackers){
-                    System.out.println("Select between 1-"+attackers);
-                    numsToSend = scan.nextInt();
+                    numsToSend = getNumberOfUnitsToSendAfterAttackerWin();
                 }
 
                 //Set the new owner and intial value
@@ -573,12 +575,22 @@ public class RiskModel {
             }
             //Attacker loses
             if(attackers == 0){
-                System.out.println("Defending Country: "+defender.getName()+" has won!");
-                System.out.println("Defenders left: "+defenders);
+
+                finalBattleOutcome = new BattleObject(attacker,
+                        defender,
+                        attacker.getArmy(),
+                        defender.getArmy(),
+                        attackers,
+                        defenders,
+                        false);
+
+                parser.sendBattleObject(finalBattleOutcome);
+
                 attacker.removeArmy(unitsToAttack);
                 defender.removeArmy(defender.getArmy()-defenders);
             }
 
+            //toDo Send battleOutcome to Parser
         }
 
 

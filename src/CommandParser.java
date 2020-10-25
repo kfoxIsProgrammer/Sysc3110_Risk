@@ -264,4 +264,19 @@ public class CommandParser {
     public Command Fortify(){
         return getInput();
     }
+
+    /**
+     * Give the outcome of a battle to the parser
+     * @param outcome the object containing battle outcomes
+     */
+    public void sendBattleObject(BattleObject outcome);
+
+    /**
+     * Get the number of units to send back once an attacker wins
+     * @return the number of units between 0 - finalAttackers -1
+     */
+    public int getNumberOfUnitsToSendAfterAttackerWin();
+
+
+
 }
