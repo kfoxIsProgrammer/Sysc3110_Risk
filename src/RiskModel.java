@@ -549,21 +549,21 @@ public class RiskModel {
 
     /**
      * This method is the attack phase controller for the game of risk
-     * @param attacker The attacking country
-     * @param defender The defending country
+     * @param attackingCountry The attacking country
+     * @param defendingCountry The defending country
      * @param unitsToAttack number of attackers from the attacking country
      * @return Boolean true = no error, false = units to attack error
      */
-    public boolean attack(Country attacker, Country defender, int unitsToAttack){
+    public boolean attack(Country attackingCountry, Country defendingCountry, int unitsToAttack){
 
-            if(attacker.getArmy() - unitsToAttack <= 0)return false;
+            if(attackingCountry.getArmy() - unitsToAttack <= 0)return false;
 
-            int defenders = defender.getArmy();
-            int attackers = unitsToAttack;
+            int defendingArmy = defendingCountry.getArmy();
+            int attackingArmy = unitsToAttack;
 
 
-            Integer[] attackRolls = new Integer[Math.max(unitsToAttack-1, defender.getArmy()-1)];
-            Integer[] defenderRolls = new Integer[Math.max(unitsToAttack-1, defender.getArmy()-1)];
+            Integer[] attackRolls = new Integer[Math.max(unitsToAttack-1, defendingCountry.getArmy()-1)];
+            Integer[] defenderRolls = new Integer[Math.max(unitsToAttack-1, defendingCountry.getArmy()-1)];
 
             //Get int array of dice rolls
             for(int i=0; i< attackRolls.length; i++){
@@ -577,13 +577,13 @@ public class RiskModel {
 
 
             //Compare rolls until someone loses
-            while(defenders > 0 && attackers > 0){
+            while(defendingArmy > 0 && attackingArmy > 0){
                 for(int i=0; i< attackRolls.length; i++){
                     if(attackRolls[i] > defenderRolls[i]){
-                        defenders--;
+                        defendingArmy--;
                     }
                     else{
-                        attackers--;
+                        attackingArmy--;
                     }
                 }
             }
@@ -592,47 +592,47 @@ public class RiskModel {
             BattleObject finalBattleOutcome;
 
             //Attacker wins
-            if(defenders == 0){
+            if(defendingArmy == 0){
 
-                finalBattleOutcome = new BattleObject(attacker,
-                        defender,
+                finalBattleOutcome = new BattleObject(attackingCountry,
+                        defendingCountry,
                         unitsToAttack,
-                        defender.getArmy(),
-                        attackers,
-                        defenders,
+                        defendingCountry.getArmy(),
+                        attackingArmy,
+                        defendingArmy,
                         true);
 
                 //Send the battle data to parser and get number of units to send to new country
                 int numsToSend = -1;
-                while(numsToSend <= 0 && numsToSend < attackers){
+                while(numsToSend < 0 && numsToSend < attackingArmy){
                     numsToSend = parser.battleOutcome(finalBattleOutcome);
                 }
 
                 //Set the new owner and initial value
-                defender.setInitialArmy(attackers-numsToSend);
-                attacker.removeArmy(attackers-numsToSend);
-                defender.setOwner(attacker.getOwner());
-                defender.getOwner().removeCountry(defender);
-                attacker.getOwner().addCountry(defender);
+                defendingCountry.setInitialArmy(attackingArmy-numsToSend);
+                attackingCountry.removeArmy(attackingArmy-numsToSend);
+                defendingCountry.getOwner().removeCountry(defendingCountry);
+                defendingCountry.setOwner(attackingCountry.getOwner());
+                attackingCountry.getOwner().addCountry(defendingCountry);
             }
             //Attacker loses
-            if(attackers == 0){
+            if(attackingArmy == 0){
 
-                finalBattleOutcome = new BattleObject(attacker,
-                        defender,
+                finalBattleOutcome = new BattleObject(attackingCountry,
+                        defendingCountry,
                         unitsToAttack,
-                        defender.getArmy(),
-                        attackers,
-                        defenders,
+                        defendingCountry.getArmy(),
+                        attackingArmy,
+                        defendingArmy,
                         false);
 
                 parser.battleOutcome(finalBattleOutcome);
 
-                attacker.removeArmy(unitsToAttack);
-                defender.removeArmy(defender.getArmy()-defenders);
+                attackingCountry.removeArmy(unitsToAttack);
+                defendingCountry.removeArmy(defendingCountry.getArmy()-defendingArmy);
             }
 
-            hasAnyoneLost(attacker.getOwner(), defender.getOwner());
+            hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner());
             return true;
         }
 
