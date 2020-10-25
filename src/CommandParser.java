@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -14,8 +12,6 @@ public class CommandParser {
     private ArrayList<Country> countries;
     /** List of the Country names*/
     private ArrayList<String> countryNames;
-    /** List of Country names that are more than one word*/
-    private String longCountryNames;
 
     /**
      * Initializes the command parser and stores relevant information in the object
@@ -25,15 +21,9 @@ public class CommandParser {
     CommandParser(ArrayList<Country> countries){
         this.countries=countries;
         this.countryNames=new ArrayList<>();
-        this.longCountryNames="";
 
-        for(Country country : this.countries) {
-            String lowercaseCountryName=country.getName().toLowerCase();
-            this.countryNames.add(lowercaseCountryName);
-
-            if(lowercaseCountryName.split(" ").length>1){
-                this.longCountryNames+=lowercaseCountryName+",";
-            }
+        for(Country country : this.countries){
+            this.countryNames.add(country.getName());
         }
     }
 
@@ -42,11 +32,11 @@ public class CommandParser {
      */
     private void showFullMap(){
         System.out.printf("Here are all the countries and their army sizes:\n");
-        System.out.printf("<---------------------------------------------------------------------------------------------->\n");
+        System.out.printf("<-------------------------------------------------------------->\n");
         for(Country country : this.countries){
             System.out.printf("\t%s:\t\t%d\n",country.getName(),country.getArmy());
         }
-        System.out.printf("<---------------------------------------------------------------------------------------------->\n");
+        System.out.printf("<-------------------------------------------------------------->\n");
     }
 
     /**
@@ -56,17 +46,17 @@ public class CommandParser {
      */
     private void showFocusMap(Player player){
         System.out.printf("Here are all your countries, their army sizes, and neighboring army sizes:\n");
-        System.out.printf("<---------------------------------------------------------------------------------------------->\n");
-        for(Country country : player.getOwnedCountries().values()){
-            System.out.printf("\t%s: %d\n\t\t",country.getName(),country.getArmy());
+        System.out.printf("<-------------------------------------------------------------->\n");
+        for(Country country : this.countries){
+            System.out.printf("\t%s:\t\t%d\n\t\t",country.getName(),country.getArmy());
             for(Country neighbor : country.getAdjancentCountries()){
                 if(!neighbor.getOwner().equals(player)){
                     System.out.printf("%d ",neighbor.getArmy());
                 }
             }
-            System.out.printf("\n");
+            System.out.printf("\n\n");
         }
-        System.out.printf("<---------------------------------------------------------------------------------------------->\n");
+        System.out.printf("<-------------------------------------------------------------->\n");
     }
 
     /**
@@ -76,35 +66,14 @@ public class CommandParser {
      * @param country The country the player is focused on
      */
     private void showNeighbors(Player player, Country country){
-        System.out.printf("You have %d troops at %s\n",country.getArmy(),country.getName());
+        System.out.printf("You have %d troops at %s",country.getArmy(),country.getName());
         System.out.printf("Your neighbors are:\n");
         for(Country neighbor : country.getAdjancentCountries()){
             if(!neighbor.getOwner().equals(player)){
-                System.out.printf("\t%s: %d\n",neighbor.getName(),neighbor.getArmy());
+                System.out.printf("\t%s: %d",neighbor.getName(),neighbor.getArmy());
             }
         }
-        System.out.printf("\n");
-    }
-
-    /**
-     * Prints a list of commands
-     */
-    private void showHelp(){
-        System.out.printf("Here is the command list:\n" +
-                "<---------------------------------GENERAL---------------------------------->\n" +
-                "\tShow Full Map\n" +
-                "\t\tDisplay a list of all the countries and the size of their army\n" +
-                "\tShow Focus Map\n" +
-                "\t\tDisplay a list of your countries, and the army size of neighbors\n" +
-                "\tSkip\n" +
-                "\t\tEnds the current phase\n" +
-                "<-------------------------------ATTACK PHASE------------------------------->\n" +
-                "\tFocus [COUNTRY]\n" +
-                "\t\tLets you select a country to attack from\n" +
-                "\t(When a country is selected) attack [COUNTRY] [NUM TROOPS]\n" +
-                "\t\tSend a number of troops to attack a neighboring country\n" +
-                "\t(When a country is selected) Back\n" +
-                "\t\tDeselects the selected country\n");
+        System.out.printf("\n\n");
     }
 
     /**
@@ -122,41 +91,6 @@ public class CommandParser {
         return true;
     }
 
-    private String[] longCountryToString(String[]  s){
-        String processedOutputString="";
-        String[] processedOutputArray;
-        List<String> longCountryNamesArray= Arrays.asList(this.longCountryNames.split(","));
-
-        for(int i=0;i<s.length;i++){
-            if (this.longCountryNames.contains(s[i])){
-                for(int j=0;j<longCountryNamesArray.size();j++){
-                    String[] splitNames=longCountryNamesArray.get(j).split(" ");
-                    if(splitNames.length==2&&
-                       s.length-i>=2&&
-                       splitNames[0].equals(s[ i ])&&
-                       splitNames[1].equals(s[i+1])){
-                        processedOutputString+=s[i]+" "+s[i+1]+",";
-                        break;
-                    }
-                    else if(splitNames.length==3&&
-                            s.length-i>=3&&
-                            splitNames[0].equals(s[ i ])&&
-                            splitNames[1].equals(s[i+1])&&
-                            splitNames[2].equals(s[i+2])){
-                        processedOutputString+=s[i]+" "+s[i+1]+" "+s[i+2]+",";
-                        break;
-                    }
-                }
-            }
-            else{
-                processedOutputString+=s[i]+",";
-            }
-        }
-        processedOutputArray=processedOutputString.split(",");
-
-        return processedOutputArray;
-    }
-
     /**
      * Finds and returns a country object when given it's name
      *
@@ -165,7 +99,7 @@ public class CommandParser {
      */
     private Country stringToCountry(String countryName){
         for(Country country : this.countries){
-            if(country.getName().toLowerCase().equals(countryName)){
+            if(country.getName().equals(countryName)){
                 return country;
             }
         }
@@ -179,19 +113,44 @@ public class CommandParser {
      */
     private Command getInput(){
         CommandCode commandCode=null;
-        Country countrySrc=null;
-        Country countryDst=null;
+        String countrySrc=null;
+        String countryDst=null;
         int numTroops=0;
 
         Scanner scanner=new Scanner(System.in);
-        String[] input=longCountryToString(scanner.nextLine().toLowerCase().split(" "));
+        String[] input=scanner.nextLine().split(" ");
+
+        /*1
+        *   skip
+        *   back
+        *   help
+        *
+        * 2
+        *   focus [country]
+        *   attack [country]
+        *
+        * 3
+        *   Show Full Map
+        *   Show Focus Map
+        *
+        * 4
+        *   Send [numTroops] to [country]
+        *
+        * 6
+        *   transfer [numTroops] from [countrySrc] to [countryDst]
+        *
+        */
+
+        for(String word : input){
+            word=word.toLowerCase();
+        }
 
         if(input.length==1){
-            if (input[0].equals("skip")) {
+            if ("skip".equals(input[0])) {
                 commandCode = CommandCode.SKIP;
-            } else if (input[0].equals("back")) {
+            } else if ("back".equals(input[0])) {
                 commandCode = CommandCode._BACK;
-            } else if (input[0].equals("help")) {
+            } else if ("help".equals(input[0])) {
                 commandCode = CommandCode._HELP;
             }
         }
@@ -199,7 +158,12 @@ public class CommandParser {
             if(input[0].equals("focus")&&
                this.countryNames.contains(input[1])){
                 commandCode=CommandCode._FOCUS;
-                countrySrc=stringToCountry(input[1]);
+                countrySrc=input[1];
+            }
+            else if(input[0].equals("attack")&&
+                     this.countryNames.contains(input[1])){
+                commandCode=CommandCode.ATTACK;
+                countrySrc=input[1];
             }
         }
         else if(input.length==3){
@@ -213,22 +177,15 @@ public class CommandParser {
                      input[2].equals("map")) {
                 commandCode = CommandCode._FOCUS_MAP;
             }
-            else if(input[0].equals("attack")&&
-                    this.countryNames.contains(input[1])&&
-                    isInt(input[2])){
-                commandCode=CommandCode.ATTACK;
-                countrySrc=stringToCountry(input[1]);
-                numTroops=Integer.parseInt(input[2]);
-            }
         }
         else if(input.length==4){
             if(input[0].equals("send")&&
                this.isInt(input[1])&&
                input[2].equals("to")&&
-               this.countryNames.contains(input[3])){
-               commandCode=CommandCode.DEPLOY;
-               numTroops=Integer.parseInt(input[1]);
-               countryDst=stringToCountry(input[3]);
+                    this.countryNames.contains(input[3])){
+                commandCode=CommandCode.DEPLOY;
+                numTroops=Integer.parseInt(input[1]);
+                countryDst=input[3];
             }
         }
         else if(input.length==6){
@@ -240,38 +197,11 @@ public class CommandParser {
                this.countryNames.contains(input[5])){
                 commandCode=CommandCode.FORTIFY;
                 numTroops=Integer.parseInt(input[1]);
-                countrySrc=stringToCountry(input[3]);
-                countryDst=stringToCountry(input[5]);
+                countrySrc=input[3];
+                countryDst=input[5];
             }
         }
-
-        Command command=new Command(commandCode,countrySrc,countryDst,numTroops);
-        //command.print();
-
-        return command;
-    }
-
-    /**
-     * Checks if the player has called a global command
-     *
-     * @param command The command to be checked against the global command list
-     * @param player The player who's turn it is
-     * @return true if an exit condition is met, false otherwise
-     */
-    private boolean globalCommands(Command command,Player player){
-        if(command.commandCode==CommandCode._HELP){
-            showHelp();
-        }
-        else if(command.commandCode==CommandCode._FULL_MAP){
-            showFullMap();
-        }
-        else if(command.commandCode==CommandCode._FOCUS_MAP){
-            showFocusMap(player);
-        }
-        else if(command.commandCode==CommandCode.SKIP){
-            return true;
-        }
-        return false;
+        return new Command(commandCode,countrySrc,countryDst,numTroops);
     }
 
     /**
@@ -279,29 +209,9 @@ public class CommandParser {
      *
      * @return A Command object containing the users move
      */
-    public Command Deploy(Player player){
-        Command command;
-
-        this.showFocusMap(player);
-
-        while(true){
-            System.out.printf("%s, what do you want to do?\n\n",player.getName());
-            command=getInput();
-
-            if(globalCommands(command, player)){
-                break;
-            }
-            else if(command.commandCode==CommandCode.DEPLOY){
-                break;
-            }
-            else{
-                System.out.printf("That command is invalid. For a list of commands type 'help'. ");
-            }
-        }
-
-        return command;
+    public Command Deploy(){
+        return getInput();
     }
-
     /**
      * Asks the player what they want to do during the attack phase then returns their command
      *
@@ -311,74 +221,63 @@ public class CommandParser {
         Command command;
 
         this.showFocusMap(player);
+        System.out.printf("What do you want to do?\n\n");
+        command = getInput();
 
         while(true){
-            System.out.printf("%s, what do you want to do?\n\n",player.getName());
-            command=getInput();
-
-            if(globalCommands(command, player)){
+            if(command.commandCode==CommandCode.SKIP){
                 break;
             }
             else if(command.commandCode==CommandCode._FOCUS){
-                this.showNeighbors(player,command.countrySrc);
+                Country country=this.stringToCountry(command.countrySrc);
 
+                this.showNeighbors(player,country);
+
+                System.out.printf("What do you want to do?\n\n");
                 command=getInput();
 
                 if(command.commandCode==CommandCode._BACK){
-                    System.out.printf("Back at the attack menu. ");
-                    continue;
+                    System.out.printf("Back at the attack menu. What do you want to do?\n\n");
+                    command=getInput();
                 }
                 else if(command.commandCode==CommandCode.ATTACK){
                     break;
                 }
                 else{
-                    System.out.printf("That command is invalid. Returning to attack menu. For a list of commands type 'help'. ");
+                    System.out.printf("That command is invalid. For a list of commands type 'help'. What do you want to do?\n\n");
+                    command=getInput();
                 }
             }
             else{
-                System.out.printf("That command is invalid. For a list of commands type 'help'. ");
+                System.out.printf("That command is invalid. For a list of commands type 'help'. What do you want to do?\n\n");
+                command=getInput();
             }
         }
 
         return command;
     }
-
     /**
      * Asks the player what they want to do during the fortify phase then returns their command
      *
      * @return A Command object containing the users move
      */
-    public Command Fortify(Player player){
-        Command command;
-
-        this.showFocusMap(player);
-
-        while(true){
-            System.out.printf("%s, what do you want to do?\n\n",player.getName());
-            command=getInput();
-
-            if(globalCommands(command, player)){
-                break;
-            }
-            else if(command.commandCode==CommandCode.FORTIFY){
-                break;
-            }
-            else{
-                System.out.printf("That command is invalid. For a list of commands type 'help'. ");
-            }
-        }
-
-        return command;
+    public Command Fortify(){
+        return getInput();
     }
 
     /**
      * Give the outcome of a battle to the parser
      * @param outcome the object containing battle outcomes
-     * @return
      */
-    public int battleOutcome(BattleObject outcome){
-        return 0;
+    public void sendBattleOutcome(BattleObject outcome){
+
     }
+
+    /**
+     * Get the number of units to send back once an attacker wins
+     * @return the number of units between 0 - finalAttackers -1
+     */
+    //public int getNumberOfUnitsToSendAfterAttackerWin();
 
     /**
      * This prints out when a player has met a lost condition
@@ -408,4 +307,5 @@ public class CommandParser {
         }
 
     }
+
 }
