@@ -11,12 +11,17 @@ public class RiskModel {
     ArrayList<Player> players;
     ArrayList<Country> countries;
     ArrayList<Continent> continents;
+    CommandParser commandParser;
 
     private RiskModel(){
-        players = new ArrayList<Player>();
-        countries = new ArrayList<Country>();
-        continents = new ArrayList<Continent>();
+        this.players = new ArrayList<Player>();
+        this.countries = new ArrayList<Country>();
+        this.continents = new ArrayList<Continent>();
+        this.createMap();
+        this.commandParser=new CommandParser(this.countries);
 
+        this.newGame();
+        this.play();
     }
     /**
      * Initialize the countries and there adjacency's, continents, and setup the game board
@@ -433,36 +438,7 @@ public class RiskModel {
     private void play(){
 
         for(Player currentPlayer: players){
-
-            System.out.println(currentPlayer.getName()+"'s turn, deploy phase, please enter command:");
-
-            /*for(Country country: currentPlayer.getOwnedCountries().values()){
-                System.out.println("Country: "+country.getName()+"  Army: "+country.getArmy()+" Can attack");
-                for(Country attackable: country.getAdjancentCountries()){
-                    if(attackable.getOwner() != currentPlayer){
-                        System.out.println("Country: "+attackable.getName()+"Army: "+attackable.getArmy());
-                    }
-                }
-                System.out.println();
-            }
-
-            Scanner scan = new Scanner(System.in);
-            System.out.println("Pick your country to attack from");
-            String attackCountry = scan.nextLine();
-            System.out.println("Pick a country to attack");
-            String defendCountry = scan.nextLine();
-            System.out.println("How many units to attack");
-            int num = scan.nextInt();
-
-
-
-            Attack(currentPlayer.getOwnedCountries().get(attackCountry),
-                    searchForCountryByString(defendCountry,currentPlayer.getOwnedCountries().get(attackCountry)),
-                    num);
-
-            System.out.println("Finished");
-            break;*/
-
+            commandParser.Attack(currentPlayer);
         }
     }
 
@@ -571,9 +547,6 @@ public class RiskModel {
 
 
        RiskModel main = new RiskModel();
-       main.createMap();
-       main.newGame();
-       main.play();
 
 
 

@@ -28,4 +28,10 @@ public class Command {
         this.countryDst=countryDst;
         this.numTroops=numTroops;
     }
+    public void print(){
+        if(commandCode!=null)
+            System.out.printf("Enum: %s, Src: %s, Dst: %s, Num: %d\n",commandCode.toString(),countrySrc,countryDst,numTroops);
+        else
+            System.out.printf("fuck");
+    }
 }
