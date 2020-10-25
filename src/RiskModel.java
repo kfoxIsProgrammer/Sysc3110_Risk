@@ -1,6 +1,7 @@
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 /**
  * Risk Model class used to model the ongoing game
@@ -8,10 +9,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * @version 10/23/20
  */
 public class RiskModel {
+    /**List of all the players in the game **/
     ArrayList<Player> players;
+    /**   list of the countries in the game **/
     ArrayList<Country> countries;
+    /**   list of all the continents in the game **/
     ArrayList<Continent> continents;
-
+/** Contructor of Risk Model*/
     private RiskModel(){
         players = new ArrayList<Player>();
         countries = new ArrayList<Country>();
@@ -340,6 +344,7 @@ public class RiskModel {
     private void newGame(){
         int x = 0;
         int startingArmySize;
+        Random rand = new Random(System.currentTimeMillis());
 
         Scanner choice = new Scanner(System.in);
 
@@ -347,8 +352,19 @@ public class RiskModel {
         while( x < 2 || x > 6) {
             if(x != 0) System.out.println("Invalid selection");
             System.out.println("How many players? (2-6)");
+
+            while(!choice.hasNextInt()) {
+
+                System.out.println("Invalid selection");
+
+                choice.next();
+
+
+            }
             x = choice.nextInt();
             choice.nextLine();
+
+
         }
 
         //Determines starting army size which depends on amount of players
@@ -374,7 +390,7 @@ public class RiskModel {
         //make randomized list of the countries
         ArrayList<Country> ran =new ArrayList<Country>();
         ran = countries;
-        Collections.shuffle(ran);
+        Collections.shuffle(ran, rand);
         Stack<Country> addStack = new Stack<Country>();
         addStack.addAll(ran);
         //Splits up the countries amongst players
@@ -392,7 +408,7 @@ public class RiskModel {
         for(Player play: players){
             while (play.getArmiesToAllocate() > 0){
                 ArrayList<Country> temp = new ArrayList<Country>(play.getOwnedCountries().values());
-                Collections.shuffle(temp);
+                Collections.shuffle(temp,rand);
                 for(Country count: temp){
                     if (play.getArmiesToAllocate() >0) {
                         count.addArmy(1);
@@ -409,22 +425,32 @@ public class RiskModel {
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
                 Country count =((Country)pair.getValue());
-                System.out.println(play.getName()+" "+count.getArmy());
+                System.out.println(play.getName()+" "+count.getName());
 
 
             }
             System.out.println(play.getName()+" =" + play.getArmiesToAllocate());
 
-        }*/
+            }*/
 
 
     }
     private void deploy(Player currentPlayer){
     }
 
+    /**
+     * Return the ArrayList of countries.
+     * @return ArrayList containing all the country objects
+     */
     public ArrayList<Country> getCountries(){
         return this.countries;
     }
+
+    /**
+     * Getter for player countries
+     * @param play player object
+     * @return ArrayList of the countries the player owns
+     */
     public ArrayList<Country> getPlayerCountries(Player play){
         ArrayList<Country> temp = new ArrayList<Country>(play.getOwnedCountries().values());
         return temp;
