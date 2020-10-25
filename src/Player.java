@@ -17,6 +17,7 @@ public class Player {
      */
     private String name;
 
+
     /**
      * Number of armies that can be allocated to a country
      */
@@ -31,6 +32,11 @@ public class Player {
      * Hashmap of Owned Continents
      */
     private HashMap<String, Continent> ownedContinents;
+
+    /**
+     * This is used for lose condition
+     */
+    private boolean hasLost = false;
 
     /**
      * 2 param Constructor for new human players
@@ -140,5 +146,9 @@ public class Player {
      */
  public void removeContinent(Continent continentToRemove){
         getOwnedContinents().remove(continentToRemove.getName());
+    }
+
+    public void hasLost(){
+     this.hasLost = true;
     }
 }

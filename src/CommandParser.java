@@ -279,6 +279,14 @@ public class CommandParser {
      */
     public int getNumberOfUnitsToSendAfterAttackerWin();
 
+    /**
+     * This prints out when a player has met a lost condition
+     * @param player the player that has lost
+     * @param event why they lost
+     */
+    public void playerHasLost(Player player, String event){
+        System.out.println("Player: "+ player.getName()+" has lost because "+event);
+    }
 
 
 }

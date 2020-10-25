@@ -596,9 +596,37 @@ public class RiskModel {
                 defender.removeArmy(defender.getArmy()-defenders);
             }
 
-
+            hasAnyoneLost(attacker.getOwner(), defender.getOwner());
         }
 
+    /**
+     * Checks if anyone has met a lost condition when they attacker
+     * @param thatAttacked The attacking player
+     * @param thatDefended The defending player
+     */
+    private void hasAnyoneLost(Player thatAttacked, Player thatDefended){
+            Player[] playersToCheck = {thatAttacked,thatDefended};
+
+            for(Player player : playersToCheck){
+                //If they do not own anymore countries they lose
+                if(player.getOwnedCountries().isEmpty()){
+                    player.hasLost();
+                    parser.playerHasLost(player,"Has no more owned countries");
+                    break;
+                }
+                //If they have no more available attacking units, they lose aswell
+                //If sum of total units = sum of all countries, you can't make a turn
+                //and you lose.
+                int sumOfUnits = 0;
+                for(Country country: player.getOwnedCountries().values()){
+                    sumOfUnits += country.getArmy();
+                }
+                if(sumOfUnits == player.getOwnedCountries().size()){
+                    player.hasLost();
+                    parser.playerHasLost(player, "Has no more available moves");
+                }
+            }
+        }
 
 
 
@@ -616,6 +644,7 @@ public class RiskModel {
         System.out.println(country);
         System.out.println(pl);\
         */
+
 
 
        RiskModel main = new RiskModel();
