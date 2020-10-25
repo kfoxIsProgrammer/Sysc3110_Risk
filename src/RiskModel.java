@@ -379,12 +379,16 @@ public class RiskModel {
 
         //Queries User for player names and initializes player objects
         System.out.println("Please enter player Names:");
-        String name;
+        String name = "";
+
 
         for(int i = 0; i < x; i++){
-            System.out.println("Player " +(i+1) +":");
-            name = choice.nextLine();
+            while(name.isEmpty()) {
+                System.out.println("Player " + (i+1) + ":");
+                name = choice.nextLine();
+            }
             players.add(new Player(name, startingArmySize));
+            name = "";
         }
 
         //make randomized list of the countries
