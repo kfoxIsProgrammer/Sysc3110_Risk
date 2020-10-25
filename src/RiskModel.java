@@ -15,7 +15,11 @@ public class RiskModel {
     ArrayList<Country> countries;
     /**   list of all the continents in the game **/
     ArrayList<Continent> continents;
-/** Contructor of Risk Model*/
+    /** Command Parser **/
+    CommandParser parser;
+
+
+    /** Contructor of Risk Model*/
     private RiskModel(){
         players = new ArrayList<Player>();
         countries = new ArrayList<Country>();
@@ -616,6 +620,7 @@ public class RiskModel {
 
        RiskModel main = new RiskModel();
        main.createMap();
+       main.parser = new CommandParser(main.countries);
        main.newGame();
        main.play();
 
