@@ -1,13 +1,12 @@
 import javafx.util.Pair;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.Random;
 
 /**
  * Risk Model class used to model the ongoing game
- * @author Dimitry Koutchine
- * @version 10/23/20
+ * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi
+ * @version 10/25/20/
  */
 public class RiskModel {
     /**List of all the players in the game **/
@@ -432,20 +431,6 @@ public class RiskModel {
 
             }
         }
-        //Testing if armies allocated correctly
-        /*for (Player play: players){
-            Iterator it = play.getOwnedCountries().entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                Country count =((Country)pair.getValue());
-                System.out.println(play.getName()+" "+count.getName());
-
-
-            }
-            System.out.println(play.getName()+" =" + play.getArmiesToAllocate());
-
-            }*/
-
 
     }
 
@@ -488,7 +473,9 @@ public class RiskModel {
                     }
                 }
                 */
-                while(true) {
+                hasAnyoneLost(currentPlayer,currentPlayer);
+                while(true && gameIsNotOver().getKey()) {
+
                     command = parser.Attack(currentPlayer);
                     if (command.commandCode==CommandCode.SKIP) {
                         break;
@@ -658,6 +645,7 @@ public class RiskModel {
                 for(Country country: player.getOwnedCountries().values()){
                     sumOfUnits += country.getArmy();
                 }
+                System.out.println(sumOfUnits +":" +player.getOwnedCountries().size());
                 if(sumOfUnits == player.getOwnedCountries().size()){
                     player.hasLost();
                     parser.playerHasLost(player, "Has no more available moves");
@@ -670,17 +658,7 @@ public class RiskModel {
 
 
     public static void main(String[] args) {
-       /* CommandParser cp = new CommandParser();
-        Country country = new Country("Canada");
-        ArrayList<Country> countrylist = new ArrayList<>();
-        countrylist.add(country);
-        Continent con = new Continent("North America", countrylist,69);
-        Player pl = new Player("Kevin", 0);
-        System.out.println(cp);
-        System.out.println(con);
-        System.out.println(country);
-        System.out.println(pl);\
-        */
+
 
 
 

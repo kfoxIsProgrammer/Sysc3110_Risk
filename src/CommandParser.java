@@ -317,7 +317,7 @@ public class CommandParser {
     public Command Attack(Player player){
         Command command = new Command();
 
-       this.showFocusMap(player);
+      // this.showFocusMap(player);
        System.out.println();
        this.showCommands();
 
@@ -427,13 +427,13 @@ public class CommandParser {
         System.out.println("Congratulations "+ winner.getName()+"! You have won!");
         System.out.println("Final Game tallies");
 
-        System.out.printf("%s %17s %18s","Player name","#Owned Countries", "Status");
+        System.out.printf("%s %17s %18s\n","Player name","#Owned Countries", "Status");
 
         for(Player player: listOfAllPlayers){
             if(player == winner)
-                System.out.printf("%s %17d %18s",player.getName(),player.getOwnedCountries().size(), "Won");
+                System.out.printf("%s %17d %18s\n",player.getName(),player.getOwnedCountries().size(), "Won");
             else
-                System.out.printf("%s %17d %18s",player.getName(),player.getOwnedCountries().size(), "Lost");
+                System.out.printf("%s %17d %18s\n",player.getName(),player.getOwnedCountries().size(), "Lost");
         }
 
     }
