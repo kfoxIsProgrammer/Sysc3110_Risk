@@ -1,15 +1,33 @@
-
 Risk Model:
   The important objects(Player, Country, Continent) are stored in arraylists since they are the easiest to iterate through
 1.Constructor:
-  Initiates the players, countries and continents list and also the parser object. Also intitates the createMap method in order to construct the game map.
-  The constructor also starts the newGame method to determine amount of players and the player names and the play method to start the game.
+  Initiates the players, countries and continents list and also the parser object. Also initiates the createMap method in order to construct the game map.
+  The constructor also starts the newGame method to determine the amount of players and the player names and the play method to start the game.
   
 2. createMap:
   It starts by initiating every country object in the game, since in order to add adjacent countries all countries must be initiated.
-  Then proceeds to set all the adjacent countries. A list is used to be able to add all the adjacent countries as an arrayList into the the addAdjacentCountries method at once.
-  Then all continents are added
+  Then proceeds to set all the adjacent countries. A list is used to be able to add all the adjacent countries as an arrayList into the the addAdjacentCountries method of
+ Country at once. Then all continents are created and all the countries are added to them. At the same time the countries added to the continents are also added to the main
+ arrayList containing all the countries in the game.
   
+3. newGame: Starts by prompting the user for the amount of players playing. It is in a while loop that only ends when a valid number is selected. After player count is
+selected it then sets the initial army size. That is selected by using a switch statement. if the case is 2 the initial army size if 50. The default case is 50 -5 times
+the input to determine the starting army size. Then it prompts for the names of the players. This will not accept blank names and will ask again if blank. Its next objective
+is to randomly assign all the countries in the game. It makes a new arrayList that is equal to the countries list and then uses the method shuffle on the list. Then it is added
+to a stack. newGame proceeds to iterate through each player and pop the stack each time until the stack is empty. at the same time each countries
+the initial army is set to one. Then it iterates through each player and assigns the rest of the player's army until the entire army is allocated. This is done again by shuffling
+an ArrayList that contains all the owned countries of the player.
+
+4.Player was designed to have the information about the player's owned countries and continenents. A useful data structure that was used was a hashmap of String, country/Continent
+because we wanted a fast data structure that could mimic a graph as well as be efficient. Since Hashmaps have O(1) put and get methods.
+
+5. The attack method in RiskModel was made to represent the attack phase in risk. The use of random numbers were needed to represent dice rolls and found that we could use two different methods.
+threadLocalRandom.current().nextINT or (int)Math.random() were the options. Since we were using a single thread application (int)Math.random() is faster to generate random numbers.
+Once the dice rolls were made, then the array of dice rolls had to be sorted in descending order to be compared. This was used by Arrays.Sort() which used an implementation Collections.reverseOrder(),
+which is used to sort the array in desc order.
+
+6. The RiskModel is a combination of Model and Controller in the MVC pattern this was useful for references, but in the future the decoupling of these two functionalities will be made.
+
 Command Parser:
     The main CommandParser class does all the interacting with the user and converts their input from a string to a format the rest of the code can understand.
     The Command object is the data type used to pass information from the parser to the RiskModel. It contains an enum for the command type. This was done to
