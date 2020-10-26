@@ -18,3 +18,12 @@ to a stack. newGame proceeds to iterate through each player and pop the stack ea
 the initial army is set to one. Then it iterates through each player and assigns the rest of the player's army until the entire army is allocated. This is done again by shuffling 
 an ArrayList that contains all the owned countries of the player.
 
+4.Player was designed to have the information about the player's owned countries and continenents. A useful data structure that was used was a hashmap of String, country/Continent 
+because we wanted a fast data structure that could mimic a graph as well as be efficient. Since Hashmaps have O(1) put and get methods. 
+
+5. The attack method in RiskModel was made to represent the attack phase in risk. The use of random numbers were needed to represent dice rolls and found that we could use two different methods.
+threadLocalRandom.current().nextINT or (int)Math.random() were the options. Since we were using a single thread application (int)Math.random() is faster to generate random numbers.
+Once the dice rolls were made, then the array of dice rolls had to be sorted in descending order to be compared. This was used by Arrays.Sort() which used an implementation Collections.reverseOrder(), 
+which is used to sort the array in desc order.
+
+6. The RiskModel is a combination of Model and Controller in the MVC pattern this was useful for references, but in the future the decoupling of these two functionalities will be made. 
