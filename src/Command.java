@@ -15,7 +15,7 @@ public class Command {
     public int numTroops;
 
     /**
-     *
+     * 1 param constructor
      */
     public Command(){
 

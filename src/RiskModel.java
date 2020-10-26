@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-
 import java.util.*;
 import java.util.Random;
 
@@ -453,6 +452,9 @@ public class RiskModel {
         return temp;
     }
 
+    /**
+     * Main control function for the Risk game
+     */
     private void play(){
         Command command;
         while(gameIsNotOver().getKey())
@@ -519,6 +521,12 @@ public class RiskModel {
         }
     }
 
+    /**
+     * Helper method to determine if the game is over based on 2 win conditions
+     * 1. All players have lost because they cannot make an attack
+     * 2. 1 player has won because they own the most countries and no one else can move
+     * @return Pair of boolean (false = game over), int (what type of win condition)
+     */
     private Pair<Boolean, Integer> gameIsNotOver(){
         int count = 0;
         for(Player player: players)
@@ -645,7 +653,6 @@ public class RiskModel {
                 for(Country country: player.getOwnedCountries().values()){
                     sumOfUnits += country.getArmy();
                 }
-                System.out.println(sumOfUnits +":" +player.getOwnedCountries().size());
                 if(sumOfUnits == player.getOwnedCountries().size()){
                     player.hasLost();
                     parser.playerHasLost(player, "Has no more available moves");
@@ -658,9 +665,6 @@ public class RiskModel {
 
 
     public static void main(String[] args) {
-
-
-
 
        RiskModel main = new RiskModel();
        main.createMap();
