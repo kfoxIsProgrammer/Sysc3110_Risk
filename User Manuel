@@ -30,7 +30,8 @@ enemy countries and their army size. Focus must be accompanied by a valid countr
 
 Attack [country] [Num Troops]:
 It will attack the selected country with the selected amount of troops. The country entered must be a valid enemy country that is adjacent to the country focused on. 
-The number of troops must be less than the amount of troops stationed in the focused country and must leave at least 1 troop behind. For example if the focused country has 3 troops stationed in it the maximum number that can be selected is 2.
+The number of troops must be less than the amount of troops stationed in the focused country and must leave at least 1 troop behind. For example if the focused country has 
+3 troops stationed in it the maximum number that can be selected is 2.
 
 Back: 
 Will return to the main command menu.
