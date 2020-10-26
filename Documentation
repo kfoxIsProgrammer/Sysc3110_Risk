@@ -1,13 +1,20 @@
-
 Risk Model:
-  The important objects(Player, Country, Contienent) are stored in arraylists since they are the easiest to iterate through
+  The important objects(Player, Country, Continent) are stored in arraylists since they are the easiest to iterate through
 1.Constructor:
-  Intiates the players, countries and contienents list and also the parser object. Also intitates the createMap method in order to construct the game map.
-  The constructor also starts the newGame method to determine amount of players and the player names and the play method to start the game.
+  Initiates the players, countries and continents list and also the parser object. Also initiates the createMap method in order to construct the game map.
+  The constructor also starts the newGame method to determine the amount of players and the player names and the play method to start the game.
   
 2. createMap:
-  It starts by initiating every country object in the game, since in order to add adjacent countries all countries must be intiated.
-  Then proceeds to set all the adjacent countries. A list is used to be able to add all the adjacent countries as an arrayList into the the addAdjacentCountries method at once.
-  Then all contienents are added 
+  It starts by initiating every country object in the game, since in order to add adjacent countries all countries must be initiated.
+  Then proceeds to set all the adjacent countries. A list is used to be able to add all the adjacent countries as an arrayList into the the addAdjacentCountries method of 
+ Country at once. Then all continents are created and all the countries are added to them. At the same time the countries added to the continents are also added to the main 
+ arrayList containing all the countries in the game.
   
+3. newGame: Starts by prompting the user for the amount of players playing. It is in a while loop that only ends when a valid number is selected. After player count is 
+selected it then sets the initial army size. That is selected by using a switch statement. if the case is 2 the initial army size if 50. The default case is 50 -5 times
+the input to determine the starting army size. Then it prompts for the names of the players. This will not accept blank names and will ask again if blank. Its next objective
+is to randomly assign all the countries in the game. It makes a new arrayList that is equal to the countries list and then uses the method shuffle on the list. Then it is added
+to a stack. newGame proceeds to iterate through each player and pop the stack each time until the stack is empty. at the same time each countries 
+the initial army is set to one. Then it iterates through each player and assigns the rest of the player's army until the entire army is allocated. This is done again by shuffling 
+an ArrayList that contains all the owned countries of the player.
 
