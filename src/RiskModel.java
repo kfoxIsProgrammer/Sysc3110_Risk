@@ -1,3 +1,4 @@
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.util.Pair;
 import java.util.*;
 import java.util.Random;
@@ -457,7 +458,7 @@ public class RiskModel {
      */
     private void play(){
         Command command;
-        while(gameIsNotOver().getKey())
+        while(gameIsNotOver()[0])
             for(Player currentPlayer: players){
             if(!currentPlayer.getHasLost()){
 
@@ -476,7 +477,7 @@ public class RiskModel {
                 }
                 */
                 hasAnyoneLost(currentPlayer,currentPlayer);
-                while(true && gameIsNotOver().getKey()) {
+                while(true && gameIsNotOver()[0]) {
 
                     command = parser.Attack(currentPlayer);
                     if (command.commandCode==CommandCode.SKIP) {
@@ -509,7 +510,7 @@ public class RiskModel {
         }
 
         //The game is over
-        if(gameIsNotOver().getValue() == 1 ){
+        if(gameIsNotOver()[1]){
             for(Player play: players) {
                 if (!play.getHasLost())
                     parser.gameIsOver(players, play);
@@ -532,7 +533,7 @@ public class RiskModel {
      * 2. 1 player has won because they own the most countries and no one else can move
      * @return Pair of boolean (false = game over), int (what type of win condition)
      */
-    private Pair<Boolean, Integer> gameIsNotOver(){
+    private boolean[] gameIsNotOver(){
         int count = 0;
         for(Player player: players)
             if(player.getHasLost()){
@@ -540,10 +541,10 @@ public class RiskModel {
             }
 
         if(count == players.size() || count == players.size() - 1){
-            return new Pair<Boolean, Integer>(false, 1);
+            return new boolean[]{false, true};
         }
         else
-            return new Pair<Boolean, Integer>(true, 0);
+            return new boolean[]{true, false};
 
     }
 
