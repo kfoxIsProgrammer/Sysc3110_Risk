@@ -76,7 +76,7 @@ public class CommandParser {
      * @param country The country the player is focused on
      */
     private void showNeighbors(Player player, Country country){
-        System.out.printf("You have %d troops at %s\n",country.getArmy(),country.getName());
+        System.out.printf("You have %d usable troops at %s\n",country.getArmy()-1,country.getName());
         System.out.printf("Your neighbors are:\n");
         for(Country neighbor : country.getAdjancentCountries()){
             if(!neighbor.getOwner().equals(player)){
@@ -400,7 +400,7 @@ public class CommandParser {
      */
     public int battleOutcome(BattleObject outcome){
 
-        System.out.println("Country: "+ outcome.getAttackingCountry().getName() +" won? "+outcome.didAttackerWin());
+        System.out.println("Country: "+ outcome.getAttackingCountry().getName() +(outcome.didAttackerWin()? "Won": "Lost"));
         System.out.println("Attacker start "+outcome.getAttackingCountry().getName() +" ->" + outcome.getInitialAttackers()+" final-> "+outcome.getFinalAttackingArmy());
         System.out.println("Defender start "+outcome.getDefendingCountry().getName() +" ->" + outcome.getInitialDefenders()+" final-> "+outcome.getFinalDefendingArmy());
         System.out.println();
