@@ -3,7 +3,7 @@ import java.util.Random;
 
 /**
  * Risk Model class used to model the ongoing game
- * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi
+ * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi, Kshitij Sawhney
  * @version 10/25/20/
  */
 public class RiskModel {
