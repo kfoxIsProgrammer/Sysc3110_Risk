@@ -23,7 +23,7 @@ Help:
 Will print out a list of commands and what they do.
 
 Focus [Country]: 
-Will enter a menu focused on that country's actions and will result in new commands.It will display the troops you own in the chosen country and then will also list adjacent 
+Will enter a menu focused on that country's actions and will result in new commands. It will display the troops you own in the chosen country and then will also list adjacent 
 enemy countries and their army size. Focus must be accompanied by a valid country owned by the user. 
 
 5. 	The commands when focused on a country are:
