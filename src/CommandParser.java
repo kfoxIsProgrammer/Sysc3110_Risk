@@ -400,7 +400,7 @@ public class CommandParser {
      */
     public int battleOutcome(BattleObject outcome){
 
-        System.out.println("Country: "+ outcome.getAttackingCountry().getName() +(outcome.didAttackerWin()? "Won": "Lost"));
+        System.out.println("Country: "+ outcome.getAttackingCountry().getName() +(outcome.didAttackerWin()? " Won": " Lost"));
         System.out.println("Attacker start "+outcome.getAttackingCountry().getName() +" ->" + outcome.getInitialAttackers()+" final-> "+outcome.getFinalAttackingArmy());
         System.out.println("Defender start "+outcome.getDefendingCountry().getName() +" ->" + outcome.getInitialDefenders()+" final-> "+outcome.getFinalDefendingArmy());
         System.out.println();
