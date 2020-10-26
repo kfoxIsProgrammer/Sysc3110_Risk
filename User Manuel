@@ -1,9 +1,12 @@
-1.	When the program starts the user will be prompted to input the number of players that will be participating in the game. This number must be between 2 and 6, anything else will result in the user having to re enter their input.
+1.	When the program starts the user will be prompted to input the number of players that will be participating in the game. This number must be between 2 and 6, 
+anything else will result in the user having to re enter their input.
 
 
-2. 	Next the user will be prompted to enter all the player names one by one. The name can use any character however blank names will result in the user having to re enter the name.
+2. 	Next the user will be prompted to enter all the player names one by one. The name can use any character however blank names will result in the user having to re enter 
+the name.
 
-3.	The user will now be in the main game loop and currently be in the attack phase. In the current iteration of the game the attack phase is the only phase. The user will be able to enter commands in order to interact with the game.
+3.	The user will now be in the main game loop and currently be in the attack phase. In the current iteration of the game the attack phase is the only phase. The user will 
+be able to enter commands in order to interact with the game.
 
 4. 	The main commands are:
 
@@ -20,17 +23,20 @@ Help:
 Will print out a list of commands and what I do.
 
 Focus [Country]: 
-Will enter a menu focused on that country's actions and will result in new commands.It will display the troops you own in the chosen country and then will also list adjacent enemy countries and their army size. Focus must be accompanied by a valid country owned by the user. 
+Will enter a menu focused on that country's actions and will result in new commands.It will display the troops you own in the chosen country and then will also list adjacent 
+enemy countries and their army size. Focus must be accompanied by a valid country owned by the user. 
 
 5. 	The commands when focused on a country are:
 
 Attack [country] [Num Troops]:
-It will attack the selected country with the selected amount of troops. The country entered must be a valid enemy country that is adjacent to the country focused on. The number of troops must be less than the amount of troops stationed in the focused country and must leave at least 1 troop behind. For example if the focused country has 3 troops stationed in it the maximum number that can be selected is 2.
+It will attack the selected country with the selected amount of troops. The country entered must be a valid enemy country that is adjacent to the country focused on. 
+The number of troops must be less than the amount of troops stationed in the focused country and must leave at least 1 troop behind. For example if the focused country has 3 troops stationed in it the maximum number that can be selected is 2.
 
 Back: 
 Will return to the main command menu.
 
 6. 	The attack phase will last until the user skips their turn.
 
-7.	The game will end when only one player remains. A player can be eliminated if they lose all their countries or if they can no longer make any moves. If players end up running out of armies to move, the winner will be decided by whomever has the most countries owned. 
+7.	The game will end when only one player remains. A player can be eliminated if they lose all their countries or if they can no longer make any moves. If players end up 
+running out of armies to move, the winner will be decided by whomever has the most countries owned. 
  
