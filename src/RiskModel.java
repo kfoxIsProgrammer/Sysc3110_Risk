@@ -483,9 +483,14 @@ public class RiskModel {
                         break;
                     }
                     else if (command.commandCode==CommandCode.ATTACK) {
-                        if(!this.attack(command.countrySrc,command.countryDst,command.numTroops)){
-                            System.out.println("Error you sent too many units");
-                            continue;
+                        if(command.countrySrc.getAdjancentCountries().contains(command.countryDst)) {
+                            if (!this.attack(command.countrySrc, command.countryDst, command.numTroops)) {
+                                System.out.println("Error you sent too many units");
+                                continue;
+                            }
+                        }
+                        else{
+                            System.out.println(command.countryDst.getName()+" is not attackable from "+ command.countrySrc.getName());
                         }
 
                     }
@@ -659,9 +664,6 @@ public class RiskModel {
                 }
             }
         }
-
-
-
 
 
     public static void main(String[] args) {
