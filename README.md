@@ -20,7 +20,7 @@ Changes from previous iteration:
 This is the first iteration of the project. The only playable phase is the attack phase.
 
 Known issues:
-No feedback when entering the wrong commands in the attack phase. It simply takes you back to the main command menu
+No feedback when entering the wrong commands in the attack phase. It simply takes you back to the main command menu.
 
 Roadmap:
 The next goal will be to a gui aspect to the project.
