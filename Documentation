@@ -6,15 +6,57 @@ Risk Model:
   
 2. createMap:
   It starts by initiating every country object in the game, since in order to add adjacent countries all countries must be initiated.
-  Then proceeds to set all the adjacent countries. A list is used to be able to add all the adjacent countries as an arrayList into the the addAdjacentCountries method of 
- Country at once. Then all continents are created and all the countries are added to them. At the same time the countries added to the continents are also added to the main 
+  Then proceeds to set all the adjacent countries. A list is used to be able to add all the adjacent countries as an arrayList into the the addAdjacentCountries method of
+ Country at once. Then all continents are created and all the countries are added to them. At the same time the countries added to the continents are also added to the main
  arrayList containing all the countries in the game.
   
-3. newGame: Starts by prompting the user for the amount of players playing. It is in a while loop that only ends when a valid number is selected. After player count is 
+3. newGame: Starts by prompting the user for the amount of players playing. It is in a while loop that only ends when a valid number is selected. After player count is
 selected it then sets the initial army size. That is selected by using a switch statement. if the case is 2 the initial army size if 50. The default case is 50 -5 times
 the input to determine the starting army size. Then it prompts for the names of the players. This will not accept blank names and will ask again if blank. Its next objective
 is to randomly assign all the countries in the game. It makes a new arrayList that is equal to the countries list and then uses the method shuffle on the list. Then it is added
-to a stack. newGame proceeds to iterate through each player and pop the stack each time until the stack is empty. at the same time each countries 
-the initial army is set to one. Then it iterates through each player and assigns the rest of the player's army until the entire army is allocated. This is done again by shuffling 
+to a stack. newGame proceeds to iterate through each player and pop the stack each time until the stack is empty. at the same time each countries
+the initial army is set to one. Then it iterates through each player and assigns the rest of the player's army until the entire army is allocated. This is done again by shuffling
 an ArrayList that contains all the owned countries of the player.
 
+4.Player was designed to have the information about the player's owned countries and continenents. A useful data structure that was used was a hashmap of String, country/Continent
+because we wanted a fast data structure that could mimic a graph as well as be efficient. Since Hashmaps have O(1) put and get methods.
+
+5. The attack method in RiskModel was made to represent the attack phase in risk. The use of random numbers were needed to represent dice rolls and found that we could use two different methods.
+threadLocalRandom.current().nextINT or (int)Math.random() were the options. Since we were using a single thread application (int)Math.random() is faster to generate random numbers.
+Once the dice rolls were made, then the array of dice rolls had to be sorted in descending order to be compared. This was used by Arrays.Sort() which used an implementation Collections.reverseOrder(),
+which is used to sort the array in desc order.
+
+6. The RiskModel is a combination of Model and Controller in the MVC pattern this was useful for references, but in the future the decoupling of these two functionalities will be made.
+
+Command Parser:
+    The main CommandParser class does all the interacting with the user and converts their input from a string to a format the rest of the code can understand.
+    The Command object is the data type used to pass information from the parser to the RiskModel. It contains an enum for the command type. This was done to
+    ensure incorrect command types could not be entered. It also passes two country objects and a number of troops. This is enough information to perform any
+    of the main game functions.
+
+    The parser gets called from the RiskModel whenever a user input is needed, and when there is a message to display to the user. Each query from the model has a method in the parser.
+    This was done to keep the main code concise.
+
+    The parser has 3 main components:
+        Input conversion
+        Information display
+        Command parsing
+
+    Input Conversion:
+        The user input is taken as a string. They enter keywords to specify the action they want to do, and write the names of countries when relevant. This was done as opposed to
+        entering a number for each country because it would make for a better user experience. The main input conversion happens in the getInput method.
+
+        The first step in the input conversion is splitting the input into individual words. This is done by scanning the user input, making it all lowercase, then using the String.split
+        method. It was made lowercase so that things would not be case sensitive which makes things simpler. The user input is an array of Strings at this point, where each element is a
+        word. The next step is combining the elements of multi-word country names (East Africa, United States, etc) into a single element. This is done by making a list of all the countries
+        that have names longer than one word and seeing if any word in the users input is contained in that list. The final step in input conversion is done in the getInput method. The
+        other words are checked and the output is returned as a Command object. I can not understate how much of a pain this was to implement.
+
+    Information Display:
+        The user can request information. This is all handled in the command parser because the main code would get cluttered if it had to check all the inputs and keep querying the
+        parser. It might be better to have a separate class called Controller or something that handled this instead, but oh well. The parser contains a list of countries and prints
+        the information in a nice way when needed.
+
+    Command Parsing:
+        The command code is checked in the Deploy, Fortify, and Attack methods. This is done because some commands are allowed during certain phases while others are not. Each phase's
+        function checks to see if the command is valid and can be returned to the risk model, or if its invalid or requires information to be displayed.

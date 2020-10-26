@@ -561,8 +561,8 @@ public class RiskModel {
             int attackingArmy = unitsToAttack;
 
 
-            Integer[] attackRolls = new Integer[Math.max(unitsToAttack-1, defendingCountry.getArmy()-1)];
-            Integer[] defenderRolls = new Integer[Math.max(unitsToAttack-1, defendingCountry.getArmy()-1)];
+            Integer[] attackRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
+            Integer[] defenderRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
 
             //Get int array of dice rolls
             for(int i=0; i< attackRolls.length; i++){
@@ -576,16 +576,16 @@ public class RiskModel {
 
 
             //Compare rolls until someone loses
-            while(defendingArmy > 0 && attackingArmy > 0){
                 for(int i=0; i< attackRolls.length; i++){
-                    if(attackRolls[i] > defenderRolls[i]){
-                        defendingArmy--;
-                    }
-                    else{
-                        attackingArmy--;
-                    }
+                    if(defendingArmy > 0 && attackingArmy > 0)
+                        if(attackRolls[i] > defenderRolls[i]){
+                            defendingArmy--;
+                        }
+                        else{
+                            attackingArmy--;
+                        }
                 }
-            }
+
 
             //Add the description of the battle
             BattleObject finalBattleOutcome;
