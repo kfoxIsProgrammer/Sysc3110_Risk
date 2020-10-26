@@ -20,7 +20,7 @@ Skip:
 Will pass on your turn to the next player.
 
 Help: 
-Will print out a list of commands and what I do.
+Will print out a list of commands and what they do.
 
 Focus [Country]: 
 Will enter a menu focused on that country's actions and will result in new commands.It will display the troops you own in the chosen country and then will also list adjacent 
