@@ -3,7 +3,7 @@ import java.util.HashMap;
 /**
  * Player class used to represent a player or ai, playing the game of risk
  * @author Kevin
- * @version 0.1
+ * @version 10-25-2020
  */
 public class Player {
 
@@ -144,12 +144,20 @@ public class Player {
      * Remove an owned continent to this player
      * @param continentToRemove the owned continent to remove
      */
- public void removeContinent(Continent continentToRemove){
+    public void removeContinent(Continent continentToRemove){
         getOwnedContinents().remove(continentToRemove.getName());
     }
 
+    /**
+     * Player has lost and boolean is set to true
+     */
     public void hasLost(){
      this.hasLost = true;
     }
+
+    /**
+     * getter for hasLost boolean
+     * @return the boolean if the player has lost
+     */
     public boolean getHasLost(){return this.hasLost;}
 }

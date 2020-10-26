@@ -6,8 +6,8 @@ import java.util.Scanner;
 /**
  * Prompts the user for input, then parses the input into a Command object for the RiskModel to use
  *
- * @author Omar Hashmi
- * @version 10.24.2020
+ * @author Omar Hashmi, Kevin Fox
+ * @version 10.25.2020
  */
 public class CommandParser {
     /** List of Country objects*/
@@ -76,7 +76,7 @@ public class CommandParser {
      * @param country The country the player is focused on
      */
     private void showNeighbors(Player player, Country country){
-        System.out.printf("You have %d troops at %s\n",country.getArmy(),country.getName());
+        System.out.printf("You have %d usable troops at %s\n",country.getArmy()-1,country.getName());
         System.out.printf("Your neighbors are:\n");
         for(Country neighbor : country.getAdjancentCountries()){
             if(!neighbor.getOwner().equals(player)){
@@ -122,6 +122,11 @@ public class CommandParser {
         return true;
     }
 
+    /**
+     * Takes a string of two countries and gets the country object
+     * @param s string array
+     * @return string Array of country name
+     */
     private String[] longCountryToString(String[]  s){
         String processedOutputString="";
         String[] processedOutputArray;
@@ -297,6 +302,9 @@ public class CommandParser {
         return command;
     }
 
+    /**
+     * Helper function to print available commands short hand info
+     */
     private void showCommands() {
         System.out.printf("%s",
                 "List of Commands\n"+
@@ -392,7 +400,7 @@ public class CommandParser {
      */
     public int battleOutcome(BattleObject outcome){
 
-        System.out.println("Country: "+ outcome.getAttackingCountry().getName() +" won? "+outcome.didAttackerWin());
+        System.out.println("Country: "+ outcome.getAttackingCountry().getName() +(outcome.didAttackerWin()? " Won": " Lost"));
         System.out.println("Attacker start "+outcome.getAttackingCountry().getName() +" ->" + outcome.getInitialAttackers()+" final-> "+outcome.getFinalAttackingArmy());
         System.out.println("Defender start "+outcome.getDefendingCountry().getName() +" ->" + outcome.getInitialDefenders()+" final-> "+outcome.getFinalDefendingArmy());
         System.out.println();

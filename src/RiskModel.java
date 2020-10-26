@@ -1,11 +1,9 @@
-import javafx.util.Pair;
-
 import java.util.*;
 import java.util.Random;
 
 /**
  * Risk Model class used to model the ongoing game
- * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi
+ * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi, Kshitij Sawhney
  * @version 10/25/20/
  */
 public class RiskModel {
@@ -453,9 +451,12 @@ public class RiskModel {
         return temp;
     }
 
+    /**
+     * Main control function for the Risk game
+     */
     private void play(){
         Command command;
-        while(gameIsNotOver().getKey())
+        while(gameIsNotOver()[0])
             for(Player currentPlayer: players){
             if(!currentPlayer.getHasLost()){
 
@@ -474,16 +475,21 @@ public class RiskModel {
                 }
                 */
                 hasAnyoneLost(currentPlayer,currentPlayer);
-                while(true && gameIsNotOver().getKey()) {
+                while(true && gameIsNotOver()[0]) {
 
                     command = parser.Attack(currentPlayer);
                     if (command.commandCode==CommandCode.SKIP) {
                         break;
                     }
                     else if (command.commandCode==CommandCode.ATTACK) {
-                        if(!this.attack(command.countrySrc,command.countryDst,command.numTroops)){
-                            System.out.println("Error you sent too many units");
-                            continue;
+                        if(command.countrySrc.getAdjancentCountries().contains(command.countryDst)) {
+                            if (!this.attack(command.countrySrc, command.countryDst, command.numTroops)) {
+                                System.out.println("Error you sent too many units");
+                                continue;
+                            }
+                        }
+                        else{
+                            System.out.println(command.countryDst.getName()+" is not attackable from "+ command.countrySrc.getName());
                         }
 
                     }
@@ -502,7 +508,7 @@ public class RiskModel {
         }
 
         //The game is over
-        if(gameIsNotOver().getValue() == 1 ){
+        if(gameIsNotOver()[1]){
             for(Player play: players) {
                 if (!play.getHasLost())
                     parser.gameIsOver(players, play);
@@ -519,7 +525,13 @@ public class RiskModel {
         }
     }
 
-    private Pair<Boolean, Integer> gameIsNotOver(){
+    /**
+     * Helper method to determine if the game is over based on 2 win conditions
+     * 1. All players have lost because they cannot make an attack
+     * 2. 1 player has won because they own the most countries and no one else can move
+     * @return Pair of boolean (false = game over), int (what type of win condition)
+     */
+    private boolean[] gameIsNotOver(){
         int count = 0;
         for(Player player: players)
             if(player.getHasLost()){
@@ -527,10 +539,10 @@ public class RiskModel {
             }
 
         if(count == players.size() || count == players.size() - 1){
-            return new Pair<Boolean, Integer>(false, 1);
+            return new boolean[]{false, true};
         }
         else
-            return new Pair<Boolean, Integer>(true, 0);
+            return new boolean[]{true, false};
 
     }
 
@@ -645,7 +657,6 @@ public class RiskModel {
                 for(Country country: player.getOwnedCountries().values()){
                     sumOfUnits += country.getArmy();
                 }
-                System.out.println(sumOfUnits +":" +player.getOwnedCountries().size());
                 if(sumOfUnits == player.getOwnedCountries().size()){
                     player.hasLost();
                     parser.playerHasLost(player, "Has no more available moves");
@@ -654,13 +665,7 @@ public class RiskModel {
         }
 
 
-
-
-
     public static void main(String[] args) {
-
-
-
 
        RiskModel main = new RiskModel();
        main.createMap();
