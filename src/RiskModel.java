@@ -17,7 +17,7 @@ public class RiskModel {
     CommandParser parser;
 
 
-    /** Contructor of Risk Model*/
+    /** Constructor of Risk Model*/
     private RiskModel(){
         this.players = new ArrayList<Player>();
         this.countries = new ArrayList<Country>();
@@ -489,7 +489,7 @@ public class RiskModel {
                             }
                         }
                         else{
-                            System.out.println(command.countryDst.getName()+" is not attackable from "+ command.countrySrc.getName());
+                            System.out.println(command.countryDst.getName()+" is not attack able from "+ command.countrySrc.getName());
                         }
 
                     }
@@ -650,7 +650,7 @@ public class RiskModel {
                     parser.playerHasLost(player,"Has no more owned countries");
                     break;
                 }
-                //If they have no more available attacking units, they lose aswell
+                //If they have no more available attacking units, they lose as well
                 //If sum of total units = sum of all countries, you can't make a turn
                 //and you lose.
                 int sumOfUnits = 0;
