@@ -54,7 +54,7 @@ public class Player {
     /**
      * 3 param Constructor for new ai players
      * @param name name of the ai
-     * @param armyValue intial army to allocate
+     * @param armyValue initial army to allocate
      * @param isAi boolean representing that this player is an ai
      */
     public Player(String name, int armyValue, Boolean isAi){
