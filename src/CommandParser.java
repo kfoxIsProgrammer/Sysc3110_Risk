@@ -398,7 +398,7 @@ public class CommandParser {
      * @param outcome the object containing battle outcomes
      * @return
      */
-    public int battleOutcome(BattleObject outcome){
+    public int battleOutcome(BattleContext outcome){
 
         System.out.println("Country: "+ outcome.getAttackingCountry().getName() +(outcome.didAttackerWin()? " Won": " Lost"));
         System.out.println("Attacker start "+outcome.getAttackingCountry().getName() +" ->" + outcome.getInitialAttackers()+" final-> "+outcome.getFinalAttackingArmy());

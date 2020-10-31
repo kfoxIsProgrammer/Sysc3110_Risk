@@ -5,7 +5,7 @@ import java.util.ArrayList;
  * @author kevin
  * @version 10-25-2020
  */
-public class BattleObject {
+public class BattleContext {
     /**
      * Attack country
      */
@@ -39,7 +39,7 @@ public class BattleObject {
      */
     private boolean didAttackerWin;
 
-    public BattleObject(){
+    public BattleContext(){
 
     }
 
@@ -53,7 +53,7 @@ public class BattleObject {
      * @param finalDefendingArmy final defending army
      * @param didAttackerWin did the attacker win
      */
-    public BattleObject(Country attacker, Country defender, int initialAttackingArmy, int initialDefendingArmy,int finalAttackingArmy,int finalDefendingArmy, boolean didAttackerWin){
+    public BattleContext(Country attacker, Country defender, int initialAttackingArmy, int initialDefendingArmy, int finalAttackingArmy, int finalDefendingArmy, boolean didAttackerWin){
         this.attackingCountry = attacker;
         this.defendingCountry = defender;
         this.initialAttackingArmy = initialAttackingArmy;

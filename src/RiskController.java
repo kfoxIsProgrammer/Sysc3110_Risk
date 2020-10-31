@@ -47,7 +47,7 @@ public class RiskController {
      * @param numberOfUnits number of units attacking
      * @return
      */
-    public BattleObject getBattleOutcome(Country focusedCountry, Country countryToBeAttacked, int numberOfUnits){
+    public BattleContext getBattleOutcome(Country focusedCountry, Country countryToBeAttacked, int numberOfUnits){
         model.getAttackOutcome(focusedCountry, countryToBeAttacked, numberOfUnits);
     }
 

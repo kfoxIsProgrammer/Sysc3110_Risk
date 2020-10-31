@@ -542,7 +542,7 @@ public class RiskModel {
      */
     public boolean attack(Country attackingCountry, Country defendingCountry, int unitsToAttack){
 
-        BattleObject finalBattleOutcome = new BattleObject();
+        BattleContext finalBattleOutcome = new BattleContext();
 
             if(attackingCountry.getArmy() - unitsToAttack <= 0)return false;
 
