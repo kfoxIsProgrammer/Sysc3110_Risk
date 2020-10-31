@@ -5,7 +5,7 @@ public class RiskController {
     private RiskModel riskModel;
     private RiskView  riskView;
 
-    public RiskController(){
+    public RiskController(RiskModel model, RiskView view){
         this.riskModel = model;
         this.riskView = view;
     }
@@ -17,7 +17,7 @@ public class RiskController {
      * @return the model of the new game to be attached to the view
      */
     public model newGame(int players, String[] playerNames){
-        this.riskModel = sendNewGameModel(new RiskModel(players, playerNames));
+        this.riskModel = new RiskModel(players, playerNames);
         view.sendNewGameModel(riskModel);
     }
 

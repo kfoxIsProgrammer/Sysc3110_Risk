@@ -17,6 +17,16 @@ public class RiskModel {
     CommandParser parser;
 
 
+    public RiskModel(int players, String[] playerNames){
+        this.players = new ArrayList<Player>();
+        this.countries = new ArrayList<Country>();
+        this.continents = new ArrayList<Continent>();
+        this.createMap();
+        this.parser=new CommandParser(this.countries);
+        this.newGame(players, playerNames);
+
+    }
+
     /** Constructor of Risk Model*/
     private RiskModel(){
         this.players = new ArrayList<Player>();
@@ -25,7 +35,6 @@ public class RiskModel {
         this.createMap();
         this.parser=new CommandParser(this.countries);
 
-        this.newGame();
         this.play();
     }
     /**
@@ -347,7 +356,7 @@ public class RiskModel {
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
      */
-    private void newGame(){
+    private void newGame(int playerNum, String[] playerNames){
         int x = 0;
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
@@ -355,23 +364,7 @@ public class RiskModel {
         Scanner choice = new Scanner(System.in);
 
         //Queries user for number of players
-        while( x < 2 || x > 6) {
-            if(x != 0) System.out.println("Invalid selection");
-            System.out.println("How many players? (2-6)");
-
-            while(!choice.hasNextInt()) {
-
-                System.out.println("Invalid selection");
-
-                choice.next();
-
-
-            }
-            x = choice.nextInt();
-            choice.nextLine();
-
-
-        }
+        x = playerNum;
 
         //Determines starting army size which depends on amount of players
         switch(x){
@@ -383,18 +376,12 @@ public class RiskModel {
                 break;
         }
 
-        //Queries User for player names and initializes player objects
-        System.out.println("Please enter player Names:");
-        String name = "";
+
+
 
 
         for(int i = 0; i < x; i++){
-            while(name.isEmpty()) {
-                System.out.println("Player " + (i+1) + ":");
-                name = choice.nextLine();
-            }
-            players.add(new Player(name, startingArmySize));
-            name = "";
+            players.add(new Player(playerNames[i], startingArmySize));
         }
 
         //make randomized list of the countries
