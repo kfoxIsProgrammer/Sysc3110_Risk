@@ -555,7 +555,10 @@ public class RiskModel {
      */
     public boolean attack(Country attackingCountry, Country defendingCountry, int unitsToAttack){
 
+        BattleObject finalBattleOutcome = new BattleObject();
+
             if(attackingCountry.getArmy() - unitsToAttack <= 0)return false;
+
 
             int defendingArmy = defendingCountry.getArmy();
             int attackingArmy = unitsToAttack;
@@ -579,27 +582,27 @@ public class RiskModel {
                 for(int i=0; i< attackRolls.length; i++){
                     if(defendingArmy > 0 && attackingArmy > 0)
                         if(attackRolls[i] > defenderRolls[i]){
+                            finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
                             defendingArmy--;
                         }
                         else{
+                            finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
                             attackingArmy--;
                         }
                 }
 
 
-            //Add the description of the battle
-            BattleObject finalBattleOutcome;
-
             //Attacker wins
             if(defendingArmy == 0){
 
-                finalBattleOutcome = new BattleObject(attackingCountry,
-                        defendingCountry,
-                        unitsToAttack,
-                        defendingCountry.getArmy(),
-                        attackingArmy,
-                        defendingArmy,
-                        true);
+                finalBattleOutcome.setAttackingCountry(attackingCountry);
+                finalBattleOutcome.setDefendingCountry(defendingCountry);
+                finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
+                finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
+                finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
+                finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
+                finalBattleOutcome.setDidAttackerWin(true);
+
 
                 //Send the battle data to parser and get number of units to send to new country
                 int numsToSend = -1;
@@ -617,13 +620,13 @@ public class RiskModel {
             //Attacker loses
             if(attackingArmy == 0){
 
-                finalBattleOutcome = new BattleObject(attackingCountry,
-                        defendingCountry,
-                        unitsToAttack,
-                        defendingCountry.getArmy(),
-                        attackingArmy,
-                        defendingArmy,
-                        false);
+                finalBattleOutcome.setAttackingCountry(attackingCountry);
+                finalBattleOutcome.setDefendingCountry(defendingCountry);
+                finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
+                finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
+                finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
+                finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
+                finalBattleOutcome.setDidAttackerWin(false);
 
                 parser.battleOutcome(finalBattleOutcome);
 

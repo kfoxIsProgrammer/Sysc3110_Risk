@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  * Model of outcome of a battle
  * @author kevin
@@ -29,10 +31,17 @@ public class BattleObject {
      */
     private int finalDefendingArmy;
     /**
+     * Data of individual dice rolls
+     */
+    private ArrayList<Integer[]> battleOutCome;
+    /**
      * boolean did the attack win
      */
     private boolean didAttackerWin;
 
+    public BattleObject(){
+
+    }
 
     /**
      * 7 param constructor
@@ -51,6 +60,7 @@ public class BattleObject {
         this.initialDefendingArmy = initialDefendingArmy;
         this.finalAttackingArmy = finalAttackingArmy;
         this.finalDefendingArmy = finalDefendingArmy;
+        this.battleOutCome = new ArrayList<>();
         this.didAttackerWin = didAttackerWin;
     }
 
@@ -108,5 +118,37 @@ public class BattleObject {
      */
     public boolean didAttackerWin() {
         return didAttackerWin;
+    }
+
+    public void setAttackingCountry(Country attackingCountry) {
+        this.attackingCountry = attackingCountry;
+    }
+
+    public void setDefendingCountry(Country defendingCountry) {
+        this.defendingCountry = defendingCountry;
+    }
+
+    public void setInitialAttackingArmy(int initialAttackingArmy) {
+        this.initialAttackingArmy = initialAttackingArmy;
+    }
+
+    public void setInitialDefendingArmy(int initialDefendingArmy) {
+        this.initialDefendingArmy = initialDefendingArmy;
+    }
+
+    public void setFinalAttackingArmy(int finalAttackingArmy) {
+        this.finalAttackingArmy = finalAttackingArmy;
+    }
+
+    public void setFinalDefendingArmy(int finalDefendingArmy) {
+        this.finalDefendingArmy = finalDefendingArmy;
+    }
+
+    public void setDidAttackerWin(boolean didAttackerWin) {
+        this.didAttackerWin = didAttackerWin;
+    }
+
+    public void addDiceRollBattle(Integer[] battle){
+        this.battleOutCome.add(battle);
     }
 }
