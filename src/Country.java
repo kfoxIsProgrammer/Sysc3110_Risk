@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 
 /**Describing a country on the map in a game of RISK
@@ -5,19 +7,20 @@ import java.util.ArrayList;
  * @version  10 / 20 / 2020
  */
 public class Country {
-    /** army currently occupying this country*/
-    private int army;
-
-    /**ArrayList of countries that lie adjacent to the current country*/
-    private ArrayList<Country> adjancentCountries;
-
     /**Name of the country*/
     private String name;
+
+    /** List of the county's vertices */
+    private ArrayList<Pair<Integer,Integer>> vertices;
 
     /**Name of the owner*/
     private Player owner;
 
-    //private isOwned;                  //(left out as all countries are owned at all times)
+    /** army currently occupying this country*/
+    private int army;
+
+    /**ArrayList of countries that lie adjacent to the current country*/
+    private ArrayList<Country> adjacentCountries;
 
     /**
      *1 param Constructor for Country
@@ -27,10 +30,16 @@ public class Country {
         this.name=name;
     }
 
+    public Country(String name, ArrayList<Pair<Integer,Integer>> vertices) {
+        this.name=name;
+        this.vertices=vertices;
+    }
+
+
     /**Add countries adjacent to this country
-     * @param adjancentCountries list of countries adjacent to this one*/
-    public void addAdjacentCountries(ArrayList<Country> adjancentCountries){
-        this.adjancentCountries=adjancentCountries;
+     * @param adjacentCountries list of countries adjacent to this one*/
+    public void addAdjacentCountries(ArrayList<Country> adjacentCountries){
+        this.adjacentCountries =adjacentCountries;
     }
 
     /**Getter for name
@@ -81,7 +90,7 @@ public class Country {
 
     /**Getter for adjacentCountries
      * @return list of countries adjacent to this one*/
-    public ArrayList<Country> getAdjancentCountries() {
-        return adjancentCountries;
+    public ArrayList<Country> getAdjacentCountries() {
+        return adjacentCountries;
     }
 }
