@@ -59,7 +59,7 @@ public class CommandParser {
         System.out.printf("<---------------------------------------------------------------------------------------------->\n");
         for(Country country : player.getOwnedCountries().values()){
             System.out.printf("\t%s: %d\n\t\t",country.getName(),country.getArmy());
-            for(Country neighbor : country.getAdjancentCountries()){
+            for(Country neighbor : country.getAdjacentCountries()){
                 if(!neighbor.getOwner().equals(player)){
                     System.out.printf("%d ",neighbor.getArmy());
                 }
@@ -78,7 +78,7 @@ public class CommandParser {
     private void showNeighbors(Player player, Country country){
         System.out.printf("You have %d usable troops at %s\n",country.getArmy()-1,country.getName());
         System.out.printf("Your neighbors are:\n");
-        for(Country neighbor : country.getAdjancentCountries()){
+        for(Country neighbor : country.getAdjacentCountries()){
             if(!neighbor.getOwner().equals(player)){
                 System.out.printf("\t%s: %d\n",neighbor.getName(),neighbor.getArmy());
             }
@@ -398,7 +398,7 @@ public class CommandParser {
      * @param outcome the object containing battle outcomes
      * @return
      */
-    public int battleOutcome(BattleObject outcome){
+    public int battleOutcome(BattleContext outcome){
 
         System.out.println("Country: "+ outcome.getAttackingCountry().getName() +(outcome.didAttackerWin()? " Won": " Lost"));
         System.out.println("Attacker start "+outcome.getAttackingCountry().getName() +" ->" + outcome.getInitialAttackers()+" final-> "+outcome.getFinalAttackingArmy());

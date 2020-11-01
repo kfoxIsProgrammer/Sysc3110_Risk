@@ -17,15 +17,28 @@ public class RiskModel {
     CommandParser parser;
 
 
-    /** Contructor of Risk Model*/
-    private RiskModel(){
+    public RiskModel(int players, String[] playerNames){
         this.players = new ArrayList<Player>();
         this.countries = new ArrayList<Country>();
         this.continents = new ArrayList<Continent>();
         this.createMap();
         this.parser=new CommandParser(this.countries);
+        this.newGame(players, playerNames);
 
-        this.newGame();
+    }
+
+    /** Constructor of Risk Model*/
+    private RiskModel(){
+        this.players = new ArrayList<>();
+
+        //TODO Allow user to select files
+        MapImport map=new MapImport("maps\\demoMap.RiskMap");
+        this.countries= map.getCountries();
+        this.continents=map.getContinents();
+        //TODO Swap CommandParser calls to gui calls
+        this.parser=new CommandParser(this.countries);
+
+
         this.play();
     }
     /**
@@ -347,7 +360,7 @@ public class RiskModel {
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
      */
-    private void newGame(){
+    private void newGame(int playerNum, String[] playerNames){
         int x = 0;
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
@@ -355,53 +368,24 @@ public class RiskModel {
         Scanner choice = new Scanner(System.in);
 
         //Queries user for number of players
-        while( x < 2 || x > 6) {
-            if(x != 0) System.out.println("Invalid selection");
-            System.out.println("How many players? (2-6)");
-
-            while(!choice.hasNextInt()) {
-
-                System.out.println("Invalid selection");
-
-                choice.next();
-
-
-            }
-            x = choice.nextInt();
-            choice.nextLine();
-
-
-        }
+        x = playerNum;
 
         //Determines starting army size which depends on amount of players
-        switch(x){
-            case 2:
-                startingArmySize = 50;
-                break;
-            default:
-                startingArmySize = (50) - 5*x;
-                break;
+        if (x == 2) {
+            startingArmySize = 50;
+        } else {
+            startingArmySize = (50) - 5 * x;
         }
-
-        //Queries User for player names and initializes player objects
-        System.out.println("Please enter player Names:");
-        String name = "";
 
 
         for(int i = 0; i < x; i++){
-            while(name.isEmpty()) {
-                System.out.println("Player " + (i+1) + ":");
-                name = choice.nextLine();
-            }
-            players.add(new Player(name, startingArmySize));
-            name = "";
+            players.add(new Player(playerNames[i], startingArmySize));
         }
 
         //make randomized list of the countries
-        ArrayList<Country> ran =new ArrayList<Country>();
-        ran = countries;
+        ArrayList<Country> ran = countries;
         Collections.shuffle(ran, rand);
-        Stack<Country> addStack = new Stack<Country>();
+        Stack<Country> addStack = new Stack<>();
         addStack.addAll(ran);
         //Splits up the countries amongst players
         while(!addStack.empty()){
@@ -417,7 +401,7 @@ public class RiskModel {
         }
         for(Player play: players){
             while (play.getArmiesToAllocate() > 0){
-                ArrayList<Country> temp = new ArrayList<Country>(play.getOwnedCountries().values());
+                ArrayList<Country> temp = new ArrayList<>(play.getOwnedCountries().values());
                 Collections.shuffle(temp,rand);
                 for(Country count: temp){
                     if (play.getArmiesToAllocate() >0) {
@@ -447,8 +431,7 @@ public class RiskModel {
      * @return ArrayList of the countries the player owns
      */
     public ArrayList<Country> getPlayerCountries(Player play){
-        ArrayList<Country> temp = new ArrayList<Country>(play.getOwnedCountries().values());
-        return temp;
+        return new ArrayList<>(play.getOwnedCountries().values());
     }
 
     /**
@@ -475,21 +458,19 @@ public class RiskModel {
                 }
                 */
                 hasAnyoneLost(currentPlayer,currentPlayer);
-                while(true && gameIsNotOver()[0]) {
-
+                while(gameIsNotOver()[0]) {
                     command = parser.Attack(currentPlayer);
                     if (command.commandCode==CommandCode.SKIP) {
                         break;
                     }
                     else if (command.commandCode==CommandCode.ATTACK) {
-                        if(command.countrySrc.getAdjancentCountries().contains(command.countryDst)) {
+                        if(command.countrySrc.getAdjacentCountries().contains(command.countryDst)) {
                             if (!this.attack(command.countrySrc, command.countryDst, command.numTroops)) {
                                 System.out.println("Error you sent too many units");
-                                continue;
                             }
                         }
                         else{
-                            System.out.println(command.countryDst.getName()+" is not attackable from "+ command.countrySrc.getName());
+                            System.out.println(command.countryDst.getName()+" is not attack able from "+ command.countrySrc.getName());
                         }
 
                     }
@@ -555,7 +536,10 @@ public class RiskModel {
      */
     public boolean attack(Country attackingCountry, Country defendingCountry, int unitsToAttack){
 
+        BattleContext finalBattleOutcome = new BattleContext();
+
             if(attackingCountry.getArmy() - unitsToAttack <= 0)return false;
+
 
             int defendingArmy = defendingCountry.getArmy();
             int attackingArmy = unitsToAttack;
@@ -579,27 +563,27 @@ public class RiskModel {
                 for(int i=0; i< attackRolls.length; i++){
                     if(defendingArmy > 0 && attackingArmy > 0)
                         if(attackRolls[i] > defenderRolls[i]){
+                            finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
                             defendingArmy--;
                         }
                         else{
+                            finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
                             attackingArmy--;
                         }
                 }
 
 
-            //Add the description of the battle
-            BattleObject finalBattleOutcome;
-
             //Attacker wins
             if(defendingArmy == 0){
 
-                finalBattleOutcome = new BattleObject(attackingCountry,
-                        defendingCountry,
-                        unitsToAttack,
-                        defendingCountry.getArmy(),
-                        attackingArmy,
-                        defendingArmy,
-                        true);
+                finalBattleOutcome.setAttackingCountry(attackingCountry);
+                finalBattleOutcome.setDefendingCountry(defendingCountry);
+                finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
+                finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
+                finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
+                finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
+                finalBattleOutcome.setDidAttackerWin(true);
+
 
                 //Send the battle data to parser and get number of units to send to new country
                 int numsToSend = -1;
@@ -617,13 +601,13 @@ public class RiskModel {
             //Attacker loses
             if(attackingArmy == 0){
 
-                finalBattleOutcome = new BattleObject(attackingCountry,
-                        defendingCountry,
-                        unitsToAttack,
-                        defendingCountry.getArmy(),
-                        attackingArmy,
-                        defendingArmy,
-                        false);
+                finalBattleOutcome.setAttackingCountry(attackingCountry);
+                finalBattleOutcome.setDefendingCountry(defendingCountry);
+                finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
+                finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
+                finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
+                finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
+                finalBattleOutcome.setDidAttackerWin(false);
 
                 parser.battleOutcome(finalBattleOutcome);
 
@@ -650,7 +634,7 @@ public class RiskModel {
                     parser.playerHasLost(player,"Has no more owned countries");
                     break;
                 }
-                //If they have no more available attacking units, they lose aswell
+                //If they have no more available attacking units, they lose as well
                 //If sum of total units = sum of all countries, you can't make a turn
                 //and you lose.
                 int sumOfUnits = 0;
@@ -670,7 +654,6 @@ public class RiskModel {
        RiskModel main = new RiskModel();
        main.createMap();
        main.parser = new CommandParser(main.countries);
-       main.newGame();
        main.play();
 
 

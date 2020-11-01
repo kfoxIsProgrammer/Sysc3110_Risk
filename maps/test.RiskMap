@@ -1,0 +1,16 @@
+# SYSC3110 RiskMap File
+# Map made by Omar Hashmi
+cn "Italy" 99,35 220,50 145,110 45,90
+cn "N J" 45,90 145,190 45,190
+cn "USA" 45,90 145,110 145,190
+cn "P C D" 220,50 220,110 145,110
+cn "ass" 145,110 220,110 220,135 145,135
+cn "P C A" 145,135 220,135 220,190 145,190
+ct "North America" 10 0 1 2
+ct "Asia" 15 3 4 5
+ad 0 2 3
+ad 1 2
+ad 2 0 4 5
+ad 3 0 4
+ad 4 2 3 5
+ad 5 2 4
