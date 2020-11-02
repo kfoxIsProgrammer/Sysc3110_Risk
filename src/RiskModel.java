@@ -38,7 +38,7 @@ public class RiskModel {
         //TODO Swap CommandParser calls to gui calls
         this.parser=new CommandParser(this.countries);
 
-
+        this.newGame();
         this.play();
     }
     /**
@@ -360,7 +360,7 @@ public class RiskModel {
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
      */
-    private void newGame(int playerNum, String[] playerNames){
+    private void newGame(){
         int x = 0;
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
@@ -376,6 +376,9 @@ public class RiskModel {
         } else {
             startingArmySize = (50) - 5 * x;
         }
+
+
+
 
 
         for(int i = 0; i < x; i++){
@@ -654,6 +657,7 @@ public class RiskModel {
        RiskModel main = new RiskModel();
        main.createMap();
        main.parser = new CommandParser(main.countries);
+       main.newGame();
        main.play();
 
 
