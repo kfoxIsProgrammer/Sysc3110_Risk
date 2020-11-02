@@ -22,7 +22,7 @@ public class RiskModel {
         this.players = new ArrayList<Player>();
         this.countries = new ArrayList<Country>();
         this.continents = new ArrayList<Continent>();
-        this.createMap();
+       // this.createMap();
         this.parser=new CommandParser(this.countries);
         this.newGame(players, playerNames);
 
