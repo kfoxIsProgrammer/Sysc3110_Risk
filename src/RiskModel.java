@@ -508,6 +508,8 @@ public class RiskModel {
     private void Test(){
         Player test = new Player("Test" , 10);
         countries.get(1).setOwner(test);
+        countries.get(1).setInitialArmy(6);
+        countries.get(5).setInitialArmy(1);
         countries.get(5).setOwner(test);
         countries.get(20).setOwner(test);
         ArrayList<Country> testing = new ArrayList<>();
@@ -523,16 +525,11 @@ public class RiskModel {
         for (Country count: testing.get(0).getAdjacentCountries()){
             System.out.println("adjacent: " + count.getName());
         }
-        Stack testStackOg = new Stack();
-        Stack testStack = getConnectedOwnedCountries(testing.get(0),test, testStackOg);
-        //System.out.println("Test");
-        while(!testStack.isEmpty()){
-            Country b = (Country) testStack.pop();
-            //System.out.println("Test");
-            System.out.println(b.getName());
-
-        }
-
+        System.out.println(countries.get(1).getArmy());
+        System.out.println(countries.get(5).getArmy());
+        fortify(countries.get(1), countries.get(20), 4, test);
+        System.out.println(countries.get(1).getArmy());
+        System.out.println(countries.get(5).getArmy());
     }
 
     /**
@@ -584,8 +581,8 @@ public class RiskModel {
             return false;
         }
         else{
-            destinationCountry.removeArmy(unitsToSend);
-            sourceCountry.addArmy(unitsToSend);
+            sourceCountry.removeArmy(unitsToSend);
+            destinationCountry.addArmy(unitsToSend);
 
         }
 
