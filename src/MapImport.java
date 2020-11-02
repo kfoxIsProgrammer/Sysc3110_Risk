@@ -1,3 +1,10 @@
+/**
+ * Accepts a RiskMap file and generates the required object from that information
+ *
+ * @author Omar Hashmi
+ * @version 11.01.2020
+ */
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,6 +16,7 @@ public class MapImport {
     /** List of all the continents in the game **/
     private ArrayList<Continent> continents;
 
+    /** Reads the file data into countries and continents **/
     public MapImport(String filename){
         this.countries=new ArrayList<>();
         this.continents=new ArrayList<>();
@@ -19,31 +27,41 @@ public class MapImport {
             while(fileReader.hasNextLine()){
                 String line=fileReader.nextLine();
 
+                //Line is empty
+                if(line.length()==0){
+                    System.out.printf("\n");
+                }
                 //Line is a comment
-                if(line.charAt(0)=='#'){
+                else if(line.charAt(0)=='#'){
                     System.out.printf("%s\n",line);
                 }
                 //Line is a country
                 else if(line.charAt(0)=='c'&&line.charAt(1)=='n'){
-                    Country country;
-                    String countryName="";
-                    ArrayList<Pair<Integer,Integer>> countryVertices=new ArrayList<>();
+                    try {
+                        Country country;
+                        String countryName = "";
+                        ArrayList<Pair<Integer, Integer>> countryVertices = new ArrayList<>();
 
-                    int i=4;
-                    for(;line.charAt(i)!='\"';i++){
-                        countryName+=line.charAt(i);
+                        //Read the country name including spaces
+                        int i = 4;
+                        for (; line.charAt(i) != '\"'; i++) {
+                            countryName += line.charAt(i);
+                        }
+
+                        //Everything following the country name must be coordinates
+                        String[] vertices = line.substring(i + 2).split(" ");
+                        for (String vertex : vertices) {
+                            String[] pos = vertex.split(",");
+                            int x = Integer.parseInt(pos[0]);
+                            int y = Integer.parseInt(pos[1]);
+                            countryVertices.add(new Pair<>(x, y));
+                        }
+                        country = new Country(countryName, countryVertices);
+                        this.countries.add(country);
                     }
-
-                    String[] vertices=line.substring(i+2).split(" ");
-                    for(String vertex: vertices){
-                        String[] pos=vertex.split(",");
-                        int x=Integer.parseInt(pos[0]);
-                        int y=Integer.parseInt(pos[1]);
-                        countryVertices.add(new Pair<>(x,y));
+                    catch (Exception e){
+                        System.out.printf("Unable to load %s, error in file\n",filename);
                     }
-
-                    country=new Country(countryName,countryVertices);
-                    this.countries.add(country);
                 }
                 //Line is a continent
                 else if(line.charAt(0)=='c'&&line.charAt(1)=='t'){
@@ -52,11 +70,13 @@ public class MapImport {
                     ArrayList<Country> countries=new ArrayList<>();
                     int continentBonus;
 
+                    //Read the continent name including spaces
                     int i=4;
                     for(;line.charAt(i)!='\"';i++){
                         continentName+=line.charAt(i);
                     }
 
+                    //Everything following the continent name must be countries
                     String[] countryIds=line.substring(i+2).split(" ");
                     continentBonus=Integer.parseInt(countryIds[0]);
                     for(int j=1;j<countryIds.length;j++){
@@ -81,18 +101,31 @@ public class MapImport {
             }
         }
         catch(FileNotFoundException e){
-            System.out.printf("File not found\n");
+            System.out.printf("Unable to load %s, file not found\n",filename);
             e.printStackTrace();
         }
     }
 
+    /**
+     * Returns the contents of the countries ArrayList
+     *
+     * @return The country data from the file
+     */
     public ArrayList<Country> getCountries() {
         return countries;
     }
+    /**
+     * Returns the contents of the continents ArrayList
+     *
+     * @return The continent data from the file
+     */
     public ArrayList<Continent> getContinents() {
         return continents;
     }
 
+    /**
+     * Displays the country information for debug purposes
+     */
     public void printCountries(){
         for(int i=0;i<countries.size();i++){
             System.out.printf("%s\n",countries.get(i).getName());
@@ -101,6 +134,9 @@ public class MapImport {
             }
         }
     }
+    /**
+     * Displays the continent information for debug purposes
+     */
     public void printContinents(){
         for(int i=0;i<continents.size();i++){
             System.out.printf("%s\n",continents.get(i).getName());
