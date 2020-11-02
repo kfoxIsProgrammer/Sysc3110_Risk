@@ -1,3 +1,4 @@
+
 import java.util.*;
 import java.util.Random;
 
@@ -340,3 +341,4 @@ public class RiskModel {
        RiskModel main = new RiskModel();
     }
 }
+
