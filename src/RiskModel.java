@@ -14,18 +14,16 @@ public class RiskModel {
     ArrayList<Country> countries;
     /**   list of all the continents in the game **/
     ArrayList<Continent> continents;
-    /** file path for the map being used**/
-    String mapImagePath;
     /** Command Parser **/
-    RiskView riskView;
+    CommandParser parser;
 
 
     public RiskModel(int players, String[] playerNames){
         this.players = new ArrayList<Player>();
         this.countries = new ArrayList<Country>();
         this.continents = new ArrayList<Continent>();
-        //this.createMap();
-
+        this.createMap();
+        this.parser=new CommandParser(this.countries);
         this.newGame(players, playerNames);
 
     }
