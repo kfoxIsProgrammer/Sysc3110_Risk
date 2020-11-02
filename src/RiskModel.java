@@ -505,6 +505,35 @@ public class RiskModel {
             parser.gameIsOver(players, players.get(players.indexOf(mostCountry)));
         }
     }
+    private void Test(){
+        Player test = new Player("Test" , 10);
+        countries.get(1).setOwner(test);
+        countries.get(5).setOwner(test);
+        countries.get(20).setOwner(test);
+        ArrayList<Country> testing = new ArrayList<>();
+        testing.add(countries.get(1));
+       // System.out.println(countries.get(1).getName());
+        testing.add(countries.get(5));
+        //System.out.println(countries.get(5).getName());
+        testing.add(countries.get(20));
+       // System.out.println(countries.get(20).getName());
+        test.addCountry(testing.get(0));
+        test.addCountry(testing.get(1));
+        test.addCountry(testing.get(2));
+        for (Country count: testing.get(0).getAdjacentCountries()){
+            System.out.println("adjacent: " + count.getName());
+        }
+        Stack testStackOg = new Stack();
+        Stack testStack = getConnectedOwnedCountries(testing.get(0),test, testStackOg);
+        //System.out.println("Test");
+        while(!testStack.isEmpty()){
+            Country b = (Country) testStack.pop();
+            //System.out.println("Test");
+            System.out.println(b.getName());
+
+        }
+
+    }
 
     /**
      * Helper method to determine if the game is over based on 2 win conditions
@@ -526,7 +555,43 @@ public class RiskModel {
             return new boolean[]{true, false};
 
     }
+    public Stack getConnectedOwnedCountries(Country sourceCountry, Player user, Stack toTest){
 
+
+        for(Country count: sourceCountry.getAdjacentCountries()){
+            if(count.getOwner() == user && !toTest.contains(count)){
+              //  System.out.println(count.getName());
+                toTest.add(count);
+                return(getConnectedOwnedCountries(count, user, toTest));
+
+            }
+
+        }
+        return toTest;
+
+    }
+
+    public boolean fortify(Country sourceCountry, Country destinationCountry, int unitsToSend, Player user){
+        Stack countriesWithinBorder = new Stack();
+        Boolean valid = false;
+        countriesWithinBorder = getConnectedOwnedCountries(sourceCountry, user, countriesWithinBorder);
+        while (!countriesWithinBorder.isEmpty()){
+            if(destinationCountry == countriesWithinBorder.pop()){
+                valid = true;
+            }
+        }
+        if(sourceCountry.getOwner() != user || destinationCountry.getOwner() != user || valid != true || (sourceCountry.getArmy()-1) < unitsToSend ){
+            return false;
+        }
+        else{
+            destinationCountry.removeArmy(unitsToSend);
+            sourceCountry.addArmy(unitsToSend);
+
+        }
+
+        return true;
+
+    }
     /**
      * This method is the attack phase controller for the game of risk
      * @param attackingCountry The attacking country
@@ -654,7 +719,7 @@ public class RiskModel {
        RiskModel main = new RiskModel();
        main.createMap();
        main.parser = new CommandParser(main.countries);
-       main.play();
+       main.Test();
 
 
 
