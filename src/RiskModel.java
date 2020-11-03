@@ -589,6 +589,16 @@ public class RiskModel {
         return true;
 
     }
+    public boolean deploy(int troopsToDeploy, Player user, Country destinationCountry){
+        if(troopsToDeploy > user.getArmiesToAllocate() && destinationCountry.getOwner() != user) {return false;}
+        else{
+            user.removeArmy(troopsToDeploy);
+            destinationCountry.addArmy(troopsToDeploy);
+            return true;
+        }
+
+    }
+
     /**
      * This method is the attack phase controller for the game of risk
      * @param attackingCountry The attacking country
