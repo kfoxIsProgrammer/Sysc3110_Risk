@@ -14,16 +14,17 @@ public class RiskModel {
     ArrayList<Country> countries;
     /**   list of all the continents in the game **/
     ArrayList<Continent> continents;
-    /** Command Parser **/
-    CommandParser parser;
+
+    RiskView riskView;
+
 
 
     public RiskModel(int players, String[] playerNames){
         this.players = new ArrayList<Player>();
         this.countries = new ArrayList<Country>();
         this.continents = new ArrayList<Continent>();
-       // this.createMap();
-        this.parser=new CommandParser(this.countries);
+        //this.createMap();
+
         this.newGame(players, playerNames);
 
     }
@@ -37,7 +38,6 @@ public class RiskModel {
         this.countries= map.getCountries();
         this.continents=map.getContinents();
         //TODO Swap CommandParser calls to gui calls
-        this.parser=new CommandParser(this.countries);
 
         this.play();
     }
