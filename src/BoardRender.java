@@ -1,3 +1,8 @@
+/**
+ * @authour Kshitij Sawhney
+ * @version 11 / 2 / 2020
+ */
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -19,12 +24,12 @@ public class BoardRender extends JFrame {
 
     private JTextArea infoArea;
     private JLabel mapImageLabel;
-    private JButton phaseButton;
+    private JLabel currentPhase;
+    private JButton skipPhase;
 
     public BoardRender() throws IOException {
         setTitle("Risk - GLobal Domination");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        //setResizable(true);
         setLayout(new GridBagLayout());
 
         gbc.fill = GridBagConstraints.NONE;
@@ -65,7 +70,7 @@ public class BoardRender extends JFrame {
         infoPanel.setBorder(new LineBorder(Color.black));
 
         infoArea = new JTextArea();
-        infoArea.setFocusable(true);
+        infoArea.setFocusable(false);
         infoArea.setLineWrap(true);
         infoArea.setWrapStyleWord(true);
         ((DefaultCaret)infoArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
