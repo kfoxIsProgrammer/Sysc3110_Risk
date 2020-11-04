@@ -1,3 +1,4 @@
+
 import java.util.*;
 import java.util.Random;
 
@@ -17,6 +18,16 @@ public class RiskModel {
     CommandParser parser;
 
 
+    public RiskModel(int players, String[] playerNames){
+        this.players = new ArrayList<Player>();
+        this.countries = new ArrayList<Country>();
+        this.continents = new ArrayList<Continent>();
+        this.createMap();
+        this.parser=new CommandParser(this.countries);
+        this.newGame(players, playerNames);
+
+    }
+
     /** Constructor of Risk Model*/
     private RiskModel(){
         this.players = new ArrayList<>();
@@ -28,7 +39,6 @@ public class RiskModel {
         //TODO Swap CommandParser calls to gui calls
         this.parser=new CommandParser(this.countries);
 
-        this.newGame();
         this.play();
     }
 
@@ -36,7 +46,7 @@ public class RiskModel {
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
      */
-    private void newGame(){
+    private void newGame(int playerNum, String[] playerNames){
         int x = 0;
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
@@ -44,18 +54,9 @@ public class RiskModel {
         Scanner choice = new Scanner(System.in);
 
         //Queries user for number of players
-        while( x < 2 || x > 6) {
-            if(x != 0) System.out.println("Invalid selection");
-            System.out.println("How many players? (2-6)");
 
-            while(!choice.hasNextInt()) {
-                System.out.println("Invalid selection");
+        x = playerNum;
 
-                choice.next();
-            }
-            x = choice.nextInt();
-            choice.nextLine();
-        }
 
         //Determines starting army size which depends on amount of players
         if (x == 2) {
@@ -64,17 +65,11 @@ public class RiskModel {
             startingArmySize = (50) - 5 * x;
         }
 
-        //Queries User for player names and initializes player objects
-        System.out.println("Please enter player Names:");
-        String name = "";
+
+
 
         for(int i = 0; i < x; i++){
-            while(name.isEmpty()) {
-                System.out.println("Player " + (i+1) + ":");
-                name = choice.nextLine();
-            }
-            players.add(new Player(name, startingArmySize));
-            name = "";
+            players.add(new Player(playerNames[i], startingArmySize));
         }
 
         //make randomized list of the countries
@@ -227,7 +222,10 @@ public class RiskModel {
      */
     public boolean attack(Country attackingCountry, Country defendingCountry, int unitsToAttack){
 
+        BattleContext finalBattleOutcome = new BattleContext();
+
             if(attackingCountry.getArmy() - unitsToAttack <= 0)return false;
+
 
             int defendingArmy = defendingCountry.getArmy();
             int attackingArmy = unitsToAttack;
@@ -248,29 +246,32 @@ public class RiskModel {
 
 
             //Compare rolls until someone loses
-            for(int i=0; i< attackRolls.length; i++){
-                if(defendingArmy > 0 && attackingArmy > 0)
-                    if(attackRolls[i] > defenderRolls[i]){
-                        defendingArmy--;
-                    }
-                    else{
-                        attackingArmy--;
-                    }
-            }
 
-            //Add the description of the battle
-            BattleObject finalBattleOutcome;
+                for(int i=0; i< attackRolls.length; i++){
+                    if(defendingArmy > 0 && attackingArmy > 0)
+                        if(attackRolls[i] > defenderRolls[i]){
+                            finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
+                            defendingArmy--;
+                        }
+                        else{
+                            finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
+                            attackingArmy--;
+                        }
+                }
+
+
 
             //Attacker wins
             if(defendingArmy == 0){
 
-                finalBattleOutcome = new BattleObject(attackingCountry,
-                        defendingCountry,
-                        unitsToAttack,
-                        defendingCountry.getArmy(),
-                        attackingArmy,
-                        defendingArmy,
-                        true);
+                finalBattleOutcome.setAttackingCountry(attackingCountry);
+                finalBattleOutcome.setDefendingCountry(defendingCountry);
+                finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
+                finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
+                finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
+                finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
+                finalBattleOutcome.setDidAttackerWin(true);
+
 
                 //Send the battle data to parser and get number of units to send to new country
                 int numToSend = -1;
@@ -288,13 +289,13 @@ public class RiskModel {
             //Attacker loses
             if(attackingArmy == 0){
 
-                finalBattleOutcome = new BattleObject(attackingCountry,
-                        defendingCountry,
-                        unitsToAttack,
-                        defendingCountry.getArmy(),
-                        attackingArmy,
-                        defendingArmy,
-                        false);
+                finalBattleOutcome.setAttackingCountry(attackingCountry);
+                finalBattleOutcome.setDefendingCountry(defendingCountry);
+                finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
+                finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
+                finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
+                finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
+                finalBattleOutcome.setDidAttackerWin(false);
 
                 parser.battleOutcome(finalBattleOutcome);
 
@@ -340,3 +341,4 @@ public class RiskModel {
        RiskModel main = new RiskModel();
     }
 }
+

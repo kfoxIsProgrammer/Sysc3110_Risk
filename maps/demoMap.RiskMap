@@ -1,8 +1,8 @@
 # SYSC3110 RiskMap File
 # Map made by Omar Hashmi and Dimitry Koutchine
-#
+
 # Countries
-#
+
 cn "Alaska" 99,100 100,101
 cn "Alberta" 99,100 100,101
 cn "Central America" 99,100 100,101
@@ -45,18 +45,18 @@ cn "Eastern Australia" 99,100 100,101
 cn "Indonesia" 99,100 100,101
 cn "New Guinea" 99,100 100,101
 cn "Western Australia" 99,100 100,101
-#
+
 # Continents
-#
+
 ct "North America" 10 0 1 2 3 4 5 6 7 8
 ct "South America" 15 9 10 11 12
 ct "Europe" 9 13 14 15 16 17 18 19
 ct "Africa" 20 20 21 22 23 24 25
 ct "Asia" 20 26 27 28 29 30 31 32 33 34 35 36 37
 ct "Australia" 10 38 39 40 41
-#
+
 # Adjacency List
-#
+
 ad 0 1 5 31
 ad 1 0 5 6 8
 ad 2 8 12 3

@@ -1,14 +1,15 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-
 /**
  * Prompts the user for input, then parses the input into a Command object for the RiskModel to use
  *
  * @author Omar Hashmi, Kevin Fox
  * @version 10.25.2020
  */
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
 public class CommandParser {
     /** List of Country objects*/
     private ArrayList<Country> countries;
@@ -398,7 +399,7 @@ public class CommandParser {
      * @param outcome the object containing battle outcomes
      * @return
      */
-    public int battleOutcome(BattleObject outcome){
+    public int battleOutcome(BattleContext outcome){
 
         System.out.println("Country: "+ outcome.getAttackingCountry().getName() +(outcome.didAttackerWin()? " Won": " Lost"));
         System.out.println("Attacker start "+outcome.getAttackingCountry().getName() +" ->" + outcome.getInitialAttackers()+" final-> "+outcome.getFinalAttackingArmy());
