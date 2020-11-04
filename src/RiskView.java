@@ -1,4 +1,5 @@
 /**
+ * This is responsible for creating the viewport in which one plays the game.
  * @authour Kshitij Sawhney
  * @version 11 / 2 / 2020
  */
@@ -15,19 +16,25 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class BoardRender extends JFrame {
+public class RiskView extends JFrame {
+
+    private RiskModel riskmodel;
+    private RiskController riskController;
+
     private GridBagConstraints gbc = new GridBagConstraints();
-    private JPanel mapPanel;
+    private JPanel mapPanel; //JLayeredPane needs the parent Container to have a null Layout Manager
+    private JLayeredPane mapLayeredPane;
     private JPanel infoPanel;
 
-    private BufferedImage mapImage;
+    private String path = "map.png";
+    private BufferedImage mapImage= ImageIO.read(new File(path));
 
     private JTextArea infoArea;
     private JLabel mapImageLabel;
     private JLabel currentPhase;
     private JButton skipPhase;
 
-    public BoardRender() throws IOException {
+    public RiskView(RiskModel riskmodel) throws IOException {
         setTitle("Risk - GLobal Domination");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
@@ -54,13 +61,24 @@ public class BoardRender extends JFrame {
 
     }
     private JPanel mapPanel() throws IOException {
-        String path = "map.png";
         mapPanel = new MapPanel();
         mapPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
         mapImage = ImageIO.read(new File(path));
+
         mapPanel.setPreferredSize(new Dimension(mapImage.getWidth(),mapImage.getHeight()));
+
+        mapLayeredPane = new JLayeredPane();
+        //inserting into Layered pane
         mapImageLabel = new JLabel(new ImageIcon(mapImage));
-        mapPanel.add(mapImageLabel);
+        mapImageLabel.setBounds(0,0,mapImage.getWidth(),mapImage.getHeight());
+        mapLayeredPane.add(mapImageLabel, Integer.valueOf(1));
+
+        mapPanel.setLayout(null);
+        mapLayeredPane.setLayout(null);
+        mapLayeredPane.setBounds(0,0,mapImage.getWidth(),mapImage.getHeight());
+
+        mapPanel.add(mapLayeredPane);
+
         return mapPanel;
     }
 
@@ -83,11 +101,17 @@ public class BoardRender extends JFrame {
         return infoPanel;
     }
 
+    public void boardUpdate(RiskModel riskModel){
+
+    }
+
     public static void main(String[] args) throws Exception{
-        new BoardRender();
+        new RiskView();
         //TODO create board render based on currentl game state
     }
 }
+
+
 class MapPanel extends JPanel{
     public MapPanel(){
         addMouseListener(new MouseAdapter() {
@@ -95,7 +119,7 @@ class MapPanel extends JPanel{
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 System.out.println(e.getX()+" "+e.getY());
-                //ToDo something with these coords
+                RiskController.countrySelected(e);
             }
         });
     }

@@ -93,4 +93,9 @@ public class Country {
     public ArrayList<Country> getAdjacentCountries() {
         return adjacentCountries;
     }
+
+    public ArrayList<Pair<Integer, Integer>> getVertices() {
+        return vertices;
+    }
 }
+
