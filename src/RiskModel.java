@@ -345,15 +345,22 @@ public class RiskModel {
 
     //Todo start a new game and update view
     public void startNewGame(int players, String[] playerNames) {
+
+
+        riskView.boardUpdate(this);
     }
 
     //Todo get country selected and update the view
     public void countryHasBeenSelected(int x, int y) {
 
+        riskView.boardUpdate(this);
     }
 
     //Todo a button was clicked therefore get units
     public void sendAction(String actionCommand) {
+
+
+        riskView.boardUpdate(this);
     }
 
 
