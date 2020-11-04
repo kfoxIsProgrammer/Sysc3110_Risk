@@ -39,7 +39,7 @@ public class RiskModel {
         this.countries= map.getCountries();
         this.continents=map.getContinents();
         //TODO Swap CommandParser calls to gui calls
-        this.riskView.updateBoard();
+        this.riskView.boardUpdate(this);
 
         this.play();
     }
