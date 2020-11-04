@@ -1,3 +1,5 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 public class RiskController implements ActionListener {
@@ -5,7 +7,6 @@ public class RiskController implements ActionListener {
 
     public RiskController(RiskModel model){
         this.riskModel = model;
-        this.riskView = view;
     }
 
     /**
@@ -18,14 +19,13 @@ public class RiskController implements ActionListener {
         this.riskModel.startNewGame(players, playerNames);
     }
 
-
     /**
      * A controller event to ask the risk model which country was clicked first
      * @param mouseEvent the event of which button is pressed
      * @return the country that is pressed
      */
-    public void countrySelected(MouseEvent mouseEvent){
-        this.riskModel.countryHasBeenSelected(mouseEvent.getX(), mouseEvent.getY());
+    public void boardUpdate(MouseEvent mouseEvent){
+        this.riskModel.boardUpdated(mouseEvent.getX(), mouseEvent.getY());
     }
 
     /**
@@ -36,5 +36,4 @@ public class RiskController implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         this.riskModel.sendAction(e.getActionCommand());
     }
-*/
 }
