@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-
 import java.util.ArrayList;
 
 /**Describing a country on the map in a game of RISK
@@ -34,6 +33,7 @@ public class Country {
         this.name=name;
         this.vertices=vertices;
     }
+
 
 
     /**Add countries adjacent to this country

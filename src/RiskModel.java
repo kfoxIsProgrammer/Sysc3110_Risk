@@ -17,6 +17,7 @@ public class RiskModel {
 
     RiskView riskView;
 
+    //Potentially add title for the map
 
 
     public RiskModel(int players, String[] playerNames){
@@ -38,6 +39,7 @@ public class RiskModel {
         this.countries= map.getCountries();
         this.continents=map.getContinents();
         //TODO Swap CommandParser calls to gui calls
+        this.riskView.updateBoard();
 
         this.play();
     }
@@ -340,5 +342,21 @@ public class RiskModel {
     public static void main(String[] args) {
        RiskModel main = new RiskModel();
     }
+
+    //Todo start a new game and update view
+    public void startNewGame(int players, String[] playerNames) {
+    }
+
+    //Todo get country selected and update the view
+    public void countryHasBeenSelected(int x, int y) {
+
+    }
+
+    //Todo a button was clicked therefore get units
+    public void sendAction(String actionCommand) {
+    }
+
+
+
 }
 
