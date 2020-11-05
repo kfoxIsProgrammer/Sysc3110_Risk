@@ -86,7 +86,7 @@ public class RiskModel {
             for(Player play: players){
                 if(!addStack.empty()){
                     play.addCountry(addStack.peek());
-                    addStack.peek().setInitialArmy(1);
+                    addStack.peek().setArmy(1);
                     play.removeArmy(1);
                     addStack.pop().setOwner(play);
                 }
@@ -292,7 +292,7 @@ public class RiskModel {
                 }
 
                 //Set the new owner and initial value
-                defendingCountry.setInitialArmy(attackingArmy-numToSend);
+                defendingCountry.setArmy(attackingArmy-numToSend);
                 attackingCountry.removeArmy(attackingArmy-numToSend);
                 defendingCountry.getOwner().removeCountry(defendingCountry);
                 defendingCountry.setOwner(attackingCountry.getOwner());

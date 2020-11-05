@@ -24,8 +24,10 @@ public class RiskController implements ActionListener {
      * @param mouseEvent the event of which button is pressed
      * @return the country that is pressed
      */
+
     public void countrySelected(MouseEvent mouseEvent){
         this.riskModel.countryHasBeenSelected(mouseEvent.getX(), mouseEvent.getY());
+
     }
 
     /**
