@@ -1,11 +1,13 @@
+/**
+ * Risk Model class used to model the ongoing game
+ *
+ * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi, Kshitij Sawhney
+ * @version 11.04.2020
+ */
+
 import java.util.*;
 import java.util.Random;
 
-/**
- * Risk Model class used to model the ongoing game
- * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi, Kshitij Sawhney
- * @version 10/25/20/
- */
 public class RiskModel {
     /**List of all the players in the game **/
     ArrayList<Player> players;
@@ -16,17 +18,15 @@ public class RiskModel {
     /** Command Parser **/
     CommandParser parser;
 
-
+    //Test constructor
     public RiskModel(int players, String[] playerNames){
-        this.players = new ArrayList<Player>();
-        this.countries = new ArrayList<Country>();
-        this.continents = new ArrayList<Continent>();
-        this.createMap();
+        this.players = new ArrayList<>();
+        this.countries = new ArrayList<>();
+        this.continents = new ArrayList<>();
         this.parser=new CommandParser(this.countries);
         this.newGame(players, playerNames);
 
     }
-
     /** Constructor of Risk Model*/
     private RiskModel(){
         this.players = new ArrayList<>();
@@ -40,320 +40,6 @@ public class RiskModel {
 
 
         this.play();
-    }
-    /**
-     * Initialize the countries and there adjacency's, continents, and setup the game board
-     *
-     */
-    private void createMap(){
-        //test
-        ArrayList<Country> adjacent;
-        Continent northAmerica, southAmerica, europe, africa, asia, australia;
-        //Constructing countries
-        //North America
-        Country alaska = new Country("Alaska");
-        Country alberta = new Country("Alberta");
-        Country centralAmerica = new Country("Central America");
-        Country easternUnitedStates = new Country("Eastern United States");
-        Country greenLand = new Country("Greenland");
-        Country northwestTerritory = new Country("Northwest Territory");
-        Country ontario = new Country("Ontario");
-        Country quebec = new Country("Quebec");
-        Country westernUnitedStates = new Country("Western United States");
-        //South America
-        Country argentina = new Country("Argentina");
-        Country brazil = new Country("Brazil");
-        Country peru = new Country("Peru");
-        Country venezuela = new Country("Venezuela");
-        //Europe
-        Country greatBritain = new Country("Great Britain");
-        Country iceLand = new Country("Iceland");
-        Country northernEurope = new Country("Northern Europe");
-        Country scandinavia = new Country("Scandinavia");
-        Country southernEurope = new Country("Southern Europe");
-        Country ukraine = new Country("Ukraine");
-        Country westernEurope = new Country("Western Europe");
-        //Africa
-        Country congo = new Country("Congo");
-        Country eastAfrica = new Country("East Africa");
-        Country egypt = new Country("Egypt");
-        Country madagascar = new Country("Madagascar");
-        Country northAfrica = new Country("North Africa");
-        Country southAfrica = new Country("South Africa");
-        //Asia
-        Country afghanistan = new Country("Afghanistan");
-        Country china = new Country("China");
-        Country india = new Country("India");
-        Country irkutsk = new Country("Irkutsk");
-        Country japan = new Country("Japan");
-        Country kamchatka = new Country("Kamchatka");
-        Country middleEast = new Country("Middle East");
-        Country mongolia = new Country("Mongolia");
-        Country siam = new Country("Siam");
-        Country siberia = new Country("Siberia");
-        Country ural = new Country("Ural");
-        Country yakutsk = new Country("Yakutsk");
-        //Australia
-        Country easternAustralia = new Country("Eastern Australia");
-        Country indonesia = new Country("Indonesia");
-        Country newGuinea = new Country("New Guinea");
-        Country westernAustralia = new Country("Western Australia");
-        //----------------------------adding adjacent ------------------------------
-
-        //North America-----------------------------------------------------------------------
-        List<Country> temp = Arrays.asList(alberta, northwestTerritory, kamchatka);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        alaska.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(alaska, northwestTerritory, ontario, westernUnitedStates);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        alberta.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(westernUnitedStates, venezuela, easternUnitedStates);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        centralAmerica.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(westernUnitedStates, ontario,quebec, centralAmerica);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        easternUnitedStates.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(northwestTerritory, ontario,quebec, iceLand);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        greenLand.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(alaska, greenLand, ontario, alberta);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        northwestTerritory.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(northwestTerritory, greenLand,quebec, easternUnitedStates, westernUnitedStates, alberta);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        ontario.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(ontario, greenLand, easternUnitedStates);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        quebec.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(alberta, ontario, easternUnitedStates, centralAmerica);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        westernUnitedStates.addAdjacentCountries(adjacent);
-
-        //South America-----------------------------------------------------------------------------
-
-        temp = Arrays.asList(venezuela,brazil, peru);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        argentina.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(venezuela, northAfrica, argentina, peru);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        brazil.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(venezuela,argentina, brazil);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        peru.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(centralAmerica, peru, brazil);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        venezuela.addAdjacentCountries(adjacent);
-
-        // Europe----------------------------------------------------------------------
-        temp = Arrays.asList(iceLand,scandinavia,northernEurope,westernEurope);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        greatBritain.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(greenLand,greatBritain,scandinavia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        iceLand.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(greatBritain, scandinavia, southernEurope, ukraine, westernEurope);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        northernEurope.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(greatBritain, iceLand,northernEurope,ukraine);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        scandinavia.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(northernEurope,ukraine,westernEurope, middleEast, egypt, northAfrica);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        southernEurope.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(northernEurope, scandinavia, southernEurope, afghanistan, ural,middleEast);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        ukraine.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(greatBritain, northernEurope,southernEurope,northAfrica);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        westernEurope.addAdjacentCountries(adjacent);
-        //Africa-------------------------------------------------------------------------
-        temp = Arrays.asList(eastAfrica,northAfrica,southAfrica);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        congo.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(congo,egypt, madagascar,northAfrica, southAfrica, middleEast);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        eastAfrica.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(eastAfrica,northAfrica,southernEurope,middleEast);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        egypt.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(eastAfrica, southAfrica);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        madagascar.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(congo,eastAfrica,egypt,southernEurope, westernEurope, brazil);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        northAfrica.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(congo, eastAfrica, madagascar);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        southAfrica.addAdjacentCountries(adjacent);
-
-        //Asia-------------------------------------------------------------
-
-        temp = Arrays.asList(china, india,middleEast, ural,ukraine);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        afghanistan.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList( afghanistan, india, mongolia, ural, siam, siberia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        china.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(afghanistan, china,middleEast, siam);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        india.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(kamchatka,mongolia,siberia,yakutsk);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        irkutsk.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(kamchatka, mongolia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        japan.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(irkutsk, japan,mongolia, yakutsk, alaska);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        kamchatka.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(afghanistan, india, southernEurope, siberia, eastAfrica,egypt);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        middleEast.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(china, irkutsk, japan, kamchatka,siberia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        mongolia.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(china, india, indonesia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        siam.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(irkutsk, china, mongolia, ural,  yakutsk);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        siberia.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(afghanistan,china, siberia, ukraine);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        ural.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(irkutsk, kamchatka, siberia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        yakutsk.addAdjacentCountries(adjacent);
-        //Australia-------------------------------------------
-        temp = Arrays.asList(indonesia, newGuinea, westernAustralia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        easternAustralia.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(easternAustralia, newGuinea, westernAustralia, siam);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        indonesia.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(indonesia, easternAustralia, westernAustralia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        newGuinea.addAdjacentCountries(adjacent);
-
-        temp = Arrays.asList(easternAustralia, newGuinea, indonesia);
-        adjacent = new ArrayList<Country>();
-        adjacent.addAll(temp);
-        westernAustralia.addAdjacentCountries(adjacent);
-        //--------------------------------------------adding to continents
-        temp = Arrays.asList(alaska,alberta,centralAmerica,easternUnitedStates,greenLand, northwestTerritory, ontario,quebec , westernUnitedStates);
-        adjacent = new ArrayList<Country>();
-        countries.addAll(temp);
-        adjacent.addAll(temp);
-        northAmerica = new Continent("North America", adjacent, 5);
-
-        temp = Arrays.asList(argentina,brazil,peru, venezuela);
-        adjacent = new ArrayList<Country>();
-        countries.addAll(temp);
-        adjacent.addAll(temp);
-        southAmerica = new Continent("South America", adjacent, 2);
-
-        temp = Arrays.asList(greatBritain, iceLand, northernEurope, scandinavia, southernEurope, ukraine, westernEurope);
-        adjacent = new ArrayList<Country>();
-        countries.addAll(temp);
-        adjacent.addAll(temp);
-        europe = new Continent("Europe", adjacent, 5);
-
-        temp = Arrays.asList(congo, eastAfrica, egypt,madagascar, northAfrica,southAfrica);
-        adjacent = new ArrayList<Country>();
-        countries.addAll(temp);
-        adjacent.addAll(temp);
-        africa = new Continent("Africa", adjacent, 3);
-
-        temp = Arrays.asList(afghanistan, china, india, irkutsk, japan, kamchatka, middleEast, mongolia, siam, siberia, ural, yakutsk);
-        adjacent = new ArrayList<Country>();
-        countries.addAll(temp);
-        adjacent.addAll(temp);
-        asia = new Continent("Asia", adjacent, 7);
-
-        temp = Arrays.asList(easternAustralia, indonesia, newGuinea, westernAustralia);
-        adjacent = new ArrayList<Country>();
-        countries.addAll(temp);
-        adjacent.addAll(temp);
-        australia = new Continent("Australia", adjacent, 2);
-        //----------------------------------------------------------------------
-        List<Continent> conttemp = Arrays.asList(northAmerica, southAmerica, europe, africa, asia, australia);
-        continents.addAll(conttemp);
     }
 
     /**
@@ -397,7 +83,6 @@ public class RiskModel {
                     addStack.pop().setOwner(play);
                 }
             }
-
         }
         for(Player play: players){
             while (play.getArmiesToAllocate() > 0){
@@ -409,31 +94,9 @@ public class RiskModel {
                         play.removeArmy(1);
                     }
                 }
-
-
             }
         }
-
     }
-
-
-    /**
-     * Return the ArrayList of countries.
-     * @return ArrayList containing all the country objects
-     */
-    public ArrayList<Country> getCountries(){
-        return this.countries;
-    }
-
-    /**
-     * Getter for player countries
-     * @param play player object
-     * @return ArrayList of the countries the player owns
-     */
-    public ArrayList<Country> getPlayerCountries(Player play){
-        return new ArrayList<>(play.getOwnedCountries().values());
-    }
-
     /**
      * Main control function for the Risk game
      */
@@ -441,10 +104,10 @@ public class RiskModel {
         Command command;
         while(gameIsNotOver()[0])
             for(Player currentPlayer: players){
-            if(!currentPlayer.getHasLost()){
+                if(!currentPlayer.getHasLost()){
 
 
-                //parser.Deploy(currentPlayer);
+                    //parser.Deploy(currentPlayer);
 
                 /*
                 while(true) {
@@ -457,24 +120,24 @@ public class RiskModel {
                     }
                 }
                 */
-                hasAnyoneLost(currentPlayer,currentPlayer);
-                while(gameIsNotOver()[0]) {
-                    command = parser.Attack(currentPlayer);
-                    if (command.commandCode==CommandCode.SKIP) {
-                        break;
-                    }
-                    else if (command.commandCode==CommandCode.ATTACK) {
-                        if(command.countrySrc.getAdjacentCountries().contains(command.countryDst)) {
-                            if (!this.attack(command.countrySrc, command.countryDst, command.numTroops)) {
-                                System.out.println("Error you sent too many units");
+                    hasAnyoneLost(currentPlayer,currentPlayer);
+                    while(gameIsNotOver()[0]) {
+                        command = parser.Attack(currentPlayer);
+                        if (command.commandCode==CommandCode.SKIP) {
+                            break;
+                        }
+                        else if (command.commandCode==CommandCode.ATTACK) {
+                            if(command.countrySrc.getAdjacentCountries().contains(command.countryDst)) {
+                                if (!this.attack(command.countrySrc, command.countryDst, command.numTroops)) {
+                                    System.out.println("Error you sent too many units");
+                                }
                             }
-                        }
-                        else{
-                            System.out.println(command.countryDst.getName()+" is not attack able from "+ command.countrySrc.getName());
-                        }
+                            else{
+                                System.out.println(command.countryDst.getName()+" is not attack able from "+ command.countrySrc.getName());
+                            }
 
+                        }
                     }
-                }
                 /*
                 parser.Fortify(currentPlayer);
                 if (command.commandCode==CommandCode.SKIP) {
@@ -484,9 +147,9 @@ public class RiskModel {
                     //TODO fortify method
                 }
                 */
+                }
+                //1 or more players are left and game is over
             }
-            //1 or more players are left and game is over
-        }
 
         //The game is over
         if(gameIsNotOver()[1]){
@@ -506,6 +169,43 @@ public class RiskModel {
         }
     }
 
+    /**
+     * Return the ArrayList of countries.
+     * @return ArrayList containing all the country objects
+     */
+    public ArrayList<Country> getCountries(){
+        return this.countries;
+    }
+    /**
+     * Getter for player countries
+     * @param play player object
+     * @return ArrayList of the countries the player owns
+     */
+    public ArrayList<Country> getPlayerCountries(Player play){
+        return new ArrayList<>(play.getOwnedCountries().values());
+    }
+    /**
+     * Method that returns a stack of all the countries that the source country is connected to via friendly territory.
+     * @param sourceCountry the source Country
+     * @param  user the Player object that is doing the action
+     * @param toTest Stack containing all of the connected owned countries
+     * @return Stack that contains all the countries connected to source through friendly territory
+     */
+    public Stack getConnectedOwnedCountries(Country sourceCountry, Player user, Stack toTest){
+
+
+        for(Country count: sourceCountry.getAdjacentCountries()){
+            if(count.getOwner() == user && !toTest.contains(count)){
+                //  System.out.println(count.getName());
+                toTest.add(count);
+                return(getConnectedOwnedCountries(count, user, toTest));
+
+            }
+
+        }
+        return toTest;
+
+    }
 
     /**
      * Helper method to determine if the game is over based on 2 win conditions
@@ -528,26 +228,135 @@ public class RiskModel {
 
     }
     /**
-     * Method that returns a stack of all the countries that the source country is connected to via friendly territory.
-     * @param sourceCountry the source Country
-     * @param  user the Player object that is doing the action
-     * @param toTest Stack containing all of the connected owned countries
-     * @return Stack that contains all the countries connected to source through friendly territory
+     * Checks if anyone has met a lost condition when they attacker
+     * @param thatAttacked The attacking player
+     * @param thatDefended The defending player
      */
-    public Stack getConnectedOwnedCountries(Country sourceCountry, Player user, Stack toTest){
+    private void hasAnyoneLost(Player thatAttacked, Player thatDefended){
+        Player[] playersToCheck = {thatAttacked,thatDefended};
 
+        for(Player player : playersToCheck){
+            //If they do not own anymore countries they lose
+            if(player.getOwnedCountries().isEmpty()){
+                player.hasLost();
+                parser.playerHasLost(player,"Has no more owned countries");
+                break;
+            }
+            //If they have no more available attacking units, they lose as well
+            //If sum of total units = sum of all countries, you can't make a turn
+            //and you lose.
+            int sumOfUnits = 0;
+            for(Country country: player.getOwnedCountries().values()){
+                sumOfUnits += country.getArmy();
+            }
+            if(sumOfUnits == player.getOwnedCountries().size()){
+                player.hasLost();
+                parser.playerHasLost(player, "Has no more available moves");
+            }
+        }
+    }
 
-        for(Country count: sourceCountry.getAdjacentCountries()){
-            if(count.getOwner() == user && !toTest.contains(count)){
-              //  System.out.println(count.getName());
-                toTest.add(count);
-                return(getConnectedOwnedCountries(count, user, toTest));
+    /**
+     * Method that performs the Deploy action. The user is able to deploy troops they have to any owned country.
+     * @param  user the Player object that is doing the action
+     * @param destinationCountry the country the troops are being sent.
+     * @param troopsToDeploy int that represent the amount of army units to move.
+     * @return boolean fortify that returns a true if the function was successful.
+     */
+    public boolean deploy(int troopsToDeploy, Player user, Country destinationCountry){
+        if(troopsToDeploy>user.getArmiesToAllocate() || destinationCountry.getOwner()!=user){
+            return false;
+        }
+        else{
+            user.removeArmy(troopsToDeploy);
+            destinationCountry.addArmy(troopsToDeploy);
+            return true;
+        }
+    }
+    /**
+     * This method is the attack phase controller for the game of risk
+     * @param attackingCountry The attacking country
+     * @param defendingCountry The defending country
+     * @param unitsToAttack number of attackers from the attacking country
+     * @return Boolean true = no error, false = units to attack error
+     */
+    public boolean attack(Country attackingCountry, Country defendingCountry, int unitsToAttack){
+        BattleContext finalBattleOutcome=new BattleContext();
+        if(attackingCountry.getArmy()-unitsToAttack<=0) {
+            return false;
+        }
 
+        int defendingArmy = defendingCountry.getArmy();
+        int attackingArmy = unitsToAttack;
+
+        Integer[] attackRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
+        Integer[] defenderRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
+
+        //Get int array of dice rolls
+        for(int i=0; i< attackRolls.length; i++){
+            attackRolls[i] = (int)(Math.ceil(Math.random()*5));
+            defenderRolls[i] = (int)(Math.ceil(Math.random()*5));
+        }
+
+        //Sort each array in desc order
+        Arrays.sort(attackRolls, Collections.reverseOrder());
+        Arrays.sort(defenderRolls, Collections.reverseOrder());
+
+        //Compare rolls until someone loses
+        for(int i=0; i< attackRolls.length; i++){
+            if(defendingArmy>0 && attackingArmy>0) {
+                if(attackRolls[i] > defenderRolls[i]){
+                    finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
+                    defendingArmy--;
+                }
+                else{
+                    finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
+                    attackingArmy--;
+                }
+            }
+        }
+
+        //Attacker wins
+        if(defendingArmy == 0){
+            finalBattleOutcome.setAttackingCountry(attackingCountry);
+            finalBattleOutcome.setDefendingCountry(defendingCountry);
+            finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
+            finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
+            finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
+            finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
+            finalBattleOutcome.setDidAttackerWin(true);
+
+            //Send the battle data to parser and get number of units to send to new country
+            int numToSend = -1;
+            while(numToSend < 0 && numToSend < attackingArmy){
+                numToSend = parser.battleOutcome(finalBattleOutcome);
             }
 
+            //Set the new owner and initial value
+            defendingCountry.setInitialArmy(attackingArmy-numToSend);
+            attackingCountry.removeArmy(attackingArmy-numToSend);
+            defendingCountry.getOwner().removeCountry(defendingCountry);
+            defendingCountry.setOwner(attackingCountry.getOwner());
+            attackingCountry.getOwner().addCountry(defendingCountry);
         }
-        return toTest;
+        //Attacker loses
+        if(attackingArmy == 0){
+            finalBattleOutcome.setAttackingCountry(attackingCountry);
+            finalBattleOutcome.setDefendingCountry(defendingCountry);
+            finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
+            finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
+            finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
+            finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
+            finalBattleOutcome.setDidAttackerWin(false);
 
+            parser.battleOutcome(finalBattleOutcome);
+
+            attackingCountry.removeArmy(unitsToAttack);
+            defendingCountry.removeArmy(defendingCountry.getArmy()-defendingArmy);
+        }
+
+        hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner());
+        return true;
     }
     /**
      * Method that performs the fortification action. The army of one country is moved to another country owned by the player and that is also connected through owned territory.
@@ -557,175 +366,29 @@ public class RiskModel {
      * @param unitsToSend int that represent the amount of army units to move.
      * @return boolean  that returns a true if the function was successful.
      */
-
     public boolean fortify(Country sourceCountry, Country destinationCountry, int unitsToSend, Player user){
         Stack countriesWithinBorder = new Stack();
-        Boolean valid = false;
+        boolean valid = false;
         countriesWithinBorder = getConnectedOwnedCountries(sourceCountry, user, countriesWithinBorder);
         while (!countriesWithinBorder.isEmpty()){
             if(destinationCountry == countriesWithinBorder.pop()){
                 valid = true;
             }
         }
-        if(sourceCountry.getOwner() != user || destinationCountry.getOwner() != user || valid != true || (sourceCountry.getArmy()-1) < unitsToSend ){
+        if(sourceCountry.getOwner()!=user ||
+            destinationCountry.getOwner()!=user ||
+            !valid ||
+            (sourceCountry.getArmy()-1)<unitsToSend ){
             return false;
         }
         else{
             sourceCountry.removeArmy(unitsToSend);
             destinationCountry.addArmy(unitsToSend);
-
         }
-
         return true;
-
     }
-    /**
-     * Method that performs the Deploy action. The user is able to deploy troops they have to any owned country.
-     * @param  user the Player object that is doing the action
-     * @param destinationCountry the country the troops are being sent.
-     * @param troopsToDeploy int that represent the amount of army units to move.
-     * @return boolean fortify that returns a true if the function was successful.
-     */
-    public boolean deploy(int troopsToDeploy, Player user, Country destinationCountry){
-        if(troopsToDeploy > user.getArmiesToAllocate() || destinationCountry.getOwner() != user) {return false;}
-        else{
-            user.removeArmy(troopsToDeploy);
-            destinationCountry.addArmy(troopsToDeploy);
-            return true;
-        }
-
-    }
-
-    /**
-     * This method is the attack phase controller for the game of risk
-     * @param attackingCountry The attacking country
-     * @param defendingCountry The defending country
-     * @param unitsToAttack number of attackers from the attacking country
-     * @return Boolean true = no error, false = units to attack error
-     */
-    public boolean attack(Country attackingCountry, Country defendingCountry, int unitsToAttack){
-
-        BattleContext finalBattleOutcome = new BattleContext();
-
-            if(attackingCountry.getArmy() - unitsToAttack <= 0)return false;
-
-
-            int defendingArmy = defendingCountry.getArmy();
-            int attackingArmy = unitsToAttack;
-
-
-            Integer[] attackRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
-            Integer[] defenderRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
-
-            //Get int array of dice rolls
-            for(int i=0; i< attackRolls.length; i++){
-                attackRolls[i] = (int)(Math.ceil(Math.random()*5));
-                defenderRolls[i] = (int)(Math.ceil(Math.random()*5));
-            }
-
-            //Sort each array in desc order
-            Arrays.sort(attackRolls, Collections.reverseOrder());
-            Arrays.sort(defenderRolls, Collections.reverseOrder());
-
-
-            //Compare rolls until someone loses
-                for(int i=0; i< attackRolls.length; i++){
-                    if(defendingArmy > 0 && attackingArmy > 0)
-                        if(attackRolls[i] > defenderRolls[i]){
-                            finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
-                            defendingArmy--;
-                        }
-                        else{
-                            finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
-                            attackingArmy--;
-                        }
-                }
-
-
-            //Attacker wins
-            if(defendingArmy == 0){
-
-                finalBattleOutcome.setAttackingCountry(attackingCountry);
-                finalBattleOutcome.setDefendingCountry(defendingCountry);
-                finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
-                finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
-                finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
-                finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
-                finalBattleOutcome.setDidAttackerWin(true);
-
-
-                //Send the battle data to parser and get number of units to send to new country
-                int numsToSend = -1;
-                while(numsToSend < 0 && numsToSend < attackingArmy){
-                    numsToSend = parser.battleOutcome(finalBattleOutcome);
-                }
-
-                //Set the new owner and initial value
-                defendingCountry.setInitialArmy(attackingArmy-numsToSend);
-                attackingCountry.removeArmy(attackingArmy-numsToSend);
-                defendingCountry.getOwner().removeCountry(defendingCountry);
-                defendingCountry.setOwner(attackingCountry.getOwner());
-                attackingCountry.getOwner().addCountry(defendingCountry);
-            }
-            //Attacker loses
-            if(attackingArmy == 0){
-
-                finalBattleOutcome.setAttackingCountry(attackingCountry);
-                finalBattleOutcome.setDefendingCountry(defendingCountry);
-                finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
-                finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
-                finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
-                finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
-                finalBattleOutcome.setDidAttackerWin(false);
-
-                parser.battleOutcome(finalBattleOutcome);
-
-                attackingCountry.removeArmy(unitsToAttack);
-                defendingCountry.removeArmy(defendingCountry.getArmy()-defendingArmy);
-            }
-
-            hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner());
-            return true;
-        }
-
-    /**
-     * Checks if anyone has met a lost condition when they attacker
-     * @param thatAttacked The attacking player
-     * @param thatDefended The defending player
-     */
-    private void hasAnyoneLost(Player thatAttacked, Player thatDefended){
-            Player[] playersToCheck = {thatAttacked,thatDefended};
-
-            for(Player player : playersToCheck){
-                //If they do not own anymore countries they lose
-                if(player.getOwnedCountries().isEmpty()){
-                    player.hasLost();
-                    parser.playerHasLost(player,"Has no more owned countries");
-                    break;
-                }
-                //If they have no more available attacking units, they lose as well
-                //If sum of total units = sum of all countries, you can't make a turn
-                //and you lose.
-                int sumOfUnits = 0;
-                for(Country country: player.getOwnedCountries().values()){
-                    sumOfUnits += country.getArmy();
-                }
-                if(sumOfUnits == player.getOwnedCountries().size()){
-                    player.hasLost();
-                    parser.playerHasLost(player, "Has no more available moves");
-                }
-            }
-        }
-
 
     public static void main(String[] args) {
-
-       RiskModel main = new RiskModel();
-       main.createMap();
-       main.parser = new CommandParser(main.countries);
-
-
-
-
+       new RiskModel();
     }
 }
