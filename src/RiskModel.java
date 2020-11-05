@@ -505,32 +505,7 @@ public class RiskModel {
             parser.gameIsOver(players, players.get(players.indexOf(mostCountry)));
         }
     }
-    private void Test(){
-        Player test = new Player("Test" , 10);
-        countries.get(1).setOwner(test);
-        countries.get(1).setInitialArmy(6);
-        countries.get(5).setInitialArmy(1);
-        countries.get(5).setOwner(test);
-        countries.get(20).setOwner(test);
-        ArrayList<Country> testing = new ArrayList<>();
-        testing.add(countries.get(1));
-       // System.out.println(countries.get(1).getName());
-        testing.add(countries.get(5));
-        //System.out.println(countries.get(5).getName());
-        testing.add(countries.get(20));
-       // System.out.println(countries.get(20).getName());
-        test.addCountry(testing.get(0));
-        test.addCountry(testing.get(1));
-        test.addCountry(testing.get(2));
-        for (Country count: testing.get(0).getAdjacentCountries()){
-            System.out.println("adjacent: " + count.getName());
-        }
-        System.out.println(countries.get(1).getArmy());
-        System.out.println(countries.get(15).getArmy());
-        deploy(10,test,countries.get(15));
-        System.out.println(countries.get(1).getArmy());
-        System.out.println(countries.get(15).getArmy());
-    }
+
 
     /**
      * Helper method to determine if the game is over based on 2 win conditions
@@ -748,7 +723,7 @@ public class RiskModel {
        RiskModel main = new RiskModel();
        main.createMap();
        main.parser = new CommandParser(main.countries);
-       main.Test();
+
 
 
 
