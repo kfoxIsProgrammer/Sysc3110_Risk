@@ -18,6 +18,8 @@ public class RiskModel {
     ArrayList<Country> countries;
     /**   list of all the continents in the game **/
     ArrayList<Continent> continents;
+    /** file path for the map being used**/
+    String mapImagePath;
     /** Command Parser **/
     CommandParser parser;
 
@@ -35,7 +37,11 @@ public class RiskModel {
         this.players = new ArrayList<>();
 
         //TODO Allow user to select files
-        MapImport map=new MapImport("maps\\test.RiskMap");
+
+        MapImport map=new MapImport("maps\\demoMap.RiskMap");
+        this.mapImagePath = "maps\\map.png";
+
+
         this.countries= map.getCountries();
         this.continents=map.getContinents();
         //TODO Swap CommandParser calls to gui calls
@@ -99,6 +105,33 @@ public class RiskModel {
                 }
             }
         }
+
+    }
+
+    /**
+     * Return the ArrayList of countries.
+     * @return ArrayList containing all the country objects
+     */
+    public ArrayList<Country> getCountries(){
+        return this.countries;
+    }
+
+    /**
+     * Return the path for the image being used as the map
+     * @return String path of the map image
+     */
+    public String getMapImagePath() {
+        return mapImagePath;
+    }
+
+    /**
+     * Getter for player countries
+     * @param play player object
+     * @return ArrayList of the countries the player owns
+     */
+    public ArrayList<Country> getPlayerCountries(Player play){
+        return new ArrayList<>(play.getOwnedCountries().values());
+
     }
     /**
      * Main control function for the Risk game
@@ -324,6 +357,15 @@ public class RiskModel {
                     finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
                     attackingArmy--;
                 }
+
+
+                //Set the new owner and initial value
+                defendingCountry.setArmy(attackingArmy-numToSend);
+                attackingCountry.removeArmy(attackingArmy-numToSend);
+                defendingCountry.getOwner().removeCountry(defendingCountry);
+                defendingCountry.setOwner(attackingCountry.getOwner());
+                attackingCountry.getOwner().addCountry(defendingCountry);
+
             }
         }
 
