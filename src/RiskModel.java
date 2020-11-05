@@ -14,10 +14,10 @@ public class RiskModel {
     ArrayList<Country> countries;
     /**   list of all the continents in the game **/
     ArrayList<Continent> continents;
-
-    RiskView riskView;
-
-    //Potentially add title for the map
+    /** file path for the map being used**/
+    String mapImagePath;
+    /** Command Parser **/
+    CommandParser parser;
 
 
     public RiskModel(int players, String[] playerNames){
@@ -25,7 +25,7 @@ public class RiskModel {
         this.countries = new ArrayList<Country>();
         this.continents = new ArrayList<Continent>();
         //this.createMap();
-
+        this.parser=new CommandParser(this.countries);
         this.newGame(players, playerNames);
 
     }
@@ -36,10 +36,12 @@ public class RiskModel {
 
         //TODO Allow user to select files
         MapImport map=new MapImport("maps\\demoMap.RiskMap");
+        this.mapImagePath = "maps\\map.png";
+
         this.countries= map.getCountries();
         this.continents=map.getContinents();
         //TODO Swap CommandParser calls to gui calls
-        this.riskView.boardUpdate(this);
+        this.parser=new CommandParser(this.countries);
 
         this.play();
     }
@@ -111,6 +113,14 @@ public class RiskModel {
      */
     public ArrayList<Country> getCountries(){
         return this.countries;
+    }
+
+    /**
+     * Return the path for the image being used as the map
+     * @return String path of the map image
+     */
+    public String getMapImagePath() {
+        return mapImagePath;
     }
 
     /**
@@ -342,28 +352,5 @@ public class RiskModel {
     public static void main(String[] args) {
        RiskModel main = new RiskModel();
     }
-
-    //Todo start a new game and update view
-    public void startNewGame(int players, String[] playerNames) {
-
-
-        riskView.boardUpdate(this);
-    }
-
-    //Todo get country selected and update the view
-    public void countryHasBeenSelected(int x, int y) {
-
-        riskView.boardUpdate(this);
-    }
-
-    //Todo a button was clicked therefore get units
-    public void sendAction(String actionCommand) {
-
-
-        riskView.boardUpdate(this);
-    }
-
-
-
 }
 
