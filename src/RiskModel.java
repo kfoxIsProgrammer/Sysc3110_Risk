@@ -506,6 +506,7 @@ public class RiskModel {
         }
     }
 
+
     /**
      * Helper method to determine if the game is over based on 2 win conditions
      * 1. All players have lost because they cannot make an attack
@@ -524,6 +525,74 @@ public class RiskModel {
         }
         else
             return new boolean[]{true, false};
+
+    }
+    /**
+     * Method that returns a stack of all the countries that the source country is connected to via friendly territory.
+     * @param sourceCountry the source Country
+     * @param  user the Player object that is doing the action
+     * @param toTest Stack containing all of the connected owned countries
+     * @return Stack that contains all the countries connected to source through friendly territory
+     */
+    public Stack getConnectedOwnedCountries(Country sourceCountry, Player user, Stack toTest){
+
+
+        for(Country count: sourceCountry.getAdjacentCountries()){
+            if(count.getOwner() == user && !toTest.contains(count)){
+              //  System.out.println(count.getName());
+                toTest.add(count);
+                return(getConnectedOwnedCountries(count, user, toTest));
+
+            }
+
+        }
+        return toTest;
+
+    }
+    /**
+     * Method that performs the fortification action. The army of one country is moved to another country owned by the player and that is also connected through owned territory.
+     * @param sourceCountry the source Country
+     * @param  user the Player object that is doing the action
+     * @param destinationCountry the country the troops are being sent.
+     * @param unitsToSend int that represent the amount of army units to move.
+     * @return boolean  that returns a true if the function was successful.
+     */
+
+    public boolean fortify(Country sourceCountry, Country destinationCountry, int unitsToSend, Player user){
+        Stack countriesWithinBorder = new Stack();
+        Boolean valid = false;
+        countriesWithinBorder = getConnectedOwnedCountries(sourceCountry, user, countriesWithinBorder);
+        while (!countriesWithinBorder.isEmpty()){
+            if(destinationCountry == countriesWithinBorder.pop()){
+                valid = true;
+            }
+        }
+        if(sourceCountry.getOwner() != user || destinationCountry.getOwner() != user || valid != true || (sourceCountry.getArmy()-1) < unitsToSend ){
+            return false;
+        }
+        else{
+            sourceCountry.removeArmy(unitsToSend);
+            destinationCountry.addArmy(unitsToSend);
+
+        }
+
+        return true;
+
+    }
+    /**
+     * Method that performs the Deploy action. The user is able to deploy troops they have to any owned country.
+     * @param  user the Player object that is doing the action
+     * @param destinationCountry the country the troops are being sent.
+     * @param troopsToDeploy int that represent the amount of army units to move.
+     * @return boolean fortify that returns a true if the function was successful.
+     */
+    public boolean deploy(int troopsToDeploy, Player user, Country destinationCountry){
+        if(troopsToDeploy > user.getArmiesToAllocate() || destinationCountry.getOwner() != user) {return false;}
+        else{
+            user.removeArmy(troopsToDeploy);
+            destinationCountry.addArmy(troopsToDeploy);
+            return true;
+        }
 
     }
 
@@ -654,7 +723,7 @@ public class RiskModel {
        RiskModel main = new RiskModel();
        main.createMap();
        main.parser = new CommandParser(main.countries);
-       main.play();
+
 
 
 
