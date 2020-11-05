@@ -5,6 +5,9 @@
  * @version 11.04.2020
  */
 
+import javafx.util.Pair;
+
+import java.awt.*;
 import java.util.*;
 import java.util.Random;
 
@@ -32,7 +35,7 @@ public class RiskModel {
         this.players = new ArrayList<>();
 
         //TODO Allow user to select files
-        MapImport map=new MapImport("maps\\demoMap.RiskMap");
+        MapImport map=new MapImport("maps\\test.RiskMap");
         this.countries= map.getCountries();
         this.continents=map.getContinents();
         //TODO Swap CommandParser calls to gui calls
@@ -78,7 +81,7 @@ public class RiskModel {
             for(Player play: players){
                 if(!addStack.empty()){
                     play.addCountry(addStack.peek());
-                    addStack.peek().setInitialArmy(1);
+                    addStack.peek().setArmy(1);
                     play.removeArmy(1);
                     addStack.pop().setOwner(play);
                 }
@@ -255,6 +258,14 @@ public class RiskModel {
             }
         }
     }
+    private Country coordinatesToCountry(Point point){
+        for(Country country: this.countries){
+            if(country.containsPoint(point)){
+                return country;
+            }
+        }
+        return null;
+    }
 
     /**
      * Method that performs the Deploy action. The user is able to deploy troops they have to any owned country.
@@ -333,7 +344,7 @@ public class RiskModel {
             }
 
             //Set the new owner and initial value
-            defendingCountry.setInitialArmy(attackingArmy-numToSend);
+            defendingCountry.setArmy(attackingArmy-numToSend);
             attackingCountry.removeArmy(attackingArmy-numToSend);
             defendingCountry.getOwner().removeCountry(defendingCountry);
             defendingCountry.setOwner(attackingCountry.getOwner());
@@ -389,6 +400,7 @@ public class RiskModel {
     }
 
     public static void main(String[] args) {
-       new RiskModel();
+       RiskModel rm=new RiskModel();
+       System.out.printf("%s\n",rm.coordinatesToCountry(new Point(113,162)).getName());
     }
 }
