@@ -511,7 +511,7 @@ public class RiskModel {
      * Helper method to determine if the game is over based on 2 win conditions
      * 1. All players have lost because they cannot make an attack
      * 2. 1 player has won because they own the most countries and no one else can move
-     * @return Pair of boolean (false = game over), int (what type of win condition)
+     * @return Pair of boolean (false = game over), int (what type of win condition).
      */
     private boolean[] gameIsNotOver(){
         int count = 0;
