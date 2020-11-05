@@ -4,26 +4,22 @@ import java.util.ArrayList;
 
 /**Describing a country on the map in a game of RISK
  * @author  Kshitij Sawhney
- * @version  10 / 20 / 2020
+ * @version  11.04.2020
  */
 public class Country {
-    /**Name of the country*/
+    /** Name of the country **/
     private String name;
-
-    /** List of the county's vertices */
+    /** List of the county's vertices **/
     private ArrayList<Pair<Integer,Integer>> vertices;
-
-    /**Name of the owner*/
+    /** Name of the owner **/
     private Player owner;
-
-    /** army currently occupying this country*/
+    /** Army currently occupying this country **/
     private int army;
-
-    /**ArrayList of countries that lie adjacent to the current country*/
+    /** ArrayList of countries that lie adjacent to the current country **/
     private ArrayList<Country> adjacentCountries;
 
     /**
-     *1 param Constructor for Country
+     * 1 param Constructor for Country
      * @param name name of the country
      */
     public Country(String name){
@@ -36,8 +32,6 @@ public class Country {
     }
 
 
-    /**Add countries adjacent to this country
-     * @param adjacentCountries list of countries adjacent to this one*/
     public void addAdjacentCountries(ArrayList<Country> adjacentCountries){
         this.adjacentCountries =adjacentCountries;
     }
