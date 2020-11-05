@@ -205,21 +205,7 @@ public class RiskModel {
         }
     }
 
-    /**
-     * Return the ArrayList of countries.
-     * @return ArrayList containing all the country objects
-     */
-    public ArrayList<Country> getCountries(){
-        return this.countries;
-    }
-    /**
-     * Getter for player countries
-     * @param play player object
-     * @return ArrayList of the countries the player owns
-     */
-    public ArrayList<Country> getPlayerCountries(Player play){
-        return new ArrayList<>(play.getOwnedCountries().values());
-    }
+
     /**
      * Method that returns a stack of all the countries that the source country is connected to via friendly territory.
      * @param sourceCountry the source Country
@@ -360,8 +346,8 @@ public class RiskModel {
 
 
                 //Set the new owner and initial value
-                defendingCountry.setArmy(attackingArmy-numToSend);
-                attackingCountry.removeArmy(attackingArmy-numToSend);
+                defendingCountry.setArmy(attackingArmy);
+                attackingCountry.removeArmy(attackingArmy);
                 defendingCountry.getOwner().removeCountry(defendingCountry);
                 defendingCountry.setOwner(attackingCountry.getOwner());
                 attackingCountry.getOwner().addCountry(defendingCountry);
