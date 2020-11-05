@@ -1,15 +1,14 @@
+import java.awt.*;
+import java.io.*;
+import java.util.*;
+import java.util.zip.*;
+
 /**
  * Accepts a RiskMap file and generates the required object from that information
  *
  * @author Omar Hashmi
  * @version 11.01.2020
  */
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
-import javafx.util.Pair;
-
 public class MapImport {
     /** List of the countries in the game **/
     private ArrayList<Country> countries;
@@ -29,7 +28,7 @@ public class MapImport {
 
                 //Line is empty
                 if(line.length()==0){
-                    System.out.printf("\n");
+                    continue;
                 }
                 //Line is a comment
                 else if(line.charAt(0)=='#'){
@@ -40,7 +39,7 @@ public class MapImport {
                     try {
                         Country country;
                         String countryName = "";
-                        ArrayList<Pair<Integer, Integer>> countryVertices = new ArrayList<>();
+                        ArrayList<Point> countryVertices = new ArrayList<>();
 
                         //Read the country name including spaces
                         int i = 4;
@@ -49,14 +48,33 @@ public class MapImport {
                         }
 
                         //Everything following the country name must be coordinates
+                        int minX=Integer.MAX_VALUE;
+                        int minY=Integer.MAX_VALUE;
+                        int maxX=0;
+                        int maxY=0;
+                        int avgX=0;
+                        int avgY=0;
+
                         String[] vertices = line.substring(i + 2).split(" ");
-                        for (String vertex : vertices) {
-                            String[] pos = vertex.split(",");
+                        for (int j=0;j<vertices.length;j++) {
+                            String[] pos = vertices[j].split(",");
                             int x = Integer.parseInt(pos[0]);
                             int y = Integer.parseInt(pos[1]);
-                            countryVertices.add(new Pair<>(x, y));
+
+                            if(x<minX){minX=x;}
+                            if(y<minY){minY=y;}
+                            if(x>maxX){maxX=x;}
+                            if(y>maxY){maxY=y;}
+
+                            avgX+=x;
+                            avgY+=y;
+
+                            countryVertices.add(new Point(x, y));
                         }
-                        country = new Country(countryName, countryVertices);
+                        avgX/=vertices.length;
+                        avgY/=vertices.length;
+
+                        country = new Country(countryName, countryVertices,minX,minY,maxX,maxY,new Point(avgX,avgY));
                         this.countries.add(country);
                     }
                     catch (Exception e){
@@ -152,4 +170,16 @@ public class MapImport {
         parser.printCountries();
         parser.printContinents();
     }
+//    public static void main(String[] args) throws IOException {
+//        ZipFile zipFile = new ZipFile("D:/Downloads/chao.risk");
+//
+//        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+//
+//        while(entries.hasMoreElements()){
+//            ZipEntry entry = entries.nextElement();
+//            System.out.printf("%s\n",entry.getName());
+//
+//            //InputStream stream = zipFile.getInputStream(entry);
+//        }
+//    }
 }
