@@ -14,10 +14,10 @@ public class RiskModel {
     ArrayList<Country> countries;
     /**   list of all the continents in the game **/
     ArrayList<Continent> continents;
-
+    /** file path for the map being used**/
+    String mapImagePath;
+    /** Command Parser **/
     RiskView riskView;
-
-    //Potentially add title for the map
 
 
     public RiskModel(int players, String[] playerNames){
@@ -36,6 +36,8 @@ public class RiskModel {
 
         //TODO Allow user to select files
         MapImport map=new MapImport("maps\\demoMap.RiskMap");
+        this.mapImagePath = "maps\\map.png";
+
         this.countries= map.getCountries();
         this.continents=map.getContinents();
         //TODO Swap CommandParser calls to gui calls
@@ -111,6 +113,14 @@ public class RiskModel {
      */
     public ArrayList<Country> getCountries(){
         return this.countries;
+    }
+
+    /**
+     * Return the path for the image being used as the map
+     * @return String path of the map image
+     */
+    public String getMapImagePath() {
+        return mapImagePath;
     }
 
     /**
