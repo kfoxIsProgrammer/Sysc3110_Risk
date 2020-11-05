@@ -155,81 +155,61 @@ public class Country {
     }
 
     /**
-     * Gets the country name
-     *
      * @return The Name of the country
      */
     public String getName() {
         return name;
     }
     /**
-     * Gets a list of the country's defining vertices
-     *
-     * @return The list of vertices
+     * @return The list of the country's defining vertices
      */
     public ArrayList<Point> getVertices() {
         return vertices;
     }
     /**
-     * Gets the min X value of the country's vertices
-     *
-     * @return The min X value
+     * @return The min X value of the country's vertices
      */
     public int getMinX() {
         return minX;
     }
     /**
-     * Gets the min Y value of the country's vertices
-     *
-     * @return The min Y value
+     * @return The min Y value of the country's vertices
      */
     public int getMinY() {
         return minY;
     }
     /**
-     * Gets the max X value of the country's vertices
-     *
-     * @return The max X value
+     * @return The max X value of the country's vertices
      */
     public int getMaxX() {
         return maxX;
     }
     /**
-     * Gets the max Y value of the country's vertices
-     *
-     * @return The max Y value
+     * @return The max Y value of the country's vertices
      */
     public int getMaxY() {
         return maxY;
     }
     /**
-     * Gets the coordinates of the center of the country
-     *
-     * @return The center coordinates
+     * @return The coordinates of the center of the country
      */
     public Point getCenterCoordinates() {
         return centerCoordinates;
     }
     /**
-     * Gets a list of adjacent countries
-     *
-     * @return The adjacent countries
+     * @return A list of adjacent countries
      */
     public ArrayList<Country> getAdjacentCountries() {
         return adjacentCountries;
     }
     /**
-     * Gets the country's owner
-     *
-     * @return The owner
+     * @return The country's owner
      */
     public Player getOwner() {
         return owner;
     }
     /**
-     * Gets the number of troops in the country
-     *
-     * @return The army
+     * @return The number of troops in the country
      */
     public int getArmy() {
         return army;
