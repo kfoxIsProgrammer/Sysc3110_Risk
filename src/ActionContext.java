@@ -11,7 +11,7 @@ public abstract class ActionContext {
     /** The current player **/
     public final Player player;
     /** The countries on the map that should be highlighted **/
-    public final Country highlightedCountries[];
+    public final Country[] highlightedCountries;
 
     /** Constructor for ActionContext **/
     ActionContext(Phase phase, Player player, Country[] highlightedCountries){

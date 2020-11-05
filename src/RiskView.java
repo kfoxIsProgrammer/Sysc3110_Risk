@@ -1,20 +1,19 @@
-/**
- * This is responsible for creating the viewport in which one plays the game.
- * @authour Kshitij Sawhney
- * @version 11 / 2 / 2020
- */
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+
+/**
+ * This is responsible for creating the viewport in which one plays the game.
+ * @authour Kshitij Sawhney
+ * @version 11 / 2 / 2020
+ */
 
 public class RiskView extends JFrame {
 
@@ -40,8 +39,8 @@ public class RiskView extends JFrame {
 
     public RiskView(RiskModel riskmodel) throws IOException {
         riskController = new RiskController(riskmodel);
-        mapImagePath = riskController.getMapImagePath();
-        setTitle(riskController.getGameTitle());
+        mapImagePath = riskmodel.getMapImagePath();
+        setTitle("Risk - Global Domination");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
 
@@ -54,7 +53,6 @@ public class RiskView extends JFrame {
         for correctly placing other panels
          */
         pack();
-
 
          // JTextArea in the top-right that gives constant information about the current state of the game like "player X's turn"
         gbc.anchor = GridBagConstraints.NORTHEAST;
@@ -79,21 +77,31 @@ public class RiskView extends JFrame {
         optionPanel = new JPanel();
         cardLayout = new CardLayout();
         optionPanel.setLayout(cardLayout);
-        optionPanel.add(attackSelectAttackerPanel(),"attackSelectAttackerPanel");
-        optionPanel.add(attackSelectDefenderPanel(),"attackSelectDefenderPanel");
+        optionPanel.add(attackSelectAttackerPanel(),Phase.ATTACK_SRC.toString());
+        optionPanel.add(attackSelectDefenderPanel(null),Phase.ATTACK_DST.toString());
         /*for future use
         *optionPanel.add(troopMoverPanelSelectSource(),"troopMoverPanelSelectSource");
         * *optionPanel.add(troopMoverPanelSelectDestination(),"troopMoverPanelSelectDestination");
         * optionPanel.add(deployPanelSelectDestination()."deployPanelSelectDestination")
          */
 
-        cardLayout.show(attackSelectAttackerPanel,"attackSelectAttackerPanel");   //for now game starts in attack phase
+        cardLayout.show(attackSelectAttackerPanel,Phase.ATTACK_SRC.toString());   //for now game starts in attack phase
         return optionPanel;
+    }
+
+    private JPanel attackSelectDefenderPanel(Country Src) {
+        //TODO add functionality
+        attackSelectDefenderPanel = new JPanel();
+        JLabel attackLabel = new JLabel("Select country to attack using " + Src);
+        attackLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        attackSelectDefenderPanel.add(attackLabel);
+        return new JPanel();
     }
 
     private JPanel attackSelectAttackerPanel() {
         attackSelectAttackerPanel = new JPanel();
-        attackSelectAttackerPanel.add(new JLabel("Select attacking country"));
+        attackSelectAttackerPanel.add(new JLabel("Select attacking country from map"));
+        //TODO add functionality
         return attackSelectAttackerPanel;
     }
 
@@ -102,13 +110,7 @@ public class RiskView extends JFrame {
         mapPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
         mapImage = ImageIO.read(new File(mapImagePath));
 
-        mapPanel.setPreferredSize(new Dimension(mapImage.getWidth(), mapImage.getHeight()));
-
-        mapLayeredPane = new JLayeredPane();
-        //inserting into Layered pane
-        mapImageLabel = new JLabel(new ImageIcon(mapImage));
-        mapImageLabel.setBounds(0, 0, mapImage.getWidth(), mapImage.getHeight());
-        mapLayeredPane.add(mapImageLabel, Integer.valueOf(1));
+       labelCountries(riskmodel.getCountries());
 
         mapPanel.setLayout(null);
         mapLayeredPane.setLayout(null);
@@ -117,6 +119,15 @@ public class RiskView extends JFrame {
         mapPanel.add(mapLayeredPane);
 
         return mapPanel;
+    }
+
+    private void insertMapImage() {
+        mapPanel.setPreferredSize(new Dimension(mapImage.getWidth(), mapImage.getHeight()));
+        mapLayeredPane = new JLayeredPane();
+        mapImageLabel = new JLabel(new ImageIcon(mapImage));
+        mapImageLabel.setBounds(0, 0, mapImage.getWidth(), mapImage.getHeight());
+        //inserting into Layered pane
+        mapLayeredPane.add(mapImageLabel, Integer.valueOf(1));
     }
 
     private JPanel infoPanel(int height) {
@@ -138,30 +149,36 @@ public class RiskView extends JFrame {
         return infoPanel;
     }
 
-    public void boardUpdate(RiskModel riskModel){
+    public void boardUpdate(AttackContext attackContext){
         //TODO update board with every move
-        currentPhase = riskModel.getcurrentPhase();
+        currentPhase = attackContext.phase.toString();
         switch(currentPhase){
-            case "attackSelectAttacker":
-                cardLayout.show(attackSelectAttackerPanel,"attackSelectAttackerPanel");
+            case Phase.ATTACK_DST.toString():
+                attackSelectDefenderPanel(attackContext.srcCountry);
+                cardLayout.show(attackSelectDefenderPanel,Phase.ATTACK_DST.toString());
+                highlightAdjacentCountries(attackContext.highlightedCountries);
                 break;
-            case "attackSelectDefender":
-                cardLayout.show(attackSelectDefenderPanel,"attackSelectDefenderPanel");
-                higlightAdjacentCountries();
+            case Phase.ATTACK_SRC: // for now, attack phase is default
+            default:
+                cardLayout.show(attackSelectAttackerPanel,Phase.ATTACK_SRC.toString());
                 break;
         }
     }
-}
 
-class MapPanel extends JPanel{
-    public MapPanel(RiskController controller){
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                System.out.println(e.getX()+" "+e.getY());
-                controller.countrySelected(e);
-            }
-        });
+    private void highlightAdjacentCountries(ArrayList<Country> countries){
+        mapLayeredPane.removeAll();
+        labelCountries(countries);
+    }
+
+    private void labelCountries(ArrayList<Country> countries) {
+        insertMapImage();
+        for(Country c: countries){
+            JLabel countryLabel = new JLabel(c.getArmy()+"");
+            countryLabel.setLocation(c.getVertices().get(0).getKey(),c.getVertices().get(0).getValue());
+            countryLabel.setOpaque(true);
+            countryLabel.setBackground(Color.blue);
+            countryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            countryLabel.setBounds(c.getVertices().get(0).getKey(),c.getVertices().get(0).getValue(),35,15);
+        }
     }
 }
