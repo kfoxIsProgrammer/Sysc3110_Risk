@@ -2,13 +2,13 @@ import java.awt.event.MouseEvent;
 
 public class RiskController {
 
-    private RiskModel riskModel;
+  /*  private RiskModel riskModel;
     private RiskView  riskView;
 
     public RiskController(RiskModel model, RiskView view){
         this.riskModel = model;
         this.riskView = view;
-    }
+    }*/
 
     /**
      * NewGame method to create a new game and set it up
@@ -16,10 +16,10 @@ public class RiskController {
      * @param playerNames the player names
      * @return the model of the new game to be attached to the view
      */
-    public model newGame(int players, String[] playerNames){
+   /* public model newGame(int players, String[] playerNames){
         this.riskModel = new RiskModel(players, playerNames);
         view.sendNewGameModel(riskModel);
-    }
+    }*/
 
 
     /**
@@ -27,18 +27,18 @@ public class RiskController {
      * @param mouseEvent the event of which button is pressed
      * @return the country that is pressed
      */
-    public Country getFirstCountry(MouseEvent mouseEvent){
+    /*public Country getFirstCountry(MouseEvent mouseEvent){
         view.sendCountryToFocus(model.getCountryByCoordinate(mouseEvent.getX(), mouseEvent.getY()));
-    }
+    }*/
 
     /**
      * A controller event to ask the risk model which country was clicked second
      * @param mouseEvent the event of which button is pressed
      * @return the country that is pressed
      */
-    public Country getSecondCountry(MouseEvent mouseEvent){
+   /* public Country getSecondCountry(MouseEvent mouseEvent){
         view.sendCountryToAttack(model.getCountryByCoordinate(mouseEvent.getX(), mouseEvent.getY()));
-    }
+    }*/
 
     /**
      * Send the battleObject from the model attack, to show the output of a battle
@@ -47,8 +47,8 @@ public class RiskController {
      * @param numberOfUnits number of units attacking
      * @return
      */
-    public BattleContext getBattleOutcome(Country focusedCountry, Country countryToBeAttacked, int numberOfUnits){
+    /*public BattleContext getBattleOutcome(Country focusedCountry, Country countryToBeAttacked, int numberOfUnits){
         model.getAttackOutcome(focusedCountry, countryToBeAttacked, numberOfUnits);
-    }
+    }*/
 
 }
