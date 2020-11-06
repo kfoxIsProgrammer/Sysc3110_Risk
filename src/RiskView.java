@@ -39,7 +39,7 @@ public class RiskView extends JFrame implements ActionListener {
 
     private JTextPane infoArea;
     private JLabel mapImageLabel;
-    private String currentPhase;
+    private Phase currentPhase;
     private JPanel sidePanel;
     private JButton confirmPhase;
     private JPanel attackConfirmPanel;
@@ -179,32 +179,36 @@ public class RiskView extends JFrame implements ActionListener {
     }
 
     public void boardUpdate(ActionContext context){
-        currentPhase = context.phase.toString();
-        confirmPhase.setActionCommand(currentPhase);
-        switch(currentPhase){
-            case Phase.ATTACK_DST.toString():
-                highlightAdjacentCountries(context.highlightedCountries);
-                attackSelectDefenderPanel(AttackContext.srcCountry); // to update the label in the panel
-                cardLayout.show(attackDstPanel,Phase.ATTACK_DST.toString());
-                confirmPhase.setText("Confirm Defender");
-                break;
+        if(context.phase == Phase.ATTACK_ARMY|| context.phase==Phase.ATTACK_CONF||context.phase==Phase.ATTACK_DICE||context.phase==Phase.ATTACK_DST){
+            AttackContext attackContext = (AttackContext)(context);
+            currentPhase =attackContext.phase;
+            confirmPhase.setActionCommand(currentPhase.toString());
 
-            case Phase.ATTACK_CONF.toString():
-                attackConfirmPanel(AttackContext.dstCountry,ActionContext.srcCountry);
-                cardLayout.show(attackConfirmPanel,Phase.ATTACK_CONF.toString());
-                confirmPhase.setText("Attack");
+            switch(currentPhase){
+                case Phase.ATTACK_DST.toString():
+                    highlightAdjacentCountries(context.highlightedCountries); //TODO convert to country[]
+                    attackSelectDefenderPanel(attackContext.srcCountry); // to update the label in the panel
+                    cardLayout.show(attackDstPanel,Phase.ATTACK_DST.toString());
+                    confirmPhase.setText("Confirm Defender");
+                    break;
 
-            case Phase.ATTACK_DICE.toString():
-                dicePanel(AttackContext.diceRolls);
-                cardLayout.show(dicePanel,Phase.ATTACK_DICE.toString());
-                confirmPhase.setText("Ok");
+                case Phase.ATTACK_CONF.toString():
+                    attackConfirmPanel(attackContext.dstCountry,attackContext.srcCountry);
+                    cardLayout.show(attackConfirmPanel,Phase.ATTACK_CONF.toString());
+                    confirmPhase.setText("Attack");
 
-            case Phase.ATTACK_SRC.toString(): // for now, attack phase is default
-            default:
-                attackSelectAttackerPanel(context.player);
-                cardLayout.show(attackSrcPanel,Phase.ATTACK_SRC.toString());
-                confirmPhase.setText("Confirm Attacker");
-                break;
+                case Phase.ATTACK_DICE.toString():
+                    dicePanel(attackContext.diceRolls, attackContext.srcCountry.getOwner(), attackContext.dstCountry.getOwner());
+                    cardLayout.show(dicePanel,Phase.ATTACK_DICE.toString());
+                    confirmPhase.setText("Ok");
+
+                case Phase.ATTACK_SRC.toString(): // for now, attack phase is default
+                default:
+                    attackSelectAttackerPanel(context.player);
+                    cardLayout.show(attackSrcPanel,Phase.ATTACK_SRC.toString());
+                    confirmPhase.setText("Confirm Attacker");
+                    break;
+            }
         }
     }
 
@@ -230,11 +234,11 @@ public class RiskView extends JFrame implements ActionListener {
         insertMapImage();
         for(Country c: countries){
             JLabel countryLabel = new JLabel(c.getArmy()+"");
-            countryLabel.setLocation(c.getVertices().get(0).getKey(),c.getVertices().get(0).getValue());
+            countryLabel.setLocation(c.getVertices().get(0).x,c.getVertices().get(0).y);
             countryLabel.setOpaque(true);
             countryLabel.setBackground(Color.blue); //TODO convert to Country.getOwner.getColor()
             countryLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            countryLabel.setBounds(c.getVertices().get(0).getKey(),c.getVertices().get(0).getValue(),35,15);
+            countryLabel.setBounds(c.getVertices().get(0).x,c.getVertices().get(0).y,35,15);
         }
     }
 
