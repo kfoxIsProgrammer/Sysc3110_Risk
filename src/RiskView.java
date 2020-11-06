@@ -4,38 +4,50 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.NoRouteToHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * This is responsible for creating the viewport in which one plays the game.
- * @authour Kshitij Sawhney
+ * @author Kshitij Sawhney
  * @version 11 / 2 / 2020
  */
 
-public class RiskView extends JFrame {
+public class RiskView extends JFrame implements ActionListener {
 
     private RiskModel riskmodel;
     private RiskController riskController;
 
     private GridBagConstraints gbc = new GridBagConstraints();
+
     private JPanel mapPanel; //JLayeredPane needs the parent Container to have a null Layout Manager
     private JLayeredPane mapLayeredPane;
     private JPanel infoPanel;
     private JPanel optionPanel; // cardLayout with other panels that change based on the current phase
     private CardLayout cardLayout;
-    private JPanel attackSelectAttackerPanel;
-    private JPanel attackSelectDefenderPanel;
+    private JPanel attackSrcPanel;
+    private JPanel attackDstPanel;
 
     private String mapImagePath ;//= "map.png";
     private BufferedImage mapImage;
 
-    private JTextArea infoArea;
+    private JTextPane infoArea;
     private JLabel mapImageLabel;
     private String currentPhase;
-    private JButton skipPhase;
+    private JPanel sidePanel;
+    private JButton confirmPhase;
+    private JPanel attackConfirmPanel;
+    private JTextPane attackDstText;
+    private JTextPane attackConfirmText;
+    private JTextPane attackSrcText;
+    private JPanel dicePanel;
+    private JTextPane dicePanelText;
 
     public RiskView(RiskModel riskmodel) throws IOException {
         riskController = new RiskController(riskmodel);
@@ -54,55 +66,63 @@ public class RiskView extends JFrame {
          */
         pack();
 
-         // JTextArea in the top-right that gives constant information about the current state of the game like "player X's turn"
+         // sidePanel for information, action and outcomes
         gbc.anchor = GridBagConstraints.NORTHEAST;
         gbc.gridx = 1;
         gbc.gridy = 0;
-
-        add(infoPanel(mapPanel.getHeight()), gbc);
-
-        //JPanel in the bottom-right which changes with every move and gives next options at each successive update
-        gbc.anchor = GridBagConstraints.SOUTHEAST;
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-
-        add(optionPanel(mapPanel.getHeight()),gbc);
-        pack();
-        setResizable(false);
-        setVisible(true);
-
+        add(sidePanel(mapPanel.getHeight()), gbc);
     }
 
     private JPanel optionPanel(int height) {
         optionPanel = new JPanel();
         cardLayout = new CardLayout();
         optionPanel.setLayout(cardLayout);
-        optionPanel.add(attackSelectAttackerPanel(),Phase.ATTACK_SRC.toString());
-        optionPanel.add(attackSelectDefenderPanel(null),Phase.ATTACK_DST.toString());
+        optionPanel.setSize(200,height-40);
+        attackSrcPanel = new JPanel();
+        attackSrcText = new JTextPane();
+        attackSrcText.setText("<player>, Select attacking country from map");
+        attackSrcText.setFocusable(false);
+        attackSrcText.setOpaque(false);
+        attackSrcPanel.add(attackSrcText);
+        optionPanel.add(attackSrcPanel,Phase.ATTACK_SRC.toString());
+
+        attackDstPanel = new JPanel();
+        attackDstText = new JTextPane();
+        attackDstText = new JTextPane();
+        attackDstText.setText("<player>, select country to be attacked");
+        attackDstText.setFocusable(false);
+        attackDstText.setOpaque(false);
+        attackDstPanel.add(attackDstText);
+        optionPanel.add(attackDstPanel,Phase.ATTACK_DST.toString());
+
+        attackConfirmPanel = new JPanel();
+        attackConfirmText =new JTextPane();
+        attackConfirmText.setText("Confirm attack on <dst> using <src>");
+        attackConfirmText.setFocusable(false);
+        attackConfirmText.setOpaque(false);
+        attackConfirmPanel.add(attackConfirmText);
+        optionPanel.add(attackConfirmPanel,Phase.ATTACK_CONF.toString());
+
+        dicePanel = new JPanel();
+        dicePanelText = new JTextPane();
+        dicePanelText.setText("<attacker> rolled <dice> and <defender> rolled <dice>");
+        dicePanelText.setFocusable(false);
+        dicePanelText.setOpaque(false);
+        dicePanel.add(dicePanelText);
+        optionPanel.add(dicePanel,Phase.ATTACK_DICE.toString());
+
         /*for future use
-        *optionPanel.add(troopMoverPanelSelectSource(),"troopMoverPanelSelectSource");
-        * *optionPanel.add(troopMoverPanelSelectDestination(),"troopMoverPanelSelectDestination");
+        * optionPanel.add(troopMoverPanelSelectSource(),"troopMoverPanelSelectSource");
+        * optionPanel.add(troopMoverPanelSelectDestination(),"troopMoverPanelSelectDestination");
         * optionPanel.add(deployPanelSelectDestination()."deployPanelSelectDestination")
          */
 
-        cardLayout.show(attackSelectAttackerPanel,Phase.ATTACK_SRC.toString());   //for now game starts in attack phase
+        cardLayout.show(attackSrcPanel,Phase.ATTACK_SRC.toString());   //for now game starts in attack phase
         return optionPanel;
     }
 
-    private JPanel attackSelectDefenderPanel(Country Src) {
-        //TODO add functionality
-        attackSelectDefenderPanel = new JPanel();
-        JLabel attackLabel = new JLabel("Select country to attack using " + Src);
-        attackLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        attackSelectDefenderPanel.add(attackLabel);
-        return new JPanel();
-    }
-
-    private JPanel attackSelectAttackerPanel() {
-        attackSelectAttackerPanel = new JPanel();
-        attackSelectAttackerPanel.add(new JLabel("Select attacking country from map"));
-        //TODO add functionality
-        return attackSelectAttackerPanel;
+    private void attackSelectDefenderPanel(Country Src) {
+        attackDstText.setText("Select country to attack using "+ Src);
     }
 
     private JPanel mapPanel(RiskController riskController) throws IOException {
@@ -130,55 +150,99 @@ public class RiskView extends JFrame {
         mapLayeredPane.add(mapImageLabel, Integer.valueOf(1));
     }
 
+    private JPanel sidePanel(int height) {
+        sidePanel = new JPanel();
+        sidePanel.setLayout(new BorderLayout());
+        sidePanel.setBorder(new LineBorder(Color.black));
+
+       sidePanel.add(infoPanel(height/2),BorderLayout.NORTH);
+       sidePanel.add(optionPanel(height/2),BorderLayout.CENTER);
+
+       confirmPhase = new JButton();
+       confirmPhase.setSize(200, 40);
+       confirmPhase.addActionListener(riskController);
+       sidePanel.add(confirmPhase,BorderLayout.SOUTH);
+
+       sidePanel.setSize(new Dimension(200, height));
+
+        return sidePanel;
+    }
+
     private JPanel infoPanel(int height) {
         infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBorder(new LineBorder(Color.black));
-
-        infoArea = new JTextArea();
+        infoArea = new JTextPane();
         infoArea.setFocusable(false);
-        infoArea.setLineWrap(true);
-        infoArea.setWrapStyleWord(true);
-        ((DefaultCaret) infoArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         JScrollPane JP = new JScrollPane(infoArea);
-        JP.setPreferredSize(new Dimension(200, (int) height / 2));
-        infoPanel.add(JP, 0);
-
-        infoPanel.setSize(new Dimension(200, height));
-
+        JP.setPreferredSize(new Dimension(200, height));
+        infoPanel.add(JP);
         return infoPanel;
     }
 
-    public void boardUpdate(AttackContext attackContext){
-        //TODO update board with every move
-        currentPhase = attackContext.phase.toString();
+    public void boardUpdate(ActionContext context){
+        currentPhase = context.phase.toString();
+        confirmPhase.setActionCommand(currentPhase);
         switch(currentPhase){
             case Phase.ATTACK_DST.toString():
-                attackSelectDefenderPanel(attackContext.srcCountry);
-                cardLayout.show(attackSelectDefenderPanel,Phase.ATTACK_DST.toString());
-                highlightAdjacentCountries(attackContext.highlightedCountries);
+                highlightAdjacentCountries(context.highlightedCountries);
+                attackSelectDefenderPanel(AttackContext.srcCountry); // to update the label in the panel
+                cardLayout.show(attackDstPanel,Phase.ATTACK_DST.toString());
+                confirmPhase.setText("Confirm Defender");
                 break;
-            case Phase.ATTACK_SRC: // for now, attack phase is default
+
+            case Phase.ATTACK_CONF.toString():
+                attackConfirmPanel(AttackContext.dstCountry,ActionContext.srcCountry);
+                cardLayout.show(attackConfirmPanel,Phase.ATTACK_CONF.toString());
+                confirmPhase.setText("Attack");
+
+            case Phase.ATTACK_DICE.toString():
+                dicePanel(AttackContext.diceRolls);
+                cardLayout.show(dicePanel,Phase.ATTACK_DICE.toString());
+                confirmPhase.setText("Ok");
+
+            case Phase.ATTACK_SRC.toString(): // for now, attack phase is default
             default:
-                cardLayout.show(attackSelectAttackerPanel,Phase.ATTACK_SRC.toString());
+                attackSelectAttackerPanel(context.player);
+                cardLayout.show(attackSrcPanel,Phase.ATTACK_SRC.toString());
+                confirmPhase.setText("Confirm Attacker");
                 break;
         }
     }
 
+    private void dicePanel(int[][] diceRolls, Player attacker ,Player defender) {
+        dicePanelText.setText(""); //make sure its empty
+        dicePanelText.setText(attacker.getName() + " rolled\n"+ Arrays.toString(diceRolls[0]) + "\n and " +defender.getName()+ "rolled\n"+ Arrays.toString(diceRolls[1]));
+    }
+
+    private void attackSelectAttackerPanel(Player player) {
+        attackSrcText.setText(player+", select attacking country from map");
+    }
+
+    private void attackConfirmPanel(Country dstCountry, Country srcCountry) {
+        attackConfirmText.setText("Confirm attack on " + dstCountry+ " using "+srcCountry);
+    }
+
     private void highlightAdjacentCountries(ArrayList<Country> countries){
-        mapLayeredPane.removeAll();
         labelCountries(countries);
     }
 
     private void labelCountries(ArrayList<Country> countries) {
+        mapLayeredPane.removeAll();
         insertMapImage();
         for(Country c: countries){
             JLabel countryLabel = new JLabel(c.getArmy()+"");
             countryLabel.setLocation(c.getVertices().get(0).getKey(),c.getVertices().get(0).getValue());
             countryLabel.setOpaque(true);
-            countryLabel.setBackground(Color.blue);
+            countryLabel.setBackground(Color.blue); //TODO convert to Country.getOwner.getColor()
             countryLabel.setHorizontalAlignment(SwingConstants.CENTER);
             countryLabel.setBounds(c.getVertices().get(0).getKey(),c.getVertices().get(0).getValue(),35,15);
         }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand().equals("Confirm Defender")){
+            labelCountries(riskmodel.getCountries());
+        }
+        riskController.actionPerformed(e);
     }
 }
