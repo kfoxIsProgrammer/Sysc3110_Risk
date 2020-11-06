@@ -1,16 +1,11 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.net.NoRouteToHostException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -34,7 +29,7 @@ public class RiskView extends JFrame implements ActionListener {
     private JPanel attackSrcPanel;
     private JPanel attackDstPanel;
 
-    private String mapImagePath ;//= "map.png";
+
     private BufferedImage mapImage;
 
     private JTextPane infoArea;
@@ -48,14 +43,17 @@ public class RiskView extends JFrame implements ActionListener {
     private JTextPane attackSrcText;
     private JPanel dicePanel;
     private JTextPane dicePanelText;
+    private Country[] countryArray;
 
-    public RiskView(RiskModel riskmodel) throws IOException {
-        riskController = new RiskController(riskmodel);
-        mapImagePath = riskmodel.getMapImagePath();
+    public RiskView(RiskController controller, BufferedImage mapImage, Country[] countries) throws IOException {
+        //TODO add troop slider and info update and skip phase button and country[] for indexed label updates
+        mapImage = mapImage;
+        riskController = controller;
+        countryArray = countries;
+
         setTitle("Risk - Global Domination");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
-
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.gridx = 0;
@@ -125,12 +123,11 @@ public class RiskView extends JFrame implements ActionListener {
         attackDstText.setText("Select country to attack using "+ Src);
     }
 
-    private JPanel mapPanel(RiskController riskController) throws IOException {
+    private JPanel mapPanel(RiskController riskController){
         mapPanel = new MapPanel(riskController);
         mapPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
-        mapImage = ImageIO.read(new File(mapImagePath));
 
-       labelCountries(riskmodel.getCountries());
+       labelCountries(countryArray);
 
         mapPanel.setLayout(null);
         mapLayeredPane.setLayout(null);
@@ -185,24 +182,24 @@ public class RiskView extends JFrame implements ActionListener {
             confirmPhase.setActionCommand(currentPhase.toString());
 
             switch(currentPhase){
-                case Phase.ATTACK_DST.toString():
-                    highlightAdjacentCountries(context.highlightedCountries); //TODO convert to country[]
+                case ATTACK_DST:
+                    highlightAdjacentCountries(context.highlightedCountries);
                     attackSelectDefenderPanel(attackContext.srcCountry); // to update the label in the panel
                     cardLayout.show(attackDstPanel,Phase.ATTACK_DST.toString());
                     confirmPhase.setText("Confirm Defender");
                     break;
 
-                case Phase.ATTACK_CONF.toString():
+                case ATTACK_CONF:
                     attackConfirmPanel(attackContext.dstCountry,attackContext.srcCountry);
                     cardLayout.show(attackConfirmPanel,Phase.ATTACK_CONF.toString());
                     confirmPhase.setText("Attack");
 
-                case Phase.ATTACK_DICE.toString():
+                case ATTACK_DICE:
                     dicePanel(attackContext.diceRolls, attackContext.srcCountry.getOwner(), attackContext.dstCountry.getOwner());
                     cardLayout.show(dicePanel,Phase.ATTACK_DICE.toString());
                     confirmPhase.setText("Ok");
 
-                case Phase.ATTACK_SRC.toString(): // for now, attack phase is default
+                case ATTACK_SRC: // for now, attack phase is default
                 default:
                     attackSelectAttackerPanel(context.player);
                     cardLayout.show(attackSrcPanel,Phase.ATTACK_SRC.toString());
@@ -225,18 +222,19 @@ public class RiskView extends JFrame implements ActionListener {
         attackConfirmText.setText("Confirm attack on " + dstCountry+ " using "+srcCountry);
     }
 
-    private void highlightAdjacentCountries(ArrayList<Country> countries){
+    private void highlightAdjacentCountries(Country[] countries){
         labelCountries(countries);
     }
 
-    private void labelCountries(ArrayList<Country> countries) {
+    private void labelCountries(Country[] countries) {
         mapLayeredPane.removeAll();
         insertMapImage();
         for(Country c: countries){
             JLabel countryLabel = new JLabel(c.getArmy()+"");
             countryLabel.setLocation(c.getVertices().get(0).x,c.getVertices().get(0).y);
             countryLabel.setOpaque(true);
-            countryLabel.setBackground(Color.blue); //TODO convert to Country.getOwner.getColor()
+            countryLabel.setBackground(c.getOwner().getColor());
+            countryLabel.setText(c.getArmy()+"");
             countryLabel.setHorizontalAlignment(SwingConstants.CENTER);
             countryLabel.setBounds(c.getVertices().get(0).x,c.getVertices().get(0).y,35,15);
         }
@@ -245,7 +243,7 @@ public class RiskView extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals("Confirm Defender")){
-            labelCountries(riskmodel.getCountries());
+            labelCountries(countryArray);
         }
         riskController.actionPerformed(e);
     }
