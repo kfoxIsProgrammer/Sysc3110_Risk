@@ -5,11 +5,8 @@
  * @version 11.04.2020
  */
 
-import javafx.util.Pair;
-
 import java.awt.*;
 import java.util.*;
-import java.util.Random;
 
 public class RiskModel {
     /**List of all the players in the game **/

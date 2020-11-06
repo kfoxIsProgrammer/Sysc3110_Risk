@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
  * @author Kshitij Sawhney
  * @version 11 / 6 / 20
  */
-class MapPanel extends JPanel {
+class MapContainer extends JPanel {
     private RiskController riskController;
     private boolean isActive;
 
@@ -14,7 +14,7 @@ class MapPanel extends JPanel {
         isActive = active;
     }
 
-    public MapPanel(RiskController controller){
+    public MapContainer(RiskController controller){
         riskController = controller;
         addMouseListener(new MouseAdapter() {
             @Override

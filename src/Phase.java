@@ -19,8 +19,6 @@ public enum Phase {
     /** Attack phase selecting number of troops to send **/
     ATTACK_ARMY,
     /**Attack phase confirmation**/
-    ATTACK_CONF,
-    /** Attack phase displaying result of battle **/
     ATTACK_DICE,
     /** Fortify phase selecting a source country **/
     FORTIFY_SRC,
