@@ -339,12 +339,13 @@ public class RiskView extends JFrame implements ActionListener {
 
         for (Country c : countries) {
             JLabel countryLabel = new JLabel(c.getArmy() + "");
-            countryLabel.setLocation(c.getVertices()[0].x, c.getVertices()[0].y);
+            countryLabel.setLocation(c.getCenterCoordinates().x, c.getCenterCoordinates().y);
             countryLabel.setOpaque(true);
             countryLabel.setBackground(c.getOwner().getColor());
             countryLabel.setText(c.getArmy() + "");
             countryLabel.setHorizontalAlignment(SwingConstants.CENTER);
             countryLabel.setBounds(c.getCenterCoordinates().x,c.getCenterCoordinates().y, 35, 15);
+            mapContainer.add(countryLabel);
         }
     }
     /**

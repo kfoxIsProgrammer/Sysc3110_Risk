@@ -46,6 +46,10 @@ public class RiskModel {
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
 
+        Color[] colorsToAllocate = {new Color(255, 255, 0), new Color(0,0,255),
+        new Color(255,0,0), new Color(0,255,0),
+        new Color(255,0,255), new Color(0,255,255)};
+
         //Determines starting army size which depends on amount of players
         if (playerNum == 2) {
             startingArmySize = 50;
@@ -55,7 +59,7 @@ public class RiskModel {
 
         players=new Player[playerNum];
         for(int i = 0; i < playerNum; i++){
-            players[i]=new Player(playerNames[i], startingArmySize);
+            players[i]=new Player(playerNames[i], startingArmySize, colorsToAllocate[i]);
         }
 
         //make randomized list of the countries
@@ -200,6 +204,7 @@ public class RiskModel {
                 this.actionContext.setDstCountry(clickedCountry);
                 break;
         }
+        //updateView();
     }
     public void menuSkip(){
         switch (this.actionContext.phase){
@@ -465,7 +470,21 @@ public class RiskModel {
         return toTest;
     }
 
+    private void updateView(){
+        this.riskView.boardUpdate(this.actionContext);
+
+    }
+
     public static void main(String[] args) {
        new RiskModel();
+    }
+
+    public void countryHasBeenSelected(int x, int y) {
+    }
+
+    public void startNewGame(int players, String[] playerNames) {
+    }
+
+    public void sendAction(String actionCommand) {
     }
 }

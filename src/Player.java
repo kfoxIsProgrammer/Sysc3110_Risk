@@ -31,10 +31,11 @@ public class Player {
      * @param name name of the player
      * @param armyValue initial army to allocate
      */
-    public Player(String name, int armyValue){
+    public Player(String name, int armyValue, Color color){
         this.isAi = false;
         this.name = name;
         this.ArmiesToAllocate = armyValue;
+        this.playerColor = color;
         ownedCountries = new HashMap<>();
         ownedContinents = new HashMap<>();
     }
@@ -154,6 +155,6 @@ public class Player {
      * @return the color of the player
      */
     public Color getColor() {
-        return new Color(59, 84, 180);
+        return this.playerColor;
     }
 }
