@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.HashMap;
 
 /**
@@ -160,4 +161,8 @@ public class Player {
      * @return the boolean if the player has lost
      */
     public boolean getHasLost(){return this.hasLost;}
+
+    public Color getColor() {
+        return new Color(59, 84, 180);
+    }
 }

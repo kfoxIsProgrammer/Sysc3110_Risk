@@ -238,51 +238,55 @@ public class RiskView extends JFrame implements ActionListener {
 
     /**
      * updates the RiskView with a given context
-     * @param context the current context for the update
+     * @param actionContext the current context for the update
      */
-    public void boardUpdate(ActionContext context) {
-        if (context.phase == Phase.ATTACK_ARMY || context.phase == Phase.ATTACK_SRC || context.phase == Phase.ATTACK_DICE || context.phase == Phase.ATTACK_DST) {
-            AttackContext attackContext = (AttackContext) (context);
-            Phase currentPhase = attackContext.phase;
-            confirmPhase.setActionCommand(currentPhase.toString());
+    public void boardUpdate(ActionContext actionContext) {
+        switch (actionContext.phase) {
+            case ATTACK_ARMY:
+            case ATTACK_SRC:
+            case ATTACK_DICE:
+            case ATTACK_DST:
+                Phase currentPhase = actionContext.phase;
+                confirmPhase.setActionCommand(currentPhase.toString());
 
-            switch (currentPhase) {
-                case ATTACK_DST -> {
-                    ((MapContainer) (mapContainer)).setActive(true);
-                    highlightAdjacentCountries(attackContext.highlightedCountries,attackContext.srcCountry);
-                    attackDstPanelEdit(attackContext.srcCountry); // to update the label in the panel
-                    cardLayout.show(attackDstPanel, Phase.ATTACK_DST.toString());
-                    confirmPhase.setText("Confirm Defender");
+                switch (currentPhase) {
+                    case ATTACK_DST:
+                        ((MapContainer) (mapContainer)).setActive(true);
+                        highlightAdjacentCountries(actionContext.highlightedCountries, actionContext.srcCountry);
+                        attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
+                        cardLayout.show(attackDstPanel, Phase.ATTACK_DST.toString());
+                        confirmPhase.setText("Confirm Defender");
+                        break;
+                    case ATTACK_ARMY:
+                        ((MapContainer) (mapContainer)).setActive(false);
+                        attackConfirmPanelEdit(actionContext.dstCountry, actionContext.srcCountry);
+                        cardLayout.show(attackConfirmPanel, Phase.ATTACK_ARMY.toString());
+                        confirmPhase.setEnabled(false);
+                        int troops = troopSelectPanel(actionContext.srcCountry);
+                        confirmPhase.setEnabled(true);
+                        if (troops > 0) {
+                            confirmPhase.setText("Attack with " + troops + " troops");
+                            confirmPhase.setActionCommand("" + troops);
+                        } else {
+                            confirmPhase.setText("Pick another country");
+                            confirmPhase.setActionCommand("Back");
+                        }
+                        break;
+                    case ATTACK_DICE:
+                        ((MapContainer) (mapContainer)).setActive(false);
+                        dicePanelEdit(actionContext.diceRolls, actionContext.srcCountry.getOwner(), actionContext.dstCountry.getOwner(), actionContext.attackerVictory);
+                        infoPanelEdit(actionContext);
+                        cardLayout.show(dicePanel, Phase.ATTACK_DICE.toString());
+                        confirmPhase.setText("Ok");
+                        break;
+                    default: //ATTACK_SRC is default for now
+                        ((MapContainer) (mapContainer)).setActive(true);
+                        attackSrcPanelEdit(actionContext.player);
+                        cardLayout.show(attackSrcPanel, Phase.ATTACK_SRC.toString());
+                        confirmPhase.setText("Confirm Attacker");
+                        break;
                 }
-                case ATTACK_ARMY -> {
-                    ((MapContainer) (mapContainer)).setActive(false);
-                    attackConfirmPanelEdit(attackContext.dstCountry, attackContext.srcCountry);
-                    cardLayout.show(attackConfirmPanel, Phase.ATTACK_ARMY.toString());
-                    confirmPhase.setEnabled(false);
-                    int troops = troopSelectPanel(attackContext.srcCountry);
-                    confirmPhase.setEnabled(true);
-                    if (troops > 0) {
-                        confirmPhase.setText("Attack with " + troops + " troops");
-                        confirmPhase.setActionCommand("" + troops);
-                    } else {
-                        confirmPhase.setText("Pick another country");
-                        confirmPhase.setActionCommand("Back");
-                    }
-                }
-                case ATTACK_DICE -> {
-                    ((MapContainer) (mapContainer)).setActive(false);
-                    dicePanelEdit(attackContext.diceRolls, attackContext.srcCountry.getOwner(), attackContext.dstCountry.getOwner(),attackContext.attackerVictory);
-                    infoPanelEdit(attackContext);
-                    cardLayout.show(dicePanel, Phase.ATTACK_DICE.toString());
-                    confirmPhase.setText("Ok");
-                }
-                default -> { //ATTACK_SRC is default for now
-                    ((MapContainer) (mapContainer)).setActive(true);
-                    attackSrcPanelEdit(context.player);
-                    cardLayout.show(attackSrcPanel, Phase.ATTACK_SRC.toString());
-                    confirmPhase.setText("Confirm Attacker");
-                }
-            }
+                break;
         }
     }
 
@@ -315,7 +319,7 @@ public class RiskView extends JFrame implements ActionListener {
      * adds information to the infoPanel based on the outcomes from context
      * @param context provided for update
      */
-    private void infoPanelEdit(AttackContext context) {
+    private void infoPanelEdit(ActionContext context) {
         if(context.phase== Phase.ATTACK_DICE) {
             String victoryString = (context.attackerVictory) ?
                     //won
