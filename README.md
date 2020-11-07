@@ -11,12 +11,12 @@ Teammates (Add your name and email):
 4. Kshitij Sawhney : kshitijsawhney@cmail.carleton.ca
 
 Deliverables:
-1.Jar file containing the source files.
-2.Design documents (changes and design choices)
-3.JUnit tests
-4.Uml Diagram 
-5.User Manual
-6.Javadoc 
+1. Jar file containing the source files.
+2. Design documents (changes and design choices)
+3. JUnit tests
+4. Uml Diagram 
+5. User Manual
+6. Javadoc 
 
 Changes from previous iteration:
 This is the second iteration of the project. The Graphical User Interface was implemented to interact with the user.
