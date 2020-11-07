@@ -3,14 +3,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
-
+/**
+ * Controller class to receive events from the view and send it to the Model
+ * @author Kevin Fox
+ * @version 11.07.2020
+ */
 public class RiskController implements ActionListener {
-    private RiskModel riskModel;
 
+    /** Model to send commands to **/
+    private RiskModel riskModel;
+    /**
+     * 1 param constructor for testing
+     * @param model the model to send commands to
+     */
     public RiskController(RiskModel model){
         this.riskModel = model;
     }
-
     /**
      * NewGame method to create a new game and set it up
      *
@@ -22,6 +30,11 @@ public class RiskController implements ActionListener {
         //this.riskModel.newGame(players, playerNames);
     }
 
+    /**
+     * Helper function to check if any chars in a string are ints
+     * @param text the text to check
+     * @return boolean True: there is a digit, False: there are no digits
+     */
     private boolean isInt(String text){
         for (char c: text.toCharArray()) {
             if (!Character.isDigit(c)){
@@ -44,7 +57,7 @@ public class RiskController implements ActionListener {
     /**
      * This command is for dealing with button clicks, mostly army number
      *
-     * @param e
+     * @param e the button click event from the view
      */
     @Override
     public void actionPerformed(ActionEvent e){

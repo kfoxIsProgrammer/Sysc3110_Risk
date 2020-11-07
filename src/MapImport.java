@@ -66,6 +66,12 @@ public class MapImport {
             return false;
         }
     }
+
+    /**
+     * Helper function to parseJSON into objects
+     * @param jsonData the JSON string
+     * @return boolean if successful
+     */
     private boolean parseJSONData(String jsonData){
         Gson gson=new Gson();
         map=gson.fromJson(jsonData,Map.class);
@@ -112,6 +118,11 @@ public class MapImport {
         System.out.printf("Map data loaded\n");
         return true;
     }
+
+    /**
+     * Helper function to read JSON from a file
+     * @param filepath the JSON file to read
+     */
     private void readJSONFile(String filepath){
         Gson gson = new Gson();
 
@@ -136,6 +147,11 @@ public class MapImport {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Helper function to read data from a map image
+     * @param filepath the file path to the map
+     */
     private void readMapImage(String filepath){
         try {
             this.mapImage=ImageIO.read(new File(filepath));

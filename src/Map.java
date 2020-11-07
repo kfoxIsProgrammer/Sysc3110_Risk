@@ -1,19 +1,40 @@
 import java.awt.image.BufferedImage;
 
+/**
+ * Used to represent a Risk Map with the list of countries, continents and the image in memory
+ * @author Kevin Fox (Documentation)
+ * @version 11.07.2020
+ */
 public class Map {
     /** List of the countries in the game **/
     public final Country[] countries;
     /** List of all the continents in the game **/
     public final Continent[] continents;
+    /** Image path **/
     private transient BufferedImage mapImage;
 
-    Map(Country[] countries, Continent[] continents){
+    /**
+     * 2 param contstructor of a Map
+     * @param countries array of countries on the map
+     * @param continents array of continents on the map
+     */
+    public Map(Country[] countries, Continent[] continents){
         this.countries=countries;
         this.continents=continents;
     }
+
+    /**
+     * getter for MapImage
+     * @return the mapImage in memory
+     */
     public BufferedImage getMapImage() {
         return mapImage;
     }
+
+    /**
+     * Setter for mapImage
+     * @param mapImage the image in memory
+     */
     public void setMapImage(BufferedImage mapImage) {
         this.mapImage = mapImage;
     }

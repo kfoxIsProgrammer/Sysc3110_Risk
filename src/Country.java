@@ -2,8 +2,8 @@ import java.awt.*;
 
 /**Describing a country on the map in a game of RISK
  *
- * @author  Kshitij Sawhney, Omar Hashmi
- * @version  11.04.2020
+ * @author  Kshitij Sawhney, Omar Hashmi, Kevin Fox
+ * @version  11.07.2020
  */
 public class Country {
     /** Name of the country **/
@@ -142,21 +142,48 @@ public class Country {
         }
     }
 
+    /**
+     * Setter for adjacent countries to this country
+     * @param adjacentCountries the adjacent countries in an array
+     */
     public void setAdjacentCountries(Country[] adjacentCountries){
         this.adjacentCountries=adjacentCountries;
     }
+
+    /**
+     * Minimum x coordinate of the country's viewable box
+     * @param minX minimum x coordinate
+     */
     public void setMinX(int minX) {
         this.minX = minX;
     }
+
+    /**
+     * Minimum y coordinate of the country's viewable box
+     * @param minY minimum y coordinate
+     */
     public void setMinY(int minY) {
         this.minY = minY;
     }
+    /**
+     * Maximum x coordinate of the country's viewable box
+     * @param maxX maximum x coordinate
+     */
     public void setMaxX(int maxX) {
         this.maxX = maxX;
     }
+    /**
+     * Maximum y coordinate of the country's viewable box
+     * @param maxY minimum y coordinate
+     */
     public void setMaxY(int maxY) {
         this.maxY = maxY;
     }
+
+    /**
+     * Setter of the center coordinate for displaying the number of units
+     * @param centerCoordinates the center x,y coordinate of the country
+     */
     public void setCenterCoordinates(Point centerCoordinates) {
         this.centerCoordinates = centerCoordinates;
     }

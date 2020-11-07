@@ -17,7 +17,9 @@ public class RiskModel {
     Map map;
     /** The current action context **/
     ActionContext actionContext;
+    /** The current risk view**/
     RiskView riskView;
+    /** The current RiskController**/
     RiskController riskController;
 
     /** Constructor of Risk Model*/
