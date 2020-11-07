@@ -10,25 +10,27 @@ import java.util.*;
 
 public class RiskModel {
     /**List of all the players in the game **/
-    ArrayList<Player> players;
+    Player[] players;
     /**   list of the countries in the game **/
     Country[] countries;
     /** List of all the continents in the game **/
     Continent[] continents;
-    /** File path for the map being used**/
-    String mapImagePath;
     /** The current action context **/
     ActionContext actionContext;
+    RiskView riskView;
+    RiskController riskController;
 
     /** Constructor of Risk Model*/
     private RiskModel(){
-        this.players = new ArrayList<>();
-
-        MapImport map=new MapImport("maps/demo.zip","oldmaps/demo.txt");
-        this.mapImagePath = "maps/demo.png";
-
-        this.countries= map.getCountries();
+        MapImport map=new MapImport("oldmaps/test.txt","maps/test.png");
+        //map.printCountries();
+        //map.printContinents();
+        this.countries=map.getCountries();
         this.continents=map.getContinents();
+        newGame(2, new String[]{"jeff", "assman"});
+
+        this.riskController=new RiskController(this);
+        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
 
         this.play();
     }
@@ -38,29 +40,24 @@ public class RiskModel {
      *
      */
     private void newGame(int playerNum, String[] playerNames){
-        int x = 0;
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
 
-        Scanner choice = new Scanner(System.in);
-
-        //Queries user for number of players
-        x = playerNum;
-
         //Determines starting army size which depends on amount of players
-        if (x == 2) {
+        if (playerNum == 2) {
             startingArmySize = 50;
         } else {
-            startingArmySize = (50) - 5 * x;
+            startingArmySize = (50) - 5 * playerNum;
         }
 
-
-        for(int i = 0; i < x; i++){
-            players.add(new Player(playerNames[i], startingArmySize));
+        players=new Player[playerNum];
+        for(int i = 0; i < playerNum; i++){
+            players[i]=new Player(playerNames[i], startingArmySize);
         }
 
         //make randomized list of the countries
-        ArrayList<Country> ran = (ArrayList<Country>) Arrays.asList(countries);
+        ArrayList<Country> ran = new ArrayList<>();
+        Collections.addAll(ran,this.countries);
         Collections.shuffle(ran, rand);
         Stack<Country> addStack = new Stack<>();
         addStack.addAll(ran);
@@ -87,7 +84,10 @@ public class RiskModel {
                 }
             }
         }
-
+        Country[] countriesArray=new Country[ran.size()];
+        countriesArray = ran.toArray(countriesArray);
+        this.countries=countriesArray;
+        this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
     }
     /**
      * Main control function for the Risk game
@@ -109,7 +109,7 @@ public class RiskModel {
                 count++;
             }
 
-        if(count == players.size() || count == players.size() - 1){
+        if(count == players.length || count == players.length - 1){
             return new boolean[]{false, true};
         }
         else
@@ -158,9 +158,9 @@ public class RiskModel {
     }
     private Player nextPlayer(Player player){
         //TODO handle invalid players
-        for(int i=0;;i=(i+1)%this.players.size()){
-            if(this.players.get(i).equals(player)){
-                return this.players.get((i+1)%this.players.size());
+        for(int i=0;;i=(i+1)%this.players.length){
+            if(this.players[i].equals(player)){
+                return this.players[(i+1)%this.players.length];
             }
         }
     }
@@ -170,8 +170,10 @@ public class RiskModel {
 
         if(clickedCountry==null){
             menuBack();
+            return;
         }
         //TODO error checking
+        System.out.printf("Country: %s\n",clickedCountry.getName());
         switch(this.actionContext.phase){
             case DEPLOY_DST:
                 this.actionContext.setPhase(Phase.DEPLOY_ARMY);
@@ -421,13 +423,6 @@ public class RiskModel {
      */
     public ArrayList<Country> getPlayerCountries(Player player){
         return new ArrayList<>(player.getOwnedCountries().values());
-    }
-    /**
-     * Return the path for the image being used as the map
-     * @return String path of the map image
-     */
-    public String getMapImagePath() {
-        return mapImagePath;
     }
     /**
      * Method that returns a stack of all the countries that the source country is connected to via friendly territory.

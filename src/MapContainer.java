@@ -19,11 +19,8 @@ class MapContainer extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (isActive){
                 super.mouseClicked(e);
-                System.out.println(e.getX()+" "+e.getY());
                 riskController.countrySelected(e);
-                }
             }
         });
 

@@ -50,9 +50,9 @@ public class MapImport {
             System.err.printf("Unable to load %s\n", filepath);
         }
     }
-    public MapImport(String zipPath,String dataPath){
-        this.mapImage=new MapImport(zipPath).getMapImage();
-        readOldFile(dataPath);
+    public MapImport(String dataPath,String mapPath){
+        readOldData(dataPath);
+        readOldMap(mapPath);
     }
     private void parseMapImage(ZipEntry entry){
         try {
@@ -85,16 +85,15 @@ public class MapImport {
 
         System.out.printf("Map data loaded\n");
     }
-    private void readOldFile(String filename){
+    private void readOldData(String filepath){
         this.countries=new ArrayList<>();
         this.continents=new ArrayList<>();
 
         try{
-            File riskMap=new File(filename);
+            File riskMap=new File(filepath);
             Scanner fileReader=new Scanner(riskMap);
             while(fileReader.hasNextLine()){
                 String line=fileReader.nextLine();
-                System.out.printf("%s\n",line);
                 //Line is empty
                 if(line.length()==0){
                     continue;
@@ -187,7 +186,15 @@ public class MapImport {
             }
         }
         catch(FileNotFoundException e){
-            System.out.printf("Unable to load %s, file not found\n",filename);
+            System.out.printf("Unable to load %s, file not found\n",filepath);
+            e.printStackTrace();
+        }
+    }
+    private void readOldMap(String filepath){
+        try {
+            this.mapImage=ImageIO.read(new File(filepath));
+        }catch(IOException e){
+            System.out.printf("Unable to load %s, file not found\n",filepath);
             e.printStackTrace();
         }
     }
@@ -214,7 +221,6 @@ public class MapImport {
     public BufferedImage getMapImage(){
         return mapImage;
     }
-
     /**
      * Displays the country information for debug purposes
      */
@@ -255,5 +261,6 @@ public class MapImport {
 
         parser.printCountries();
         parser.printContinents();
+        System.out.printf("\n%s\n",parser.getMapImage().toString());
     }
 }

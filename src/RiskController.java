@@ -39,6 +39,7 @@ public class RiskController implements ActionListener {
      */
     public void countrySelected(MouseEvent mouseEvent){
         this.riskModel.mapClicked(new Point(mouseEvent.getX(), mouseEvent.getY()));
+        //System.out.printf("{\"x\":%d,\"y\":%d},\n",mouseEvent.getX(),mouseEvent.getY());
     }
     /**
      * This command is for dealing with button clicks, mostly army number
