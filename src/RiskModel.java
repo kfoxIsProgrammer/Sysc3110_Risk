@@ -24,8 +24,8 @@ public class RiskModel {
     private RiskModel(){
         this.players = new ArrayList<>();
 
-        MapImport map=new MapImport("maps\\demoMap.RiskMap");
-        this.mapImagePath = "maps\\map.png";
+        MapImport map=new MapImport("maps/demo.zip","oldmaps/demo.txt");
+        this.mapImagePath = "maps/demo.png";
 
         this.countries= map.getCountries();
         this.continents=map.getContinents();
@@ -442,7 +442,6 @@ public class RiskModel {
                 //  System.out.println(count.getName());
                 toTest.add(count);
                 return(getConnectedOwnedCountries(count, user, toTest));
-
             }
         }
         return toTest;
@@ -450,6 +449,5 @@ public class RiskModel {
 
     public static void main(String[] args) {
        RiskModel rm=new RiskModel();
-       System.out.printf("%s\n",rm.pointToCountry(new Point(113,162)).getName());
     }
 }

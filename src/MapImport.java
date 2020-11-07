@@ -196,13 +196,17 @@ public class MapImport {
      * @return The contents of the countries ArrayList
      */
     public Country[] getCountries() {
-        return (Country[]) countries.toArray();
+        Country[] result=new Country[countries.size()];
+        result=countries.toArray(result);
+        return result;
     }
     /**
      * @return The contents of the continents ArrayList
      */
     public Continent[] getContinents() {
-        return (Continent[]) continents.toArray();
+        Continent[] result=new Continent[continents.size()];
+        result=continents.toArray(result);
+        return result;
     }
     /**
      * @return An image of the map
