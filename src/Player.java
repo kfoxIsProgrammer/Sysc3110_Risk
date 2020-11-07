@@ -8,36 +8,23 @@ import java.util.HashMap;
  */
 public class Player {
 
-    /**
-     * Boolean describing if this player is an ai
-     */
+    /** Boolean describing if this player is an ai **/
     private Boolean isAi;
-
-    /**
-     * Name of this player
-     */
+    /** Name of this player **/
     private String name;
-
-
-    /**
-     * Number of armies that can be allocated to a country
-     */
+    /** Number of armies that can be allocated to a country **/
     private int ArmiesToAllocate;
 
-    /**
-     * Hashmap of owned Countries
-     */
+    /** Hashmap of owned Countries **/
     private HashMap<String,Country> ownedCountries;
 
-    /**
-     * Hashmap of Owned Continents
-     */
+    /** Hashmap of Owned Continents **/
     private HashMap<String, Continent> ownedContinents;
 
-    /**
-     * This is used for lose condition
-     */
+    /** This is used for lose condition **/
     private boolean hasLost = false;
+    /** The color the player is **/
+    private Color playerColor;
 
     /**
      * 2 param Constructor for new human players
@@ -162,6 +149,10 @@ public class Player {
      */
     public boolean getHasLost(){return this.hasLost;}
 
+    /**
+     * Getter for the color of the player for the view
+     * @return the color of the player
+     */
     public Color getColor() {
         return new Color(59, 84, 180);
     }
