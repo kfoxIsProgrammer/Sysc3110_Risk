@@ -1,15 +1,13 @@
 import com.google.gson.Gson;
 
 import javax.imageio.ImageIO;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 
 /**
  * Accepts a RiskMap file and generates the required object from that information
@@ -18,179 +16,127 @@ import java.util.zip.ZipFile;
  * @version 11.01.2020
  */
 public class MapImport {
-    private String filepath;
-    private ZipFile zipFile;
+    private Map map;
     private BufferedImage mapImage;
-
     /** List of the countries in the game **/
-    private ArrayList<Country> countries;
+    private Country[] countries;
     /** List of all the continents in the game **/
-    private ArrayList<Continent> continents;
+    private Continent[] continents;
 
     /** Reads the file data into countries and continents **/
     public MapImport(String filepath){
-        this.filepath=filepath;
-
         try{
-            this.zipFile=new ZipFile(filepath);
+            ZipFile zipFile=new ZipFile(filepath);
 
-            for(Enumeration<? extends ZipEntry> entryReader = this.zipFile.entries(); entryReader.hasMoreElements();){
+            boolean dataLoaded=false;
+            boolean imageLoaded=false;
+
+            for(Enumeration<? extends ZipEntry> entryReader = zipFile.entries(); entryReader.hasMoreElements();){
                 ZipEntry entry=entryReader.nextElement();
 
-                if(entry.getName().toLowerCase().equals("test.png")){
-                    parseMapImage(entry);
+                if(entry.getName().toLowerCase().split("\\.(?=[^\\.]+$)")[1].equals("png")){
+                    imageLoaded=parseMapImage(zipFile, entry);
                 }
-                else if(entry.getName().toLowerCase().equals("test.json")){
+                else if(entry.getName().toLowerCase().split("\\.(?=[^\\.]+$)")[1].equals("json")){
                     InputStream inputStream=zipFile.getInputStream(entry);
-                    //parseJSONData();
+
+                    Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+                    String result = s.hasNext() ? s.next() : "";
+
+                    dataLoaded=parseJSONData(result);
                 }
+            }
+            if(dataLoaded && imageLoaded){
+                this.map.setMapImage(this.mapImage);
+                System.out.printf("Map set\n");
             }
         }
         catch(IOException e){
             System.err.printf("Unable to load %s\n", filepath);
         }
     }
-    public MapImport(String dataPath,String mapPath){
-        readOldData(dataPath);
-        readOldMap(mapPath);
-    }
-    private void parseMapImage(ZipEntry entry){
+
+    private boolean parseMapImage(ZipFile zipFile, ZipEntry entry){
         try {
-            this.mapImage=ImageIO.read(this.zipFile.getInputStream(entry));
+            this.mapImage=ImageIO.read(zipFile.getInputStream(entry));
             System.out.printf("Map image loaded\n");
+            return true;
         } catch (IOException e) {
-            System.err.printf("Unable to load map image\n");
+            System.out.printf("Unable to load map image\n");
+            return false;
         }
+    }
+    private boolean parseJSONData(String jsonData){
+        Gson gson=new Gson();
+        map=gson.fromJson(jsonData,Map.class);
+
+        for(Country country: map.countries){
+            int numAdjacentCountries=country.getAdjacentCountryIDs().length;
+            Country[] adjacentCountries=new Country[numAdjacentCountries];
+            for(int i=0;i<numAdjacentCountries;i++){
+                adjacentCountries[i]=map.countries[country.getAdjacentCountryIDs()[i]];
+            }
+            country.setAdjacentCountries(adjacentCountries);
+
+            int minX=Integer.MAX_VALUE;
+            int minY=Integer.MAX_VALUE;
+            int maxX=0;
+            int maxY=0;
+            int avgX=0;
+            int avgY=0;
+            for(Point vertex: country.getVertices()){
+                if(vertex.x<minX){
+                    minX=vertex.x;
+                }
+                if(vertex.y<minY){
+                    minY=vertex.y;
+                }
+                if(vertex.x>maxX){
+                    maxX=vertex.x;
+                }
+                if(vertex.y>maxY){
+                    maxY=vertex.y;
+                }
+                avgX+=vertex.x;
+                avgY+=vertex.y;
+            }
+            avgX/=country.getVertices().length;
+            avgY/=country.getVertices().length;
+            country.setMinX(minX);
+            country.setMinY(minY);
+            country.setMaxX(maxX);
+            country.setMaxY(maxY);
+            country.setCenterCoordinates(new Point(avgX,avgY));
+        }
+
+        System.out.printf("Map data loaded\n");
+        return true;
     }
     private void readJSONFile(String filepath){
         Gson gson = new Gson();
 
-        try (Reader reader = new FileReader("maps/test.json")) {
+        try (Reader reader = new FileReader(filepath)) {
 
             // Convert JSON File to Java Object
             Map map = gson.fromJson(reader, Map.class);
 
-            // print staff
-            System.out.println(map);
+//            readOldData("oldmaps/test.txt");
+//
+//            Country[] countries3=new Country[this.countries.size()];
+//            countries3=this.countries.toArray(countries3);
+//
+//            Continent[] continents3=new Continent[this.continents.size()];
+//            continents3=this.continents.toArray(continents3);
+//
+//            Map tess=new Map(countries3,continents3);
+
+            System.out.printf("%s\n",gson.toJson(map));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
-    private void parseJSONData(String jsonData){
-        Gson gson=new Gson();
-        gson.fromJson(jsonData,Map.class);
-
-        System.out.printf("Map data loaded\n");
-    }
-    private void readOldData(String filepath){
-        this.countries=new ArrayList<>();
-        this.continents=new ArrayList<>();
-
-        try{
-            File riskMap=new File(filepath);
-            Scanner fileReader=new Scanner(riskMap);
-            while(fileReader.hasNextLine()){
-                String line=fileReader.nextLine();
-                //Line is empty
-                if(line.length()==0){
-                    continue;
-                }
-                //Line is a comment
-                else if(line.charAt(0)=='#'){
-                    System.out.printf("%s\n",line);
-                }
-                //Line is a country
-                else if(line.charAt(0)=='c'&&line.charAt(1)=='n'){
-                    String countryName = "";
-                    ArrayList<Point> countryVertices = new ArrayList<>();
-
-                    //Read the country name including spaces
-                    int i = 4;
-                    for (; line.charAt(i) != '\"'; i++) {
-                        countryName += line.charAt(i);
-                    }
-
-                    //Everything following the country name must be coordinates
-                    int minX=Integer.MAX_VALUE;
-                    int minY=Integer.MAX_VALUE;
-                    int maxX=0;
-                    int maxY=0;
-                    int avgX=0;
-                    int avgY=0;
-
-                    String[] vertices = line.substring(i + 2).split(" ");
-                    for (int j=0;j<vertices.length;j++) {
-                        String[] pos = vertices[j].split(",");
-                        int x = Integer.parseInt(pos[0]);
-                        int y = Integer.parseInt(pos[1]);
-
-                        if(x<minX){minX=x;}
-                        if(y<minY){minY=y;}
-                        if(x>maxX){maxX=x;}
-                        if(y>maxY){maxY=y;}
-
-                        avgX+=x;
-                        avgY+=y;
-
-                        countryVertices.add(new Point(x, y));
-                    }
-                    avgX/=vertices.length;
-                    avgY/=vertices.length;
-
-                    Point[] countryVertices1=new Point[countryVertices.size()];
-                    countryVertices1 = countryVertices.toArray(countryVertices1);
-                    Country country = new Country(countryName, countryVertices1,minX,minY,maxX,maxY,new Point(avgX,avgY));
-                    this.countries.add(country);
-                }
-                //Line is a continent
-                else if(line.charAt(0)=='c'&&line.charAt(1)=='t'){
-                    String continentName="";
-                    ArrayList<Country> countries=new ArrayList<>();
-                    int continentBonus;
-
-                    //Read the continent name including spaces
-                    int i=4;
-                    for(;line.charAt(i)!='\"';i++){
-                        continentName+=line.charAt(i);
-                    }
-
-                    //Everything following the continent name must be countries
-                    String[] countryIds=line.substring(i+2).split(" ");
-                    continentBonus=Integer.parseInt(countryIds[0]);
-                    for(int j=1;j<countryIds.length;j++){
-                        int countryIndex=Integer.parseInt(countryIds[j]);
-                        countries.add(this.countries.get(countryIndex));
-                    }
-                    Country[] countries1=new Country[countries.size()];
-                    countries1 = countries.toArray(countries1);
-                    Continent continent=new Continent(continentName, countries1,continentBonus);
-                    this.continents.add(continent);
-                }
-                //Line is an adjacency
-                else if(line.charAt(0)=='a'&&line.charAt(1)=='d'){
-                    String[] countryIds=line.substring(3).split(" ");
-                    ArrayList<Country> adjacentCountries=new ArrayList<>();
-
-                    for(int i=1;i<countryIds.length;i++){
-                        int countryIndex=Integer.parseInt(countryIds[i]);
-                        adjacentCountries.add(this.countries.get(countryIndex));
-                    }
-
-                    Country[] adjacentCountries1=new Country[adjacentCountries.size()];
-                    adjacentCountries1 = adjacentCountries.toArray(adjacentCountries1);
-                    this.countries.get(Integer.parseInt(countryIds[0])).setAdjacentCountries(adjacentCountries1);
-                }
-            }
-        }
-        catch(FileNotFoundException e){
-            System.out.printf("Unable to load %s, file not found\n",filepath);
-            e.printStackTrace();
-        }
-    }
-    private void readOldMap(String filepath){
+    private void readMapImage(String filepath){
         try {
             this.mapImage=ImageIO.read(new File(filepath));
         }catch(IOException e){
@@ -203,32 +149,26 @@ public class MapImport {
      * @return The contents of the countries ArrayList
      */
     public Country[] getCountries() {
-        Country[] result=new Country[countries.size()];
-        result=countries.toArray(result);
-        return result;
+        return countries;
     }
     /**
      * @return The contents of the continents ArrayList
      */
     public Continent[] getContinents() {
-        Continent[] result=new Continent[continents.size()];
-        result=continents.toArray(result);
-        return result;
+        return continents;
     }
-    /**
-     * @return An image of the map
-     */
-    public BufferedImage getMapImage(){
-        return mapImage;
+    public Map getMap(){
+        return map;
     }
+
     /**
      * Displays the country information for debug purposes
      */
     public void printCountries(){
-        for(int i=0;i<countries.size();i++){
-            System.out.printf("%s\n", countries.get(i).getName());
-            for(int j = 0; j< countries.get(i).getAdjacentCountries().length; j++){
-                System.out.printf("\t%s\n", countries.get(i).getAdjacentCountries()[j].getName());
+        for(int i=0;i<countries.length;i++){
+            System.out.printf("%s\n", countries[i].getName());
+            for(int j = 0; j< countries[i].getAdjacentCountries().length; j++){
+                System.out.printf("\t%s\n", countries[i].getAdjacentCountries()[j].getName());
             }
         }
     }
@@ -236,31 +176,16 @@ public class MapImport {
      * Displays the continent information for debug purposes
      */
     public void printContinents(){
-        for(int i=0;i<continents.size();i++){
-            System.out.printf("%s\n", continents.get(i).getName());
-            for(int j = 0; j< continents.get(i).getCountryList().length; j++){
-                System.out.printf("\t%s\n", continents.get(i).getCountryList()[j].getName());
+        for(int i=0;i<continents.length;i++){
+            System.out.printf("%s\n", continents[i].getName());
+            for(int j = 0; j< continents[i].getCountryList().length; j++){
+                System.out.printf("\t%s\n", continents[i].getCountryList()[j].getName());
             }
         }
     }
 
     public static void main(String[] args) {
-        MapImport parser=new MapImport("maps/test.zip","oldmaps/test.txt");
-        //
-//        Gson gson=new Gson();
-//
-//        Map map=new Map(parser.countries,parser.continents);
-//
-//        try {
-//            FileWriter fw=new FileWriter("D:\\Downloads\\helpme.json");
-//            gson.toJson(map, fw);
-//            fw.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        MapImport parser=new MapImport("maps/test.zip");
 
-        parser.printCountries();
-        parser.printContinents();
-        System.out.printf("\n%s\n",parser.getMapImage().toString());
     }
 }

@@ -11,12 +11,12 @@ public class Country {
     /** List of the county's vertices **/
     private final Point[] vertices;
     /** Bounding coordinates for the country **/
-    private final int minX,minY,maxX,maxY;
+    private transient int minX,minY,maxX,maxY;
     /** The coordinates of the country's center **/
-    private final Point centerCoordinates;
+    private transient Point centerCoordinates;
     /** ArrayList of countries that lie adjacent to the current country **/
     private transient Country[] adjacentCountries;
-    private int[] adjacentCountriesID;
+    private int[] adjacentCountriesIDs;
     /** Name of the owner **/
     private Player owner;
     /** Army currently occupying this country **/
@@ -27,12 +27,8 @@ public class Country {
      *
      * @param name Name of the country
      * @param vertices List of the vertices of the country on the map
-     * @param minX  Minimum X coordinate from the vertices
-     * @param minY  Minimum Y coordinate from the vertices
-     * @param maxX  Maximum X coordinate from the vertices
-     * @param maxY  Maximum Y coordinate from the vertices
      */
-    public Country(String name, Point[] vertices, int minX, int minY, int maxX, int maxY, Point centerCoordinates) {
+    public Country(String name, Point[] vertices) {
         this.name = name;
         this.vertices = vertices;
         this.minX = minX;
@@ -145,16 +141,24 @@ public class Country {
             this.army-=army;
         }
     }
-    /**
-     * Adds an adjacent country
-     *
-     * @param adjacentCountries The adjacent country
-     */
-    public void setAdjacentCountries(Country[] adjacentCountries) {
-        this.adjacentCountries = adjacentCountries;
+
+    public void setAdjacentCountries(Country[] adjacentCountries){
+        this.adjacentCountries=adjacentCountries;
     }
-    public void setAdjacentCountriesID(int[] adjacentCountriesID) {
-        this.adjacentCountriesID = adjacentCountriesID;
+    public void setMinX(int minX) {
+        this.minX = minX;
+    }
+    public void setMinY(int minY) {
+        this.minY = minY;
+    }
+    public void setMaxX(int maxX) {
+        this.maxX = maxX;
+    }
+    public void setMaxY(int maxY) {
+        this.maxY = maxY;
+    }
+    public void setCenterCoordinates(Point centerCoordinates) {
+        this.centerCoordinates = centerCoordinates;
     }
 
     /**
@@ -204,6 +208,12 @@ public class Country {
      */
     public Country[] getAdjacentCountries() {
         return adjacentCountries;
+    }
+    /**
+     * @return A list of adjacent country IDs
+     */
+    public int[] getAdjacentCountryIDs() {
+        return adjacentCountriesIDs;
     }
     /**
      * @return The country's owner

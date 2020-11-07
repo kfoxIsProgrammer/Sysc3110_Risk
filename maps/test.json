@@ -1,60 +1,274 @@
-{
-  "map": {
-    "countries": [{
-		  "name": "Italy",
-		  "center": [128,71],
-		  "vertices": [[100,35],[220,50],[145,110],[45,90]]
-		},{
-		  "name": "N J",
-		  "center": [78,157],
-		  "vertices": [[45,90],[145,190],[45,190]]
-		},{
-		  "name": "USA",
-		  "center": [112,130],
-		  "vertices": [[45,90],[145,110],[145,190]]
-		},{
-		  "name": "P C D",
-		  "center": [195,90],
-		  "vertices": [[220,50],[220,110],[145,110]]
-		},{
-		  "name": "ass",
-		  "center": [183,123],
-		  "vertices": [[145,110],[220,110],[220,135],[145,135]]
-		},{
-		  "name": "P C A",
-		  "center": [183,650],
-		  "vertices": [[145,135],[220,135],[220,190],[145,190]]
-		}
-	],
-    "continents": [{
-          "name": "North America",
-          "bonus": 10,
-          "countryIDs": [0,1,2]
-        },{
-          "name": "Asia",
-          "bonus": 15,
-          "countryIDs": [3,4,5]
+{"countries": [
+    {"name": "Italy",
+      "vertices": [
+        {"x": 99,"y": 35},
+        {"x": 220,"y": 50},
+        {"x": 145,"y": 110},
+        {"x": 45,"y": 90}
+      ],
+      "minX": 45,
+      "minY": 35,
+      "maxX": 220,
+      "maxY": 110,
+      "centerCoordinates": {"x": 127,"y": 71},
+      "army": 0,
+	  "adjacentCountriesIDs":[2,3]
+    },
+    {"name": "N J",
+      "vertices": [
+        {"x": 45,"y": 90},
+        {"x": 145,"y": 110},
+        {"x": 45,"y": 190}
+      ],
+      "minX": 45,
+      "minY": 90,
+      "maxX": 145,
+      "maxY": 190,
+      "centerCoordinates": {"x": 78,"y": 130},
+      "army": 0,
+	  "adjacentCountriesIDs":[2]
+    },
+    {"name": "USA",
+      "vertices": [
+        {"x": 45,"y": 190},
+        {"x": 145,"y": 110},
+        {"x": 145,"y": 190}
+      ],
+      "minX": 45,
+      "minY": 110,
+      "maxX": 145,
+      "maxY": 190,
+      "centerCoordinates": {"x": 111,"y": 163},
+      "army": 0,
+	  "adjacentCountriesIDs":[0,4,5]
+    },
+    {"name": "P C D",
+      "vertices": [
+        {"x": 220,"y": 50},
+        {"x": 220,"y": 110},
+        {"x": 145,"y": 110
         }
-	],
-    "adjacencies": [{
-			"rootCountryID":0,
-			"countryIDs":[2,3]
-		},{
-			"rootCountryID":1,
-			"countryIDs":[2]
-		},{
-			"rootCountryID":2,
-			"countryIDs":[0,4,5]
-		},{
-			"rootCountryID":3,
-			"countryIDs":[0,4]
-		},{
-			"rootCountryID":4,
-			"countryIDs":[2,3,5]
-		},{
-			"rootCountryID":5,
-			"countryIDs":[2,4]
-		}
-	]
-  }
+      ],
+      "minX": 145,
+      "minY": 50,
+      "maxX": 220,
+      "maxY": 110,
+      "centerCoordinates": {"x": 195,"y": 90},
+      "army": 0,
+	  "adjacentCountriesIDs":[0,4]
+    },
+    {      "name": "ass",
+      "vertices": [
+        {"x": 145,"y": 110},
+        {"x": 220,"y": 110},
+        {"x": 220,"y": 135},
+        {"x": 145,"y": 135
+        }
+      ],
+      "minX": 145,
+      "minY": 110,
+      "maxX": 220,
+      "maxY": 135,
+      "centerCoordinates": {"x": 182,"y": 122},
+      "army": 0,
+	  "adjacentCountriesIDs":[2,3,5]
+    },
+    {      "name": "P C A",
+      "vertices": [
+        {"x": 145,"y": 135},
+        {"x": 220,"y": 135},
+        {"x": 220,"y": 190},
+        {"x": 145,"y": 190}
+      ],
+      "minX": 145,
+      "minY": 135,
+      "maxX": 220,
+      "maxY": 190,
+      "centerCoordinates": {"x": 182,"y": 162},
+      "army": 0,
+	  "adjacentCountriesIDs":[2,4]
+    }
+  ],
+  "continents": [
+    {
+      "name": "North America",
+      "countryList": [
+        {
+          "name": "Italy",
+          "vertices": [
+            {
+              "x": 99,
+              "y": 35
+            },
+            {
+              "x": 220,
+              "y": 50
+            },
+            {
+              "x": 145,
+              "y": 110
+            },
+            {
+              "x": 45,
+              "y": 90
+            }
+          ],
+          "minX": 45,
+          "minY": 35,
+          "maxX": 220,
+          "maxY": 110,
+          "centerCoordinates": {
+            "x": 127,
+            "y": 71
+          },
+          "army": 0
+        },
+        {
+          "name": "N J",
+          "vertices": [
+            {
+              "x": 45,
+              "y": 90
+            },
+            {
+              "x": 145,
+              "y": 110
+            },
+            {
+              "x": 45,
+              "y": 190
+            }
+          ],
+          "minX": 45,
+          "minY": 90,
+          "maxX": 145,
+          "maxY": 190,
+          "centerCoordinates": {
+            "x": 78,
+            "y": 130
+          },
+          "army": 0
+        },
+        {
+          "name": "USA",
+          "vertices": [
+            {
+              "x": 45,
+              "y": 190
+            },
+            {
+              "x": 145,
+              "y": 110
+            },
+            {
+              "x": 145,
+              "y": 190
+            }
+          ],
+          "minX": 45,
+          "minY": 110,
+          "maxX": 145,
+          "maxY": 190,
+          "centerCoordinates": {
+            "x": 111,
+            "y": 163
+          },
+          "army": 0
+        }
+      ],
+      "bonusArmyValue": 10
+    },
+    {
+      "name": "Asia",
+      "countryList": [
+        {
+          "name": "P C D",
+          "vertices": [
+            {
+              "x": 220,
+              "y": 50
+            },
+            {
+              "x": 220,
+              "y": 110
+            },
+            {
+              "x": 145,
+              "y": 110
+            }
+          ],
+          "minX": 145,
+          "minY": 50,
+          "maxX": 220,
+          "maxY": 110,
+          "centerCoordinates": {
+            "x": 195,
+            "y": 90
+          },
+          "army": 0
+        },
+        {
+          "name": "ass",
+          "vertices": [
+            {
+              "x": 145,
+              "y": 110
+            },
+            {
+              "x": 220,
+              "y": 110
+            },
+            {
+              "x": 220,
+              "y": 135
+            },
+            {
+              "x": 145,
+              "y": 135
+            }
+          ],
+          "minX": 145,
+          "minY": 110,
+          "maxX": 220,
+          "maxY": 135,
+          "centerCoordinates": {
+            "x": 182,
+            "y": 122
+          },
+          "army": 0
+        },
+        {
+          "name": "P C A",
+          "vertices": [
+            {
+              "x": 145,
+              "y": 135
+            },
+            {
+              "x": 220,
+              "y": 135
+            },
+            {
+              "x": 220,
+              "y": 190
+            },
+            {
+              "x": 145,
+              "y": 190
+            }
+          ],
+          "minX": 145,
+          "minY": 135,
+          "maxX": 220,
+          "maxY": 190,
+          "centerCoordinates": {
+            "x": 182,
+            "y": 162
+          },
+          "army": 0
+        }
+      ],
+      "bonusArmyValue": 15
+    }
+  ]
 }

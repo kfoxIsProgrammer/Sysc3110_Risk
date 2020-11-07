@@ -1,13 +1,12 @@
+import java.awt.*;
+import java.util.*;
+
 /**
  * Risk Model class used to model the ongoing game
  *
  * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi, Kshitij Sawhney
  * @version 11.04.2020
  */
-
-import java.awt.*;
-import java.util.*;
-
 public class RiskModel {
     /**List of all the players in the game **/
     Player[] players;
@@ -15,6 +14,7 @@ public class RiskModel {
     Country[] countries;
     /** List of all the continents in the game **/
     Continent[] continents;
+    Map map;
     /** The current action context **/
     ActionContext actionContext;
     RiskView riskView;
@@ -22,11 +22,12 @@ public class RiskModel {
 
     /** Constructor of Risk Model*/
     private RiskModel(){
-        MapImport map=new MapImport("oldmaps/test.txt","maps/test.png");
-        //map.printCountries();
-        //map.printContinents();
-        this.countries=map.getCountries();
-        this.continents=map.getContinents();
+        MapImport mapReader=new MapImport("maps/demo.zip");
+        this.map=mapReader.getMap();
+        map.printCountries();
+        map.printContinents();
+        this.countries=map.countries;
+        this.continents=map.continents;
         newGame(2, new String[]{"jeff", "assman"});
 
         this.riskController=new RiskController(this);
@@ -167,13 +168,14 @@ public class RiskModel {
 
     public void mapClicked(Point point){
         Country clickedCountry=pointToCountry(point);
-
+        System.out.printf("(%d,%d):\t",point.x,point.y);
         if(clickedCountry==null){
+            System.out.printf("No Country\n");
             menuBack();
             return;
         }
         //TODO error checking
-        System.out.printf("Country: %s\n",clickedCountry.getName());
+        System.out.printf("%s\n",clickedCountry.getName());
         switch(this.actionContext.phase){
             case DEPLOY_DST:
                 this.actionContext.setPhase(Phase.DEPLOY_ARMY);
@@ -201,17 +203,25 @@ public class RiskModel {
         switch (this.actionContext.phase){
             case DEPLOY_DST:
             case DEPLOY_ARMY:
-                this.actionContext.setPhase(Phase.ATTACK_SRC);
+            case DEPLOY_CONFIRM:
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
                 break;
             case ATTACK_SRC:
             case ATTACK_DST:
             case ATTACK_ARMY:
-            case ATTACK_DICE:
-                this.actionContext.setPhase(Phase.FORTIFY_SRC);
+            case ATTACK_CONFIRM:
+                this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
                 break;
+            case RETREAT_ARMY:
+                retreat(this.actionContext.player,
+                        this.actionContext.srcCountry,
+                        this.actionContext.dstCountry,
+                        0);
+                this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
+            case FORTIFY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
         }
@@ -219,20 +229,28 @@ public class RiskModel {
     public void menuConfirm(){
         //TODO error checking
         switch (this.actionContext.phase) {
-            case DEPLOY_ARMY:
+            case DEPLOY_CONFIRM:
                 deploy(this.actionContext.player,
                        this.actionContext.dstCountry,
                        this.actionContext.srcArmy);
                 this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
                 break;
-            case ATTACK_ARMY:
+            case ATTACK_CONFIRM:
                 attack(this.actionContext.player,
                        this.actionContext.srcCountry,
                        this.actionContext.dstCountry,
                        this.actionContext.srcArmy);
+                this.actionContext.phase=Phase.RETREAT_ARMY;
+                this.actionContext.srcArmy=0;
+                break;
+            case RETREAT_CONFIRM:
+                retreat(this.actionContext.player,
+                        this.actionContext.srcCountry,
+                        this.actionContext.dstCountry,
+                        this.actionContext.srcArmy);
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
                 break;
-            case FORTIFY_ARMY:
+            case FORTIFY_CONFIRM:
                 fortify(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
@@ -245,17 +263,25 @@ public class RiskModel {
         switch(this.actionContext.phase){
             case DEPLOY_DST:
             case DEPLOY_ARMY:
+            case DEPLOY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
                 break;
             case ATTACK_SRC:
             case ATTACK_DST:
             case ATTACK_ARMY:
-            case ATTACK_DICE:
+            case ATTACK_CONFIRM:
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
                 break;
+            case RETREAT_ARMY:
+                retreat(this.actionContext.player,
+                        this.actionContext.srcCountry,
+                        this.actionContext.dstCountry,
+                        0);
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
+            case FORTIFY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
                 break;
         }
@@ -295,7 +321,6 @@ public class RiskModel {
      * @return Boolean true = no error, false = units to attack error
      */
     private boolean attack(Player player, Country attackingCountry, Country defendingCountry, int unitsToAttack){
-        //TODO action context
         if(attackingCountry.getArmy()-unitsToAttack<=0) {
             return false;
         }
@@ -320,6 +345,7 @@ public class RiskModel {
         for(int i=0; i< attackRolls.length; i++){
             if(defendingArmy>0 && attackingArmy>0) {
                 if(attackRolls[i] > defenderRolls[i]){
+                    //TODO bro im so tired
                     //finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
                     defendingArmy--;
                 }
@@ -341,13 +367,9 @@ public class RiskModel {
 
         //Attacker wins
         if(defendingArmy == 0){
-//            finalBattleOutcome.setAttackingCountry(attackingCountry);
-//            finalBattleOutcome.setDefendingCountry(defendingCountry);
-//            finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
-//            finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
-//            finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
-//            finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
-//            finalBattleOutcome.setDidAttackerWin(true);
+            this.actionContext.setSrcArmyDead(unitsToAttack-attackingArmy);
+            this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
+            this.actionContext.setAttackerVictory(true);
 
             //Send the battle data to parser and get number of units to send to new country
             int numToSend = -1;
@@ -364,19 +386,18 @@ public class RiskModel {
         }
         //Attacker loses
         if(attackingArmy == 0){
-//            finalBattleOutcome.setAttackingCountry(attackingCountry);
-//            finalBattleOutcome.setDefendingCountry(defendingCountry);
-//            finalBattleOutcome.setInitialAttackingArmy(unitsToAttack);
-//            finalBattleOutcome.setInitialDefendingArmy(defendingCountry.getArmy());
-//            finalBattleOutcome.setFinalAttackingArmy(attackingArmy);
-//            finalBattleOutcome.setFinalDefendingArmy(defendingArmy);
-//            finalBattleOutcome.setDidAttackerWin(false);
+            this.actionContext.setSrcArmyDead(unitsToAttack-attackingArmy);
+            this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
+            this.actionContext.setAttackerVictory(false);
 
             attackingCountry.removeArmy(unitsToAttack);
             defendingCountry.removeArmy(defendingCountry.getArmy()-defendingArmy);
         }
 
         hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner());
+        return true;
+    }
+    private boolean retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
         return true;
     }
     /**
@@ -443,6 +464,6 @@ public class RiskModel {
     }
 
     public static void main(String[] args) {
-       RiskModel rm=new RiskModel();
+       new RiskModel();
     }
 }

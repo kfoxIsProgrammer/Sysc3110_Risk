@@ -203,7 +203,7 @@ public class RiskView extends JFrame implements ActionListener {
         dicePanelText.setFocusable(false);
         dicePanelText.setOpaque(false);
         dicePanel.add(dicePanelText);
-        optionPanel.add(dicePanel, Phase.ATTACK_DICE.toString());
+        optionPanel.add(dicePanel, Phase.RETREAT_ARMY.toString());
 
         /*for future use
          * optionPanel.add(troopMoverPanelSelectSource(),"troopMoverPanelSelectSource");
@@ -222,7 +222,7 @@ public class RiskView extends JFrame implements ActionListener {
         switch (actionContext.phase) {
             case ATTACK_ARMY:
             case ATTACK_SRC:
-            case ATTACK_DICE:
+            case RETREAT_ARMY:
             case ATTACK_DST:
                 Phase currentPhase = actionContext.phase;
                 confirmPhase.setActionCommand(currentPhase.toString());
@@ -250,11 +250,11 @@ public class RiskView extends JFrame implements ActionListener {
                             confirmPhase.setActionCommand("Back");
                         }
                         break;
-                    case ATTACK_DICE:
+                    case RETREAT_ARMY:
                         ((MapContainer) (mapContainer)).setActive(false);
                         dicePanelEdit(actionContext.diceRolls, actionContext.srcCountry.getOwner(), actionContext.dstCountry.getOwner(), actionContext.attackerVictory);
                         infoPanelEdit(actionContext);
-                        cardLayout.show(dicePanel, Phase.ATTACK_DICE.toString());
+                        cardLayout.show(dicePanel, Phase.RETREAT_ARMY.toString());
                         confirmPhase.setText("Ok");
                         break;
                     default: //ATTACK_SRC is default for now
@@ -294,7 +294,7 @@ public class RiskView extends JFrame implements ActionListener {
      * @param context provided for update
      */
     private void infoPanelEdit(ActionContext context) {
-        if(context.phase== Phase.ATTACK_DICE) {
+        if(context.phase== Phase.RETREAT_ARMY) {
             String victoryString = (context.attackerVictory) ?
                     //won
                     "won. " + context.srcCountry.getName()+" has "+ (context.srcArmy-context.srcArmyDead) + " troops left":
