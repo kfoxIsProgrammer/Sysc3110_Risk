@@ -149,20 +149,20 @@ public class RiskView extends JFrame {
         return infoPanel;
     }
 
-    public void boardUpdate(AttackContext attackContext){
+    public void boardUpdate(ActionContext attackContext){
         //TODO update board with every move
         currentPhase = attackContext.phase.toString();
-        switch(currentPhase){
-            case Phase.ATTACK_DST.toString():
-                attackSelectDefenderPanel(attackContext.srcCountry);
-                cardLayout.show(attackSelectDefenderPanel,Phase.ATTACK_DST.toString());
-                highlightAdjacentCountries(attackContext.highlightedCountries);
-                break;
-            case Phase.ATTACK_SRC: // for now, attack phase is default
-            default:
-                cardLayout.show(attackSelectAttackerPanel,Phase.ATTACK_SRC.toString());
-                break;
-        }
+//        switch(currentPhase){
+//            case Phase.ATTACK_DST.toString():
+//                attackSelectDefenderPanel(attackContext.srcCountry);
+//                cardLayout.show(attackSelectDefenderPanel,Phase.ATTACK_DST.toString());
+//                highlightAdjacentCountries(attackContext.highlightedCountries);
+//                break;
+//            case Phase.ATTACK_SRC: // for now, attack phase is default
+//            default:
+//                cardLayout.show(attackSelectAttackerPanel,Phase.ATTACK_SRC.toString());
+//                break;
+//        }
     }
 
     private void highlightAdjacentCountries(ArrayList<Country> countries){
@@ -174,11 +174,11 @@ public class RiskView extends JFrame {
         insertMapImage();
         for(Country c: countries){
             JLabel countryLabel = new JLabel(c.getArmy()+"");
-            countryLabel.setLocation(c.getVertices().get(0).getKey(),c.getVertices().get(0).getValue());
+            countryLabel.setLocation(c.getVertices().get(0).x,c.getVertices().get(0).y);
             countryLabel.setOpaque(true);
             countryLabel.setBackground(Color.blue);
             countryLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            countryLabel.setBounds(c.getVertices().get(0).getKey(),c.getVertices().get(0).getValue(),35,15);
+            countryLabel.setBounds(c.getVertices().get(0).x,c.getVertices().get(0).y,35,15);
         }
     }
 }
