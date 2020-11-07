@@ -34,6 +34,7 @@ public class RiskModel {
 
         this.riskController=new RiskController(this);
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
+        updateView();
 
         this.play();
     }
@@ -95,6 +96,7 @@ public class RiskModel {
         countriesArray = ran.toArray(countriesArray);
         this.countries=countriesArray;
         this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
+
     }
     /**
      * Main control function for the Risk game
@@ -204,7 +206,7 @@ public class RiskModel {
                 this.actionContext.setDstCountry(clickedCountry);
                 break;
         }
-        //updateView();
+        updateView();
     }
     public void menuSkip(){
         switch (this.actionContext.phase){

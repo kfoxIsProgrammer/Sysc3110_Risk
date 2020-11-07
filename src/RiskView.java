@@ -48,6 +48,8 @@ public class RiskView extends JFrame implements ActionListener {
     /**JTextArea that gets updated as the game goes on**/
     private JTextArea infoArea;
 
+    private JPanel optionPanel;
+
     /**constructor for RiskView
      * @param controller controller for the RiskView
      * @param modelMapImage Buffered image to be used as the map background
@@ -63,6 +65,7 @@ public class RiskView extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
 
+        setResizable(false);
         //Constraints for the placement of MapPanel,SidePanel
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.NONE;
@@ -70,6 +73,7 @@ public class RiskView extends JFrame implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
         add(mapPanel(), gbc);
+        pack();
 
         // sidePanel for information, action and outcomes
         gbc.anchor = GridBagConstraints.NORTHEAST;
@@ -124,9 +128,10 @@ public class RiskView extends JFrame implements ActionListener {
         confirmPhase = new JButton();
         confirmPhase.setSize(150, 40);
 
-        JButton skipButton = new JButton();
+        JButton skipButton = new JButton("Skip");
+
         skipButton.setSize(50, 40);
-        skipButton.setActionCommand("SkipPhase");
+        skipButton.setActionCommand("skip");
 
 
         confirmPhase.addActionListener(riskController);
@@ -134,6 +139,8 @@ public class RiskView extends JFrame implements ActionListener {
 
         buttonPanel.add(confirmPhase, BorderLayout.WEST);
         buttonPanel.add(skipButton, BorderLayout.EAST);
+
+        sidePanel.add(buttonPanel,BorderLayout.SOUTH);
 
         sidePanel.setSize(new Dimension(200, height));
 
@@ -162,7 +169,7 @@ public class RiskView extends JFrame implements ActionListener {
      */
     private JPanel optionPanel(int height) {
         // cardLayout with other panels that change based on the current phase
-        JPanel optionPanel = new JPanel();
+        optionPanel = new JPanel();
         cardLayout = new CardLayout();
 
         optionPanel.setLayout(cardLayout);
@@ -230,15 +237,15 @@ public class RiskView extends JFrame implements ActionListener {
                 switch (currentPhase) {
                     case ATTACK_DST:
                         ((MapContainer) (mapContainer)).setActive(true);
-                        highlightAdjacentCountries(actionContext.highlightedCountries, actionContext.srcCountry);
+                        highlightAdjacentCountries(actionContext.srcCountry.getAdjacentCountries(), actionContext.srcCountry);
                         attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
-                        cardLayout.show(attackDstPanel, Phase.ATTACK_DST.toString());
+                        cardLayout.show(optionPanel, Phase.ATTACK_DST.toString());
                         confirmPhase.setText("Confirm Defender");
                         break;
                     case ATTACK_ARMY:
                         ((MapContainer) (mapContainer)).setActive(false);
                         attackConfirmPanelEdit(actionContext.dstCountry, actionContext.srcCountry);
-                        cardLayout.show(attackConfirmPanel, Phase.ATTACK_ARMY.toString());
+                        cardLayout.show(optionPanel, Phase.ATTACK_ARMY.toString());
                         confirmPhase.setEnabled(false);
                         int troops = troopSelectPanel(actionContext.srcCountry);
                         confirmPhase.setEnabled(true);
@@ -254,13 +261,13 @@ public class RiskView extends JFrame implements ActionListener {
                         ((MapContainer) (mapContainer)).setActive(false);
                         dicePanelEdit(actionContext.diceRolls, actionContext.srcCountry.getOwner(), actionContext.dstCountry.getOwner(), actionContext.attackerVictory);
                         infoPanelEdit(actionContext);
-                        cardLayout.show(dicePanel, Phase.RETREAT_ARMY.toString());
+                        cardLayout.show(optionPanel, Phase.RETREAT_ARMY.toString());
                         confirmPhase.setText("Ok");
                         break;
                     default: //ATTACK_SRC is default for now
                         ((MapContainer) (mapContainer)).setActive(true);
                         attackSrcPanelEdit(actionContext.player);
-                        cardLayout.show(attackSrcPanel, Phase.ATTACK_SRC.toString());
+                        cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
                         confirmPhase.setText("Confirm Attacker");
                         break;
                 }
@@ -279,7 +286,7 @@ public class RiskView extends JFrame implements ActionListener {
      * @param Src country being used to attack
      */
     private void attackDstPanelEdit(Country Src) {
-        attackDstText.setText("Select country to attack using " + Src);
+        attackDstText.setText("Select country to attack using " + Src.getName());
     }
     /**
      * edits the attackConfirmPanel with corresponding context information
@@ -287,7 +294,7 @@ public class RiskView extends JFrame implements ActionListener {
      * @param srcCountry the country attacking
      */
     private void attackConfirmPanelEdit(Country dstCountry, Country srcCountry) {
-        attackConfirmText.setText("Confirm attack on " + dstCountry + " using " + srcCountry);
+        attackConfirmText.setText("Confirm attack on " + dstCountry.getName() + " using " + srcCountry.getName());
     }
     /**
      * adds information to the infoPanel based on the outcomes from context
@@ -345,8 +352,11 @@ public class RiskView extends JFrame implements ActionListener {
             countryLabel.setText(c.getArmy() + "");
             countryLabel.setHorizontalAlignment(SwingConstants.CENTER);
             countryLabel.setBounds(c.getCenterCoordinates().x,c.getCenterCoordinates().y, 35, 15);
-            mapContainer.add(countryLabel);
+            mapLayeredPane.add(countryLabel,Integer.valueOf(2));
         }
+
+        mapLayeredPane.validate();
+        mapLayeredPane.repaint();
     }
     /**
      * creates a popup window with a slider that lets the user decide the number of troops to send to battle
@@ -356,7 +366,7 @@ public class RiskView extends JFrame implements ActionListener {
     private int troopSelectPanel(Country attacker) {
         JFrame parent = new JFrame();
         JOptionPane optionPane = new JOptionPane();
-        JSlider slider = new JSlider(1, attacker.getArmy() - 1);
+        JSlider slider = new JSlider(1, attacker.getArmy() -1);
         slider.setMajorTickSpacing(5);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
@@ -373,7 +383,7 @@ public class RiskView extends JFrame implements ActionListener {
         JDialog dialog = optionPane.createDialog(parent, "Select attacking troops");
         dialog.setVisible(true);
         if ((Integer) optionPane.getValue() == 0) {
-            return (Integer) (optionPane.getInputValue());
+            return (Integer) Integer.parseInt((optionPane.getInputValue().toString()));
         } else {
             return -1; //player cancelled selection
         }
