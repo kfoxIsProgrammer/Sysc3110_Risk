@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.ArrayList;
 
 /**Describing a country on the map in a game of RISK
  *
@@ -10,13 +9,14 @@ public class Country {
     /** Name of the country **/
     private final String name;
     /** List of the county's vertices **/
-    private final ArrayList<Point> vertices;
+    private final Point[] vertices;
     /** Bounding coordinates for the country **/
     private final int minX,minY,maxX,maxY;
     /** The coordinates of the country's center **/
     private final Point centerCoordinates;
     /** ArrayList of countries that lie adjacent to the current country **/
-    private ArrayList<Country> adjacentCountries;
+    private transient Country[] adjacentCountries;
+    private int[] adjacentCountriesID;
     /** Name of the owner **/
     private Player owner;
     /** Army currently occupying this country **/
@@ -32,7 +32,7 @@ public class Country {
      * @param maxX  Maximum X coordinate from the vertices
      * @param maxY  Maximum Y coordinate from the vertices
      */
-    public Country(String name, ArrayList<Point> vertices, int minX, int minY, int maxX, int maxY, Point centerCoordinates) {
+    public Country(String name, Point[] vertices, int minX, int minY, int maxX, int maxY, Point centerCoordinates) {
         this.name = name;
         this.vertices = vertices;
         this.minX = minX;
@@ -62,11 +62,11 @@ public class Country {
             Point ray2=point;
 
             //Get every connected pair of vertices
-            ArrayList<Point> vertices=this.getVertices();
-            int numSides=vertices.size();
+            Point[] vertices=this.getVertices();
+            int numSides=vertices.length;
             for(int v1=0,v2=1;v1<numSides;v1++,v2=(v2+1)%numSides){
-                Point vertex1=vertices.get(v1);
-                Point vertex2=vertices.get(v2);
+                Point vertex1=vertices[v1];
+                Point vertex2=vertices[v2];
 
                 //Get equation of the polygon's line in the form Ax+By+C=0
                 int eqnA,eqnB,eqnC;
@@ -150,8 +150,11 @@ public class Country {
      *
      * @param adjacentCountries The adjacent country
      */
-    public void addAdjacentCountries(ArrayList<Country> adjacentCountries){
-        this.adjacentCountries =adjacentCountries;
+    public void setAdjacentCountries(Country[] adjacentCountries) {
+        this.adjacentCountries = adjacentCountries;
+    }
+    public void setAdjacentCountriesID(int[] adjacentCountriesID) {
+        this.adjacentCountriesID = adjacentCountriesID;
     }
 
     /**
@@ -163,7 +166,7 @@ public class Country {
     /**
      * @return The list of the country's defining vertices
      */
-    public ArrayList<Point> getVertices() {
+    public Point[] getVertices() {
         return vertices;
     }
     /**
@@ -199,7 +202,7 @@ public class Country {
     /**
      * @return A list of adjacent countries
      */
-    public ArrayList<Country> getAdjacentCountries() {
+    public Country[] getAdjacentCountries() {
         return adjacentCountries;
     }
     /**

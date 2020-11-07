@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+
 
 /**Describing a Continent on the map in a game of RISK
  * @author  Kshitij Sawhney
@@ -9,7 +9,7 @@ public class Continent {
     private String name;
 
     /**List of countries within the continent*/
-    private ArrayList<Country> countryList;
+    private Country[] countryList;
 
     /**Number of troops received as bonus for full ownership*/
     private int bonusArmyValue;
@@ -20,7 +20,7 @@ public class Continent {
      * @param countryList list of contained countries
      * @param bonusArmyValue troop bonus
      */
-    public Continent(String name, ArrayList<Country> countryList,int bonusArmyValue){
+    public Continent(String name, Country[] countryList,int bonusArmyValue){
         this.name=name;
         this.countryList=countryList;
         this.bonusArmyValue=bonusArmyValue;
@@ -40,7 +40,7 @@ public class Continent {
 
     /**Getter for countryList
      * @return list of countries contained within the continent*/
-    public ArrayList<Country> getCountryList() {
+    public Country[] getCountryList() {
         return countryList;
     }
 }

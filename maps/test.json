@@ -1,0 +1,60 @@
+{
+  "map": {
+    "countries": [{
+		  "name": "Italy",
+		  "center": [128,71],
+		  "vertices": [[100,35],[220,50],[145,110],[45,90]]
+		},{
+		  "name": "N J",
+		  "center": [78,157],
+		  "vertices": [[45,90],[145,190],[45,190]]
+		},{
+		  "name": "USA",
+		  "center": [112,130],
+		  "vertices": [[45,90],[145,110],[145,190]]
+		},{
+		  "name": "P C D",
+		  "center": [195,90],
+		  "vertices": [[220,50],[220,110],[145,110]]
+		},{
+		  "name": "ass",
+		  "center": [183,123],
+		  "vertices": [[145,110],[220,110],[220,135],[145,135]]
+		},{
+		  "name": "P C A",
+		  "center": [183,650],
+		  "vertices": [[145,135],[220,135],[220,190],[145,190]]
+		}
+	],
+    "continents": [{
+          "name": "North America",
+          "bonus": 10,
+          "countryIDs": [0,1,2]
+        },{
+          "name": "Asia",
+          "bonus": 15,
+          "countryIDs": [3,4,5]
+        }
+	],
+    "adjacencies": [{
+			"rootCountryID":0,
+			"countryIDs":[2,3]
+		},{
+			"rootCountryID":1,
+			"countryIDs":[2]
+		},{
+			"rootCountryID":2,
+			"countryIDs":[0,4,5]
+		},{
+			"rootCountryID":3,
+			"countryIDs":[0,4]
+		},{
+			"rootCountryID":4,
+			"countryIDs":[2,3,5]
+		},{
+			"rootCountryID":5,
+			"countryIDs":[2,4]
+		}
+	]
+  }
+}

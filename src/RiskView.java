@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.CharArrayWriter;
 import java.util.Arrays;
 
 /**
@@ -368,7 +367,7 @@ public class RiskView extends JFrame implements ActionListener {
 
         for (Country c : countries) {
             JLabel countryLabel = new JLabel(c.getArmy() + "");
-            countryLabel.setLocation(c.getVertices().get(0).x, c.getVertices().get(0).y);
+            countryLabel.setLocation(c.getVertices()[0].x, c.getVertices()[0].y);
             countryLabel.setOpaque(true);
             countryLabel.setBackground(c.getOwner().getColor());
             countryLabel.setText(c.getArmy() + "");

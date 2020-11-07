@@ -6,16 +6,15 @@
  */
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.*;
 
 public class RiskModel {
     /**List of all the players in the game **/
     ArrayList<Player> players;
     /**   list of the countries in the game **/
-    ArrayList<Country> countries;
+    Country[] countries;
     /** List of all the continents in the game **/
-    ArrayList<Continent> continents;
+    Continent[] continents;
     /** File path for the map being used**/
     String mapImagePath;
     /** The current action context **/
@@ -61,7 +60,7 @@ public class RiskModel {
         }
 
         //make randomized list of the countries
-        ArrayList<Country> ran = countries;
+        ArrayList<Country> ran = (ArrayList<Country>) Arrays.asList(countries);
         Collections.shuffle(ran, rand);
         Stack<Country> addStack = new Stack<>();
         addStack.addAll(ran);
@@ -412,7 +411,7 @@ public class RiskModel {
      * Return the ArrayList of countries.
      * @return ArrayList containing all the country objects
      */
-    public ArrayList<Country> getCountries(){
+    public Country[] getCountries(){
         return this.countries;
     }
     /**
