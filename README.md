@@ -19,14 +19,17 @@ __Deliverables:__
 6. Javadoc 
 
 __Changes from previous iteration:__
+
 This is the second iteration of the project. The Graphical User Interface was implemented to interact with the user.
 We have incorporated a map/data loader in anticipation for milestone 4. 
 The model sends tranactional State information to the view using a Context class.
 
 __Known issues:__
+
 No feedback when entering the wrong commands in the attack phase. It simply takes you back to the main command menu.
 
 __Roadmap:__
+
 The next goal for our game is to introduce the playable Deploy and Fortify phases.
 As well we want to further refine our design based on TA feedback to increase class cohesion.
 The final milestone is to add a save feature and a method to import custom maps.
