@@ -26,7 +26,7 @@ The model sends tranactional State information to the view using a Context class
 
 __Known issues:__
 
-No feedback when entering the wrong commands in the attack phase. It simply takes you back to the main command menu.
+__ToDO: Add the known issues after testing__
 
 __Roadmap:__
 
