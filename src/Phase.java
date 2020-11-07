@@ -10,18 +10,22 @@ public enum Phase {
     DEPLOY_DST,
     /** Deploy phase selecting number of troops to deploy **/
     DEPLOY_ARMY,
+    /**Deploy phase confirmation**/
+    DEPLOY_CONF,
     /** Attack phase selecting a source country **/
     ATTACK_SRC,
     /** Attack phase selecting a destination country **/
     ATTACK_DST,
     /** Attack phase selecting number of troops to send **/
     ATTACK_ARMY,
-    /** Attack phase displaying result of battle **/
+    /**Attack phase confirmation**/
     ATTACK_DICE,
     /** Fortify phase selecting a source country **/
     FORTIFY_SRC,
     /** Fortify phase selecting a destination country **/
     FORTIFY_DST,
     /** Fortify phase selecting number of troops to send **/
-    FORTIFY_ARMY
+    FORTIFY_ARMY,
+    /**Fortify phase confirmation**/
+    FORTIFY_CONF
 }
