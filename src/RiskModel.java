@@ -38,19 +38,16 @@ public class RiskModel {
         this.actionContext = new ActionContext(Phase.NEW_GAME, null);
         updateView();
 
-        this.play();
     }
 
     public void newGameHelper(String stringToProcess){
-        //System.out.println(stringToProcess);
 
         String[] values = stringToProcess.split(" ");
         String[] valuesForGame = new String[values.length-1];
         for(int i =1; i< values.length; i++){
             valuesForGame[i-1] = values[i];
         }
-
-        newGame(this.actionContext.srcArmy, values);
+        newGame(this.actionContext.srcArmy, valuesForGame);
     }
 
     /**
@@ -74,6 +71,7 @@ public class RiskModel {
 
         players=new Player[playerNum];
         for(int i = 0; i < playerNum; i++){
+
             players[i]=new Player(playerNames[i], startingArmySize, colorsToAllocate[i]);
         }
 
@@ -138,6 +136,7 @@ public class RiskModel {
             }*/
         }
 
+        System.out.println(""+ count + (this.players.length-1));
         if(count >= this.players.length-1){
             //Set the game to the Game over
             this.actionContext = new ActionContext(Phase.GAME_OVER, winner);

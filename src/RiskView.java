@@ -2,6 +2,8 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -293,7 +295,11 @@ public class RiskView extends JFrame implements ActionListener {
                 selectFrame.setVisible(false);
                 labelCountries(countryArray,true);
                 ((MapContainer) (mapContainer)).setActive(true);
-                attackSrcPanelEdit(actionContext.player);
+                try {
+                    attackSrcPanelEdit(actionContext.player);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
                 confirmPhase.setText("Confirm Attacker");
                 confirmPhase.setVisible(false);
@@ -394,8 +400,10 @@ public class RiskView extends JFrame implements ActionListener {
      * edits the attackSrcPanel with information from a context
      * @param player player whose turn is to attack
      */
-    private void attackSrcPanelEdit(Player player) {
+    private void attackSrcPanelEdit(Player player) throws BadLocationException {
+        attackSrcText.getHighlighter().removeAllHighlights();
         attackSrcText.setText(player.getName() + ", select attacking country from map");
+        attackSrcText.getHighlighter().addHighlight(0,player.getName().length(), new DefaultHighlighter.DefaultHighlightPainter(player.getColor()));
     }
     /**
      * edits the text in attackSrcPanel based on the country attacking
