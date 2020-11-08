@@ -252,8 +252,9 @@ public class RiskView extends JFrame implements ActionListener {
                         highlightAdjacentCountries(actionContext.srcCountry.getAdjacentCountries(), actionContext.srcCountry);
                         attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
                         cardLayout.show(optionPanel, Phase.ATTACK_DST.toString());
-                        confirmPhase.setText("Confirm Defender");
-                        confirmPhase.setVisible(false);
+                        confirmPhase.setText("back");
+                        confirmPhase.setActionCommand("back");
+                        confirmPhase.setVisible(true);
                         break;
                     case ATTACK_ARMY:
                         ((MapContainer) (mapContainer)).setActive(false);
