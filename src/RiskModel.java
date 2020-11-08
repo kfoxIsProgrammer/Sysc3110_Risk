@@ -47,7 +47,7 @@ public class RiskModel {
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
 
-        Color[] colorsToAllocate = {new Color(255, 255, 0), new Color(244,244,244),
+        Color[] colorsToAllocate = {new Color(200, 150, 0), new Color(125,125,125),
         new Color(255,0,0), new Color(0,255,0),
         new Color(255,0,255), new Color(0,255,255)};
 
@@ -297,7 +297,6 @@ public class RiskModel {
                        this.actionContext.srcCountry,
                        this.actionContext.dstCountry,
                        this.actionContext.srcArmy);
-
                 this.actionContext.phase=Phase.RETREAT_ARMY;
                 break;
             case RETREAT_CONFIRM:
