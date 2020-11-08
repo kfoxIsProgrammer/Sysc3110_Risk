@@ -52,6 +52,7 @@ public class RiskView extends JFrame implements ActionListener {
     private JTextArea infoArea;
 
     private JPanel optionPanel;
+    private JButton forfeitButton;
 
     /**constructor for RiskView
      * @param controller controller for the RiskView
@@ -132,7 +133,7 @@ public class RiskView extends JFrame implements ActionListener {
         confirmPhase.setSize(200, 40);
 
         JButton skipButton = new JButton("Skip");
-        JButton forfeitButton = new JButton("Forfeit");
+        forfeitButton = new JButton("Forfeit");
         forfeitButton.setActionCommand("Forfeit");
         forfeitButton.setSize(50,40);
 
@@ -243,6 +244,7 @@ public class RiskView extends JFrame implements ActionListener {
      * @param actionContext the current context for the update
      */
     public void boardUpdate(ActionContext actionContext) {
+        forfeitButton.setText("Forfeit");
         switch (actionContext.phase) {
             case ATTACK_SRC:
                 labelCountries(countryArray,true);
@@ -253,7 +255,7 @@ public class RiskView extends JFrame implements ActionListener {
                 confirmPhase.setVisible(false);
                 break;
             case ATTACK_DST:
-                       ((MapContainer) (mapContainer)).setActive(true);
+                ((MapContainer) (mapContainer)).setActive(true);
                 if(isNull(actionContext.highlightedCountries)){
                     displayPopup("Cannot attack with 1 troop, select a different country");
                     confirmPhase.setText("Select another country");
@@ -312,14 +314,15 @@ public class RiskView extends JFrame implements ActionListener {
                         confirmPhase.setVisible(true);
                         break;
             case FORFEIT_CLICKED:
+                confirmPhase.setVisible(false);
                 if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + "You are about to forfeit your battle! Confirm", "WARNING",
                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    ActionEvent e = new ActionEvent(null,1,"ForfeitConfimed");
-                    riskController.actionPerformed(e);
+                    forfeitButton.setText("Confirm forfeit?");
+                    forfeitButton.setActionCommand("Forfeit");
                 } else {
-                   riskController.actionPerformed(new ActionEvent(confirmPhase,2,"back"));
+                    confirmPhase.setText("Cancel forfeit");
+                    confirmPhase.setActionCommand("back");
                 }
-
                     default:
                         System.out.println(actionContext.phase);
                 break;
