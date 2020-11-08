@@ -68,7 +68,7 @@ public class RiskView extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
 
-        setResizable(true);
+        setResizable(false);
         //Constraints for the placement of MapPanel,SidePanel
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.NONE;
@@ -241,6 +241,7 @@ public class RiskView extends JFrame implements ActionListener {
     public void boardUpdate(ActionContext actionContext) {
         switch (actionContext.phase) {
             case ATTACK_SRC:
+                labelCountries(countryArray,true);
                 ((MapContainer) (mapContainer)).setActive(true);
                 attackSrcPanelEdit(actionContext.player);
                 cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
@@ -290,7 +291,7 @@ public class RiskView extends JFrame implements ActionListener {
                                     confirmPhase.setActionCommand("" + retreatingTroops);
                                 } else {
                                     confirmPhase.setText("Ok");
-                                    confirmPhase.setActionCommand("back");
+                                   confirmPhase.setActionCommand("skip");
                                 }
                             }
                         }else{

@@ -245,7 +245,7 @@ public class RiskModel {
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
                         0);
-                this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player); //Should be Fortify
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
@@ -322,6 +322,9 @@ public class RiskModel {
     public void menuNumTroops(int numTroops){
         switch (this.actionContext.phase) {
             case DEPLOY_ARMY:
+            case RETREAT_ARMY:
+                actionContext.setPhase(Phase.RETREAT_CONFIRM);
+                menuConfirm();
             case ATTACK_ARMY:
                 this.actionContext.setSrcArmy(numTroops);
                 //ADDED FOR TESTING
