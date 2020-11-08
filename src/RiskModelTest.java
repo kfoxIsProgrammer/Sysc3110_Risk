@@ -34,6 +34,14 @@ public class RiskModelTest extends TestCase {
        }
        return null;
    }
+
+    /***
+     *  Checks all the countries owned by the passed in user, and chooses any country with an army over 1 and with a
+     *  adjacent country that is owned by an enemy so that it can attack.
+     * @param playerOwnedCountries
+     * @param currentUser
+     * @return A valid Country object
+     */
     public Country getValidSrcCountryforAttack(ArrayList<Country> playerOwnedCountries, Player currentUser){
         Country ValidSrcCountry = null;
         boolean thereIsAnEnemyAdjacentCountry;
@@ -53,6 +61,12 @@ public class RiskModelTest extends TestCase {
         return(ValidSrcCountry);
     }
 
+    /***
+     * Checks all the adjacent countries of the passed in Country count and finds one that is not owned by the user.
+     * @param count Passed in Country
+     * @param currentUser user that the passed in country belongs too.
+     * @return
+     */
     public Country getValidDstCountryForAttack(Country count, Player currentUser){
         Country validDstCountry = null;
         for(int i = 0; i < count.getAdjacentCountries().length; i++){
