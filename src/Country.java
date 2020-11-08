@@ -191,6 +191,10 @@ public class Country {
     /**
      * @return The Name of the country
      */
+    public int[] getMinMaxValues(){
+        int[] arrayOfMaxAndMin = {minX,maxX,minY,maxY};
+        return arrayOfMaxAndMin;
+    }
     public String getName() {
         return name;
     }
