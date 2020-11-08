@@ -28,7 +28,7 @@ public class ActionContext {
     /** Whether or not the attacker won **/
     public  boolean attackerVictory;
     /** The dice roll information **/
-    public  int diceRolls[][];
+    public  Integer diceRolls[][];
 
     /** Constructor for ActionContext **/
     ActionContext(Phase phase, Player player){
@@ -121,7 +121,7 @@ public class ActionContext {
      * Setter for the dice rolls during an attack, to be displayed later
      * @param diceRolls the 2d array representing dice rolls
      */
-    public void setDiceRolls(int[][] diceRolls) {
+    public void setDiceRolls(Integer[][] diceRolls) {
         this.diceRolls = diceRolls;
     }
 }

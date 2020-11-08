@@ -249,6 +249,7 @@ public class RiskModel {
                        this.actionContext.srcCountry,
                        this.actionContext.dstCountry,
                        this.actionContext.srcArmy);
+
                 this.actionContext.phase=Phase.RETREAT_ARMY;
                 this.actionContext.srcArmy=0;
                 break;
@@ -301,6 +302,10 @@ public class RiskModel {
             case ATTACK_ARMY:
             case FORTIFY_ARMY:
                 this.actionContext.setSrcArmy(numTroops);
+                //ADDED FOR TESTING
+                actionContext.setPhase(Phase.ATTACK_CONFIRM);
+                menuConfirm();
+
                 break;
         }
     }
@@ -363,14 +368,12 @@ public class RiskModel {
                     attackingArmy--;
                 }
 
-
                 //Set the new owner and initial value
                 defendingCountry.setArmy(attackingArmy);
                 attackingCountry.removeArmy(attackingArmy);
                 defendingCountry.getOwner().removeCountry(defendingCountry);
                 defendingCountry.setOwner(attackingCountry.getOwner());
                 attackingCountry.getOwner().addCountry(defendingCountry);
-
             }
         }
 
@@ -404,6 +407,16 @@ public class RiskModel {
         }
 
         hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner());
+
+        //ADDED FOR TESTING
+        System.out.println(actionContext.attackerVictory);
+        this.actionContext.setPhase(Phase.RETREAT_ARMY);
+      Integer[][] dicerolls = new Integer[2][];
+       dicerolls[0]=attackRolls;
+       dicerolls[1]=defenderRolls;
+        actionContext.setDiceRolls(dicerolls);
+        riskView.boardUpdate(actionContext);
+
         return true;
     }
     private boolean retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
