@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.sql.Array;
 import java.util.*;
 
 /**
@@ -566,5 +567,18 @@ public class RiskModel {
     }
 
     public void sendAction(String actionCommand) {
+    }
+
+    public void playerForfeit() {
+        if(actionContext.phase==Phase.FORFEIT_CLICKED){
+            actionContext.player.hasLost();
+            if(gameIsOver()){
+                updateView();
+            }else{
+                actionContext = new ActionContext(Phase.ATTACK_SRC,nextPlayer(actionContext.player));
+            }
+        }
+        actionContext.setPhase(Phase.FORFEIT_CLICKED);
+        updateView();
     }
 }

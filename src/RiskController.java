@@ -73,5 +73,10 @@ public class RiskController implements ActionListener {
         else if(isInt(e.getActionCommand())){
             riskModel.menuNumTroops(Integer.parseInt(e.getActionCommand()));
         }
+        else if(e.getActionCommand().equals("Forfeit")){
+            riskModel.playerForfeit();
+        }else if(e.getActionCommand().equals("ForfeitConfirmed")){
+            riskModel.playerForfeit();
+        }
     }
 }
