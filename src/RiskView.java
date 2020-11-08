@@ -277,6 +277,7 @@ public class RiskView extends JFrame implements ActionListener {
                         infoPanelEdit(actionContext);
                         cardLayout.show(optionPanel, Phase.RETREAT_ARMY.toString());
                         confirmPhase.setText("Ok");
+                        confirmPhase.setActionCommand("skip");
                         break;
                     default: //ATTACK_SRC is default for now
                        ((MapContainer) (mapContainer)).setActive(true);
@@ -316,15 +317,16 @@ public class RiskView extends JFrame implements ActionListener {
      */
     private void infoPanelEdit(ActionContext context) {
         if(context.phase== Phase.RETREAT_ARMY) {
-            String victoryString = (context.attackerVictory) ?
-                    //won
-                    "won. " + context.srcCountry.getName()+" has "+ (context.srcArmy-context.srcArmyDead) + " troops left":
-                    //lost
-                    "lost. "+ context.srcCountry.getName()+" has "+ (context.srcArmy-context.srcArmyDead) + " troops left and "+
-                            context.dstCountry.getName()+" has "+ (context.dstArmy-context.dstArmyDead) + " troops left";
-            //infoArea.append("===========================");
-            infoArea.append(context.srcCountry.getOwner().getName() +  " used " +context.srcCountry.getName()+
-                    " to attack "+ context.dstCountry.getName() + " and "+victoryString);
+
+            String vicString =
+                    context.srcCountry.getName() +" attacked " + context.dstCountry.getName();
+            String battleOutcomes = context.srcCountry.getName() +" has lost " + (context.srcArmyDead)+" troops.";
+            String battleOutcomes2 = context.dstCountry.getName() +" has lost " + (context.dstArmyDead)+" troops.";
+
+            infoArea.append("Player: "+ context.srcCountry.getOwner().getName() +"\n");
+            infoArea.append(vicString+"\n");
+            infoArea.append(battleOutcomes+"\n");
+            infoArea.append(battleOutcomes2+"\n");
         }
     }
     /**

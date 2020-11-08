@@ -130,7 +130,7 @@ public class RiskModel {
      * @param thatAttacked The attacking player
      * @param thatDefended The defending player
      */
-    private void hasAnyoneLost(Player thatAttacked, Player thatDefended){
+    private boolean hasAnyoneLost(Player thatAttacked, Player thatDefended){
         Player[] playersToCheck = {thatAttacked,thatDefended};
 
         for(Player player : playersToCheck){
@@ -150,6 +150,7 @@ public class RiskModel {
                 player.hasLost();
             }
         }
+        return false;
     }
     /**
      * Checks if a point is inside any country
@@ -234,6 +235,7 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
         }
+        updateView();
     }
     public void menuConfirm(){
         //TODO error checking
@@ -251,7 +253,7 @@ public class RiskModel {
                        this.actionContext.srcArmy);
 
                 this.actionContext.phase=Phase.RETREAT_ARMY;
-                this.actionContext.srcArmy=0;
+
                 break;
             case RETREAT_CONFIRM:
                 retreat(this.actionContext.player,
@@ -268,6 +270,7 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
         }
+        updateView();
     }
     public void menuBack(){
         switch(this.actionContext.phase){
@@ -295,6 +298,7 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
                 break;
         }
+        updateView();
     }
     public void menuNumTroops(int numTroops){
         switch (this.actionContext.phase) {
@@ -305,7 +309,6 @@ public class RiskModel {
                 //ADDED FOR TESTING
                 actionContext.setPhase(Phase.ATTACK_CONFIRM);
                 menuConfirm();
-
                 break;
         }
     }
@@ -347,79 +350,93 @@ public class RiskModel {
 
         //Get int array of dice rolls
         for(int i=0; i< attackRolls.length; i++){
-            attackRolls[i] = (int)(Math.ceil(Math.random()*5));
-            defenderRolls[i] = (int)(Math.ceil(Math.random()*5));
+            if(i+1 <= unitsToAttack) {
+                attackRolls[i] = (int) (Math.ceil(Math.random() * 5));
+            }else{
+                attackRolls[i] = 0;
+            }
+            if(i+1 <= defendingCountry.getArmy()) {
+                defenderRolls[i] = (int) (Math.ceil(Math.random() * 5));
+            }else{
+                defenderRolls[i] = 0;
+            }
         }
 
         //Sort each array in desc order
         Arrays.sort(attackRolls, Collections.reverseOrder());
         Arrays.sort(defenderRolls, Collections.reverseOrder());
 
+        Queue<Integer> attackersQueue = new LinkedList<>();
+        Queue<Integer> defenderQueue = new LinkedList<>();
+
+        for(int val: attackRolls){
+            attackersQueue.add(val);
+        }
+        for(int val: defenderRolls){
+            defenderQueue.add(val);
+        }
+
         //Compare rolls until someone loses
         for(int i=0; i< attackRolls.length; i++){
-            if(defendingArmy>0 && attackingArmy>0) {
-                if(attackRolls[i] > defenderRolls[i]){
-                    //TODO bro im so tired
-                    //finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
+            int attackVal = attackersQueue.peek();
+            int defendVal = defenderQueue.peek();
+            if((!attackersQueue.isEmpty() && !defenderQueue.isEmpty())
+                    && (attackingArmy >0 && defendingArmy>0)) {
+                if(attackVal > defendVal ){
+                    defenderQueue.remove();
                     defendingArmy--;
                 }
                 else{
-                    //finalBattleOutcome.addDiceRollBattle(new Integer[]{attackRolls[i], defenderRolls[i]});
+                    attackersQueue.remove();
                     attackingArmy--;
                 }
-
-                //Set the new owner and initial value
-                defendingCountry.setArmy(attackingArmy);
-                attackingCountry.removeArmy(attackingArmy);
-                defendingCountry.getOwner().removeCountry(defendingCountry);
-                defendingCountry.setOwner(attackingCountry.getOwner());
-                attackingCountry.getOwner().addCountry(defendingCountry);
             }
         }
+
+
+        System.out.println(attackingArmy + " " +defendingArmy);
+
+        //Send dice rolls
+        actionContext.setDiceRolls(new Integer[][]{attackRolls, defenderRolls});
 
         //Attacker wins
         if(defendingArmy == 0){
             this.actionContext.setSrcArmyDead(unitsToAttack-attackingArmy);
+            this.actionContext.setDstArmy(defendingCountry.getArmy());
             this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
             this.actionContext.setAttackerVictory(true);
+            this.actionContext.setPhase(Phase.RETREAT_CONFIRM);
 
-            //Send the battle data to parser and get number of units to send to new country
-            int numToSend = -1;
-            while(numToSend < 0 && numToSend < attackingArmy){
-                //numToSend = parser.battleOutcome(finalBattleOutcome);
-            }
 
-            //Set the new owner and initial value
-            defendingCountry.setArmy(attackingArmy-numToSend);
-            attackingCountry.removeArmy(attackingArmy-numToSend);
-            defendingCountry.getOwner().removeCountry(defendingCountry);
-            defendingCountry.setOwner(attackingCountry.getOwner());
-            attackingCountry.getOwner().addCountry(defendingCountry);
         }
         //Attacker loses
         if(attackingArmy == 0){
             this.actionContext.setSrcArmyDead(unitsToAttack-attackingArmy);
             this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
+            this.actionContext.setDstArmy(defendingCountry.getArmy());
             this.actionContext.setAttackerVictory(false);
+            this.actionContext.setPhase(Phase.ATTACK_SRC);
 
-            attackingCountry.removeArmy(unitsToAttack);
-            defendingCountry.removeArmy(defendingCountry.getArmy()-defendingArmy);
+
         }
 
-        hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner());
+        if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
 
-        //ADDED FOR TESTING
-        System.out.println(actionContext.attackerVictory);
-        this.actionContext.setPhase(Phase.RETREAT_ARMY);
-      Integer[][] dicerolls = new Integer[2][];
-       dicerolls[0]=attackRolls;
-       dicerolls[1]=defenderRolls;
-        actionContext.setDiceRolls(dicerolls);
+        }
+
+
         riskView.boardUpdate(actionContext);
 
         return true;
     }
     private boolean retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
+
+        defendingCountry.setArmy((attackingCountry.getArmy()-this.actionContext.srcArmyDead)-unitsToRetreat);
+        attackingCountry.removeArmy((attackingCountry.getArmy()-this.actionContext.srcArmyDead)-unitsToRetreat);
+        defendingCountry.getOwner().removeCountry(defendingCountry);
+        defendingCountry.setOwner(attackingCountry.getOwner());
+        attackingCountry.getOwner().addCountry(defendingCountry);
+        this.actionContext.setPhase(Phase.RETREAT_CONFIRM);
         return true;
     }
     /**
