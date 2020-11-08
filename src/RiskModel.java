@@ -23,7 +23,7 @@ public class RiskModel {
     RiskController riskController;
 
     /** Constructor of Risk Model*/
-    private RiskModel(){
+    public RiskModel(){
         MapImport mapReader=new MapImport("maps/demo.zip");
         this.map=mapReader.getMap();
         map.printCountries();
