@@ -67,6 +67,7 @@ public class RiskModelTest extends TestCase {
 
     @org.junit.Test
 
+
 /***
  * Tests that the correct map is being loaded in on startup by measuring country and continent array size.
  */
@@ -77,6 +78,18 @@ public class RiskModelTest extends TestCase {
         assertNotEquals(null, test.riskController);
 
         assertEquals(Phase.ATTACK_SRC,test.actionContext.phase);
+    }
+
+    /***
+     * Confirms that for every country in the game there is at least one valid point that can be clicked in order to
+     * access  it.
+     */
+    public void testEveryCountryIsClickable(){
+        RiskModel test = new RiskModel();
+        for(int i = 0; i < test.countries.length; i++){
+            assertTrue(test.countries[i].containsPoint(getValidPoint(test.countries[i])));
+        }
+
     }
 
     /***
@@ -168,8 +181,31 @@ public class RiskModelTest extends TestCase {
         Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
         test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
 
-        if(sourceCountryToTest.getArmy() > 2 ){test.menuNumTroops(1);} //Clicks number of troops}
+        test.menuNumTroops(1); //Clicks number of troops}
         assertEquals(Phase.ATTACK_CONFIRM, test.actionContext.phase);//confirms phase went back to choosing src country
+    }
+
+    /***
+     * Test the functionality of the skip button
+     */
+    public void testSkipButton(){
+        RiskModel test = new RiskModel();
+        assertEquals(test.players[0],test.actionContext.player);
+        test.menuSkip();
+        assertEquals(test.players[1],test.actionContext.player);
+    }
+
+    /**
+     * skips through whole list of players.
+     */
+    public void testSkipButtonCycle(){
+        RiskModel test = new RiskModel();
+        assertEquals(test.players[0],test.actionContext.player);
+        for(int i = 0; i < test.players.length; i++) {
+            test.menuSkip();
+        }
+
+        assertEquals(test.players[0],test.actionContext.player);
     }
 
 
