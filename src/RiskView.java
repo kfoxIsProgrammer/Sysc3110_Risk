@@ -129,11 +129,14 @@ public class RiskView extends JFrame implements ActionListener {
         sidePanel.add(optionPanel(height / 2), BorderLayout.CENTER);
 
         confirmPhase = new JButton();
-        confirmPhase.setSize(225, 40);
+        confirmPhase.setSize(200, 40);
 
         JButton skipButton = new JButton("Skip");
+        JButton forfeitButton = new JButton("Forfeit");
+        forfeitButton.setActionCommand("Forfeit");
+        forfeitButton.setSize(50,40);
 
-        skipButton.setSize(75, 40);
+        skipButton.setSize(50, 40);
         skipButton.setActionCommand("skip");
 
         confirmPhase.addActionListener(riskController);
@@ -141,6 +144,7 @@ public class RiskView extends JFrame implements ActionListener {
 
         buttonPanel.add(confirmPhase, BorderLayout.WEST);
         buttonPanel.add(skipButton, BorderLayout.EAST);
+        buttonPanel.add(forfeitButton,BorderLayout.CENTER);
 
         sidePanel.add(buttonPanel,BorderLayout.SOUTH);
 
@@ -307,9 +311,17 @@ public class RiskView extends JFrame implements ActionListener {
                         cardLayout.show(optionPanel, Phase.RETREAT_ARMY.toString());
                         confirmPhase.setVisible(true);
                         break;
-                    default:
-                       System.out.println(actionContext.phase);
+            case FORFEIT_CLICKED:
+                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + "You are about to forfeit your battle! Confirm", "WARNING",
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    ActionEvent e = new ActionEvent(null,1,"ForfeitConfimed");
+                    riskController.actionPerformed(e);
+                } else {
+                   riskController.actionPerformed(new ActionEvent(confirmPhase,2,"back"));
+                }
 
+                    default:
+                        System.out.println(actionContext.phase);
                 break;
         }
     }
@@ -432,14 +444,14 @@ public class RiskView extends JFrame implements ActionListener {
         troopPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
         troopPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
         JFrame f = new JFrame();
+        slider.setMajorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
         switch (actionContext.phase) {
             case ATTACK_ARMY:
                 if (actionContext.srcCountry.getArmy() >= 3) {
                     slider.setMaximum(actionContext.srcCountry.getArmy() - 1);
                     slider.setMinimum(1);
-                    slider.setMajorTickSpacing(1);
-                    slider.setPaintTicks(true);
-                    slider.setPaintLabels(true);
                     JDialog dialog = troopPane.createDialog(troopSelectPanel, "Select attacking troops");
                     dialog.setVisible(true);
 
@@ -463,9 +475,6 @@ public class RiskView extends JFrame implements ActionListener {
                 if (actionContext.srcArmy-actionContext.srcArmyDead >= 2) {
                     slider.setMaximum(actionContext.srcArmy-actionContext.srcArmyDead - 1);
                     slider.setMinimum(0);
-                    slider.setMajorTickSpacing(1);
-                    slider.setPaintTicks(true);
-                    slider.setPaintLabels(true);
                     JDialog dialog = troopPane.createDialog(troopSelectPanel, "You won! Select retreating troops");
                     dialog.setVisible(true);
                     if (!isNull(troopPane.getValue()) && (Integer) troopPane.getValue() == JOptionPane.OK_OPTION) {
