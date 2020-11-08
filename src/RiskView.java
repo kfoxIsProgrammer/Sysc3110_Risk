@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Objects.isNull;
 
@@ -239,17 +240,14 @@ public class RiskView extends JFrame implements ActionListener {
      */
     public void boardUpdate(ActionContext actionContext) {
         switch (actionContext.phase) {
-            case ATTACK_ARMY:
             case ATTACK_SRC:
-            case RETREAT_ARMY:
+                ((MapContainer) (mapContainer)).setActive(true);
+                attackSrcPanelEdit(actionContext.player);
+                cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
+                confirmPhase.setText("Confirm Attacker");
+                confirmPhase.setVisible(false);
+                break;
             case ATTACK_DST:
-                Phase currentPhase = actionContext.phase;
-                confirmPhase.setActionCommand(currentPhase.toString());
-
-
-                switch (currentPhase) {
-
-                    case ATTACK_DST:
                        ((MapContainer) (mapContainer)).setActive(true);
                         highlightAdjacentCountries(actionContext.highlightedCountries, actionContext.srcCountry);
                         attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
@@ -263,15 +261,18 @@ public class RiskView extends JFrame implements ActionListener {
                         attackConfirmPanelEdit(actionContext.dstCountry, actionContext.srcCountry);
                         cardLayout.show(optionPanel, Phase.ATTACK_ARMY.toString());
                         confirmPhase.setEnabled(false);
-                        int troops = troopSelectPanel(actionContext.srcCountry);
-                        confirmPhase.setEnabled(true);
-                        if (troops > 0) {
-                            confirmPhase.setText("Attack with " + troops + " troops");
-                            confirmPhase.setActionCommand("" + troops);
-                        } else {
-                            confirmPhase.setText("Pick another country");
+                        int attackingTroops = 0;
+                        while (attackingTroops==0){
+                            attackingTroops = troopSelectPanel(actionContext,"Select number of troops: ");
+                        }
+                        if (attackingTroops>0){
+                            confirmPhase.setText("Attack with "+attackingTroops+" troops");
+                            confirmPhase.setActionCommand(""+attackingTroops);
+                        }else{
+                            confirmPhase.setText("select countries again");
                             confirmPhase.setActionCommand("back");
                         }
+                        confirmPhase.setEnabled(true);
                         confirmPhase.setVisible(true);
                         break;
                     case RETREAT_ARMY:
@@ -280,19 +281,28 @@ public class RiskView extends JFrame implements ActionListener {
                         labelCountries(countryArray,true);
                         dicePanelEdit(actionContext.diceRolls, actionContext.srcCountry.getOwner(), actionContext.dstCountry.getOwner(), actionContext.attackerVictory);
                         infoPanelEdit(actionContext);
+                        if(actionContext.attackerVictory) {
+                            int retreatingTroops = 0;
+                            while (retreatingTroops == 0) {
+                                retreatingTroops = troopSelectPanel(actionContext, "Select number of troops to retreat: ");
+                                if (retreatingTroops > 0) {
+                                    confirmPhase.setText("Send " + retreatingTroops + " troops back");
+                                    confirmPhase.setActionCommand("" + retreatingTroops);
+                                } else {
+                                    confirmPhase.setText("Ok");
+                                    confirmPhase.setActionCommand("back");
+                                }
+                            }
+                        }else{
+                            confirmPhase.setText("Ok");
+                            confirmPhase.setActionCommand("back");
+                        }
                         cardLayout.show(optionPanel, Phase.RETREAT_ARMY.toString());
-                        confirmPhase.setText("Ok");
-                        confirmPhase.setActionCommand("skip");
                         confirmPhase.setVisible(true);
                         break;
-                    default: //ATTACK_SRC is default for now
-                       ((MapContainer) (mapContainer)).setActive(true);
-                        attackSrcPanelEdit(actionContext.player);
-                        cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
-                        confirmPhase.setText("Confirm Attacker");
-                        confirmPhase.setVisible(false);
-                        break;
-                }
+                    default:
+                       System.out.println(actionContext.phase);
+
                 break;
         }
     }
@@ -387,37 +397,60 @@ public class RiskView extends JFrame implements ActionListener {
     }
     /**
      * creates a popup window with a slider that lets the user decide the number of troops to send to battle
-     * @param attacker attacking country
+     * @param actionContext context information
      * @return the number of troops selected
      */
-    private int troopSelectPanel(Country attacker) {
-        JFrame troopSelectPanel = new JFrame();
-        JOptionPane troopPane = new JOptionPane();
-        JSlider slider = new JSlider(1, attacker.getArmy() - 1);
-        slider.setMajorTickSpacing(5);
-        slider.setPaintTicks(true);
-        slider.setPaintLabels(true);
-        ChangeListener changeListener = changeEvent -> {
-            JSlider theSlider = (JSlider) changeEvent.getSource();
-            if (!theSlider.getValueIsAdjusting()) {
-                troopPane.setInputValue(theSlider.getValue());
+    private int troopSelectPanel(ActionContext actionContext,String message) {
+        if(actionContext.srcCountry.getArmy()>2) {
+            AtomicBoolean sliderUsed = new AtomicBoolean(false);
+            JFrame troopSelectPanel = new JFrame();
+            JOptionPane troopPane = new JOptionPane();
+            JSlider slider = new JSlider();
+            slider.setMaximum(actionContext.srcCountry.getArmy() - 1);
+            if (actionContext.phase == Phase.ATTACK_ARMY) {
+                slider.setMinimum(1);
+            } else if (actionContext.phase == Phase.RETREAT_ARMY) {
+                slider.setMinimum(0);
             }
-        };
-        slider.addChangeListener(changeListener);
-        troopPane.setMessage(new Object[]{"Select the number of troops: ", slider});
-        troopPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-        troopPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-        JDialog dialog = troopPane.createDialog(troopSelectPanel, "Select attacking troops");
-        dialog.setVisible(true);
+            slider.setMajorTickSpacing(1);
+            slider.setPaintTicks(true);
+            slider.setPaintLabels(true);
+            ChangeListener changeListener = changeEvent -> {
+                JSlider theSlider = (JSlider) changeEvent.getSource();
+                if (!theSlider.getValueIsAdjusting()) {
+                    sliderUsed.set(true);
+                    troopPane.setInputValue(theSlider.getValue());
+                }
+            };
+            slider.addChangeListener(changeListener);
+            troopPane.setMessage(new Object[]{message, slider});
+            troopPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+            troopPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
+            JDialog dialog = troopPane.createDialog(troopSelectPanel, "Select attacking troops");
+            dialog.setVisible(true);
 
-        if (!isNull(troopPane.getValue()) && (Integer) troopPane.getValue() == JOptionPane.OK_OPTION) {
-            return Integer.parseInt((troopPane.getInputValue().toString()));
-        } else { //player cancelled selection
+            if (!isNull(troopPane.getValue()) && (Integer) troopPane.getValue() == JOptionPane.OK_OPTION) {
+                return (sliderUsed.get()) ? Integer.parseInt((troopPane.getInputValue().toString())) : 0;
+            } else { //player cancelled selection
+                return -1;
+            }
+        }else if(actionContext.srcCountry.getArmy()==2){ // 1 troop to attack
+            JFrame f=new JFrame();
+            int x = JOptionPane.showConfirmDialog(f,"Attack with 1 troop?");
+            if(x==JOptionPane.YES_OPTION){
+                return x;
+            }else { //no troops to attack
+                return -1;
+            }
+        }
+        else{
+            JFrame f=new JFrame();
+            JOptionPane.showMessageDialog(f,"No troops to use");
             return -1;
         }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.printf("Asas\n");
+        System.out.printf("BRUH\n");
     }
 }

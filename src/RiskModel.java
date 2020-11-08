@@ -314,6 +314,8 @@ public class RiskModel {
             case FORTIFY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
                 break;
+            default:
+                System.out.println(actionContext.phase);
         }
         updateView();
     }
