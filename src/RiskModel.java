@@ -197,14 +197,15 @@ public class RiskModel {
                     this.actionContext.setPhase(Phase.ATTACK_DST);
                     this.actionContext.setSrcCountry(clickedCountry);
                     ArrayList<Country> enemyCountries = new ArrayList<>();
-
-                    for (Country c : clickedCountry.getAdjacentCountries()) {
-                        if (c.getOwner() != this.actionContext.player) {
-                            enemyCountries.add(c);
+                    if (clickedCountry.getArmy() > 1) {
+                        for (Country c : clickedCountry.getAdjacentCountries()) {
+                            if (c.getOwner() != this.actionContext.player) {
+                                enemyCountries.add(c);
+                            }
                         }
+                        Country[] temp = new Country[enemyCountries.size()];
+                        this.actionContext.highlightedCountries = enemyCountries.toArray(temp);
                     }
-                    Country[] temp = new Country[enemyCountries.size()];
-                    this.actionContext.highlightedCountries = enemyCountries.toArray(temp);
                 }
                 break;
             case ATTACK_DST:
@@ -270,7 +271,6 @@ public class RiskModel {
                        this.actionContext.srcArmy);
 
                 this.actionContext.phase=Phase.RETREAT_ARMY;
-
                 break;
             case RETREAT_CONFIRM:
                 retreat(this.actionContext.player,
@@ -321,12 +321,13 @@ public class RiskModel {
         switch (this.actionContext.phase) {
             case DEPLOY_ARMY:
             case ATTACK_ARMY:
-            case FORTIFY_ARMY:
                 this.actionContext.setSrcArmy(numTroops);
                 //ADDED FOR TESTING
                 actionContext.setPhase(Phase.ATTACK_CONFIRM);
                 menuConfirm();
                 break;
+            case FORTIFY_ARMY:
+
         }
     }
 

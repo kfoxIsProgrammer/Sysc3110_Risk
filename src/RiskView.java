@@ -354,7 +354,9 @@ public class RiskView extends JFrame implements ActionListener {
     private void highlightAdjacentCountries(Country[] countries,Country attacking) {
         Country[] attacker = {attacking};
         labelCountries(attacker , true);
-        labelCountries(countries,false);
+        if(!(countries.length == 0)) {
+            labelCountries(countries, false);
+        }
     }
     /**
      * labels countries using their coordinates
