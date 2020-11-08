@@ -180,7 +180,7 @@ public class RiskModel {
         System.out.printf("(%d,%d):\t",point.x,point.y);
         if(clickedCountry==null){
             System.out.printf("No Country\n");
-            menuBack();
+            //menuBack();
             return;
         }
         //TODO error checking
@@ -196,11 +196,20 @@ public class RiskModel {
                 if(clickedCountry.getOwner().equals(this.actionContext.player)) {
                     this.actionContext.setPhase(Phase.ATTACK_DST);
                     this.actionContext.setSrcCountry(clickedCountry);
+                    ArrayList<Country> enemyCountries = new ArrayList<>();
+
+                    for (Country c : clickedCountry.getAdjacentCountries()) {
+                        if (c.getOwner() != this.actionContext.player) {
+                            enemyCountries.add(c);
+                        }
+                    }
+                    Country[] temp = new Country[enemyCountries.size()];
+                    this.actionContext.highlightedCountries = enemyCountries.toArray(temp);
                 }
                 break;
             case ATTACK_DST:
                 if(Arrays.asList(clickedCountry.getAdjacentCountries())
-                        .contains(this.actionContext.srcCountry) &&
+                        .contains(this.actionContext.srcCountry) &
                         !clickedCountry.getOwner().equals(this.actionContext.player)) {
                     this.actionContext.setPhase(Phase.ATTACK_ARMY);
                     this.actionContext.setDstCountry(clickedCountry);
@@ -415,8 +424,6 @@ public class RiskModel {
             this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
             this.actionContext.setAttackerVictory(true);
 
-
-
         }
         //Attacker loses
         if(attackingArmy == 0){
@@ -424,6 +431,9 @@ public class RiskModel {
             this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
             this.actionContext.setDstArmy(defendingCountry.getArmy());
             this.actionContext.setAttackerVictory(false);
+
+            attackingCountry.removeArmy(unitsToAttack);
+            defendingCountry.removeArmy(defendingCountry.getArmy() - defendingArmy);
         }
 
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){

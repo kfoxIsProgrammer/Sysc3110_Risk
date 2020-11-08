@@ -246,10 +246,11 @@ public class RiskView extends JFrame implements ActionListener {
                 Phase currentPhase = actionContext.phase;
                 confirmPhase.setActionCommand(currentPhase.toString());
 
+
                 switch (currentPhase) {
                     case ATTACK_DST:
                        ((MapContainer) (mapContainer)).setActive(true);
-                        highlightAdjacentCountries(actionContext.srcCountry.getAdjacentCountries(), actionContext.srcCountry);
+                        highlightAdjacentCountries(actionContext.highlightedCountries, actionContext.srcCountry);
                         attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
                         cardLayout.show(optionPanel, Phase.ATTACK_DST.toString());
                         confirmPhase.setText("back");
@@ -363,7 +364,11 @@ public class RiskView extends JFrame implements ActionListener {
     private void labelCountries(Country[] countries, boolean clearPrevLabels) {
         if(clearPrevLabels){
         mapLayeredPane.removeAll();
-        insertMapImage();}
+        insertMapImage();
+        mapContainer.add(mapLayeredPane);
+        repaint();
+
+        }
 
         for (Country c : countries) {
             JLabel countryLabel = new JLabel(c.getArmy() + "");
@@ -375,6 +380,7 @@ public class RiskView extends JFrame implements ActionListener {
             countryLabel.setBounds(c.getCenterCoordinates().x,c.getCenterCoordinates().y, 35, 15);
             mapLayeredPane.add(countryLabel,Integer.valueOf(2));
         }
+        repaint();
     }
     /**
      * creates a popup window with a slider that lets the user decide the number of troops to send to battle
