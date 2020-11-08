@@ -31,13 +31,26 @@ public class RiskModel {
         map.printContinents();
         this.countries=map.countries;
         this.continents=map.continents;
-        newGame(2, new String[]{"jeff", "assman"});
+        //newGame(2, new String[]{"jeff", "assman"});
 
         this.riskController=new RiskController(this);
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
+        this.actionContext = new ActionContext(Phase.NEW_GAME, null);
         updateView();
 
         this.play();
+    }
+
+    public void newGameHelper(String stringToProcess){
+
+        String[] values = stringToProcess.split(" ");
+        String[] valuesForGame = new String[values.length-1];
+        for(int i =1; i< values.length; i++){
+            valuesForGame[i-1] = values[i];
+        }
+
+        newGame(this.actionContext.srcArmy, values);
+
     }
 
     /**
@@ -144,7 +157,7 @@ public class RiskModel {
             //If they do not own anymore countries they lose
             if(player.getOwnedCountries().isEmpty()){
                 player.hasLost();
-                break;
+                return true;
             }
             //If they have no more available attacking units, they lose as well
             //If sum of total units = sum of all countries, you can't make a turn
@@ -155,6 +168,7 @@ public class RiskModel {
             }
             if(sumOfUnits == player.getOwnedCountries().size()){
                 player.hasLost();
+                return true;
             }
         }
         return false;
@@ -347,6 +361,10 @@ public class RiskModel {
     }
     public void menuNumTroops(int numTroops){
         switch (this.actionContext.phase) {
+            case NEW_GAME:
+                this.actionContext.srcArmy = numTroops;
+                menuConfirm();
+                break;
             case DEPLOY_ARMY:
             case RETREAT_ARMY:
                 this.actionContext.setDstArmy(numTroops);

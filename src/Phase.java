@@ -7,6 +7,8 @@
 
 public enum Phase {
 
+    /** New Game**/
+    NEW_GAME,
     GAME_OVER,
     /** Deploy phase selecting a source country **/
     DEPLOY_DST,
