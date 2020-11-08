@@ -369,7 +369,7 @@ public class RiskView extends JFrame implements ActionListener {
             case GAME_OVER:
                 infoPanelEdit(actionContext);
 
-                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + "You Won!\nPlay again?", "Congratulations",
+                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + ", you Won!\nPlay again?", "Congratulations",
                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     forfeitButton.setText("Play Again");
                     forfeitButton.setActionCommand("newGame");

@@ -131,11 +131,11 @@ public class RiskModel {
         for(Player player: players) {
             if (player.getHasLost()) {
                 count++;
-            }
+            }/*
             if(!player.getHasLost()){
                 //This will only be used when the game is actually over
                 winner = player;
-            }
+            }*/
         }
 
         if(count >= this.players.length-1){
