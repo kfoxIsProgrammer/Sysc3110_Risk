@@ -7,6 +7,7 @@
 
 public enum Phase {
 
+    GAME_OVER,
     /** Deploy phase selecting a source country **/
     DEPLOY_DST,
     /** Deploy phase selecting number of troops to deploy **/

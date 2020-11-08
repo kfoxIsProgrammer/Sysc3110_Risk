@@ -111,19 +111,25 @@ public class RiskModel {
      * 2. 1 player has won because they own the most countries and no one else can move
      * @return Pair of boolean (false = game over), int (what type of win condition)
      */
-    private boolean[] gameIsNotOver(){
+    private boolean gameIsOver(){
         int count = 0;
-        for(Player player: players)
-            if(player.getHasLost()){
+        Player winner = null;
+        for(Player player: players) {
+            if (player.getHasLost()) {
                 count++;
             }
-
-        if(count == players.length || count == players.length - 1){
-            return new boolean[]{false, true};
+            if(!player.getHasLost()){
+                //This will only be used when the game is actually over
+                winner = player;
+            }
         }
-        else
-            return new boolean[]{true, false};
 
+        if(count >= this.players.length-1){
+            //Set the game to the Game over
+            this.actionContext = new ActionContext(Phase.GAME_OVER, winner);
+            return true;
+        }
+        return false;
     }
     /**
      * Checks if anyone has met a lost condition when they attacker
@@ -168,11 +174,32 @@ public class RiskModel {
     }
     private Player nextPlayer(Player player){
         //TODO handle invalid players
+
+        int indexOfCurrentPlayer = Arrays.asList(this.players).indexOf(player);
+        int modValue = this.players.length;
+
+        for(int nextIndex = (indexOfCurrentPlayer+1)%modValue;; nextIndex = (nextIndex+1)%modValue){
+                    if(!this.players[nextIndex].getHasLost()){
+                        return this.players[nextIndex];
+                    }
+                    //Error no more players call game is over
+                    if(this.players[nextIndex].equals(player)){
+                        gameIsOver();
+                        updateView();
+                        return null;
+                    }
+        }
+
+/*
         for(int i=0;;i=(i+1)%this.players.length){
             if(this.players[i].equals(player)){
-                return this.players[(i+1)%this.players.length];
+                if(!this.players[(i+1)%this.players.length].getHasLost()) {
+                    return this.players[(i + 1) % this.players.length];
+                }
             }
         }
+        */
+ 
     }
 
     public void mapClicked(Point point){
@@ -241,7 +268,7 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
             case RETREAT_ARMY:
-               /* retreat(this.actionContext.player,
+                /*retreat(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
                         0);*/
@@ -444,7 +471,10 @@ public class RiskModel {
         }
 
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
-
+            if(gameIsOver()){
+                //Force game over here
+                updateView();
+            }
         }
 
         return true;
