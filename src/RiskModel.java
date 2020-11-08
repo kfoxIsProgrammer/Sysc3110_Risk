@@ -444,8 +444,8 @@ public class RiskModel {
     }
     private boolean retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
 
-        defendingCountry.setArmy((attackingCountry.getArmy()-this.actionContext.srcArmyDead)-unitsToRetreat);
-        attackingCountry.removeArmy((attackingCountry.getArmy()-this.actionContext.srcArmyDead)-unitsToRetreat);
+        defendingCountry.setArmy((this.actionContext.srcArmy-this.actionContext.srcArmyDead)-unitsToRetreat);
+        attackingCountry.removeArmy((this.actionContext.srcArmy-this.actionContext.srcArmyDead)-unitsToRetreat);
         defendingCountry.getOwner().removeCountry(defendingCountry);
         defendingCountry.setOwner(attackingCountry.getOwner());
         attackingCountry.getOwner().addCountry(defendingCountry);
