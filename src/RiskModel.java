@@ -573,12 +573,13 @@ public class RiskModel {
         if(actionContext.phase==Phase.FORFEIT_CLICKED){
             actionContext.player.hasLost();
             if(gameIsOver()){
-                updateView();
+               actionContext=new ActionContext(Phase.GAME_OVER,nextPlayer(actionContext.player));
             }else{
                 actionContext = new ActionContext(Phase.ATTACK_SRC,nextPlayer(actionContext.player));
             }
+        }else {
+            actionContext.setPhase(Phase.FORFEIT_CLICKED);
         }
-        actionContext.setPhase(Phase.FORFEIT_CLICKED);
         updateView();
     }
 }

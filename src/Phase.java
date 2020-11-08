@@ -36,8 +36,4 @@ public enum Phase {
     FORTIFY_CONFIRM,
     /**Player has clicked Forfeit button, ask for confirmation**/
     FORFEIT_CLICKED,
-    /**Forfeit was confirmed**/
-    FORFEIT_CONFIRMED,
-    /**Game over condition**/
-   GAME_OVER ;
 }

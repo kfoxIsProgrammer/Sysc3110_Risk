@@ -5,6 +5,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -136,6 +137,7 @@ public class RiskView extends JFrame implements ActionListener {
         forfeitButton = new JButton("Forfeit");
         forfeitButton.setActionCommand("Forfeit");
         forfeitButton.setSize(50,40);
+        forfeitButton.addActionListener(riskController);
 
         skipButton.setSize(50, 40);
         skipButton.setActionCommand("skip");
@@ -315,7 +317,7 @@ public class RiskView extends JFrame implements ActionListener {
                         break;
             case FORFEIT_CLICKED:
                 confirmPhase.setVisible(false);
-                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + "You are about to forfeit your battle! Confirm", "WARNING",
+                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + ", you are about to forfeit your battle! Confirm", "WARNING",
                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     forfeitButton.setText("Confirm forfeit?");
                     forfeitButton.setActionCommand("Forfeit");
@@ -323,8 +325,18 @@ public class RiskView extends JFrame implements ActionListener {
                     confirmPhase.setText("Cancel forfeit");
                     confirmPhase.setActionCommand("back");
                 }
-                    default:
-                        System.out.println(actionContext.phase);
+            case GAME_OVER:
+                infoPanelEdit(actionContext);
+
+                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + "You Won!\nPlay again?", "Congratulations",
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    forfeitButton.setText("Play Again");
+                    forfeitButton.setActionCommand("newGame");
+                } else {
+                    dispatchEvent(new WindowEvent(this,WindowEvent.WINDOW_CLOSING));
+                }
+            default:
+                System.out.println(actionContext.phase);
                 break;
         }
     }
