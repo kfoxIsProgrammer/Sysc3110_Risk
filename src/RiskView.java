@@ -349,13 +349,13 @@ public class RiskView extends JFrame implements ActionListener {
      */
     private void infoPanelEdit(ActionContext context) {
         if(context.phase== Phase.RETREAT_ARMY) {
-
+            String suffix = (context.attackerVictory)?" won":" lost";
             String vicString =
                     context.srcCountry.getName() +" attacked " + context.dstCountry.getName();
             String battleOutcomes = context.srcCountry.getName() +" has lost " + (context.srcArmyDead)+" troops.";
             String battleOutcomes2 = context.dstCountry.getName() +" has lost " + (context.dstArmyDead)+" troops.";
 
-            infoArea.append("Player: "+ context.srcCountry.getOwner().getName() +"\n");
+            infoArea.append("Player: "+ context.srcCountry.getOwner().getName() +suffix+"\n");
             infoArea.append(vicString+"\n");
             infoArea.append(battleOutcomes+"\n");
             infoArea.append(battleOutcomes2+"\n");
@@ -482,7 +482,7 @@ public class RiskView extends JFrame implements ActionListener {
                     troopPane.setMessage(new Object[]{message, slider});
                     troopPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
                     troopPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-                    JDialog dialog = troopPane.createDialog(troopSelectPanel, "Select attacking troops");
+                    JDialog dialog = troopPane.createDialog(troopSelectPanel, "You won! Select retreating troops");
                     dialog.setVisible(true);
 
                     if (!isNull(troopPane.getValue()) && (Integer) troopPane.getValue() == JOptionPane.OK_OPTION) {
