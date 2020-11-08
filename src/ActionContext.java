@@ -28,7 +28,9 @@ public class ActionContext {
     /** Whether or not the attacker won **/
     public  boolean attackerVictory;
     /** The dice roll information **/
-    public  int diceRolls[][];
+    public  Integer diceRolls[][];
+    /**Troops moving at given time**/
+    public int movingTroops;
 
     /** Constructor for ActionContext **/
     ActionContext(Phase phase, Player player){
@@ -36,6 +38,14 @@ public class ActionContext {
         this.player=player;
     }
     /** Setters for ActionContext instance variables **/
+
+    /**
+     * sets the number of moving troops
+     * @param movingTroops
+     */
+    public void setMovingTroops(int movingTroops) {
+        this.movingTroops = movingTroops;
+    }
 
     /**
      * Setter for phase
@@ -121,7 +131,7 @@ public class ActionContext {
      * Setter for the dice rolls during an attack, to be displayed later
      * @param diceRolls the 2d array representing dice rolls
      */
-    public void setDiceRolls(int[][] diceRolls) {
+    public void setDiceRolls(Integer[][] diceRolls) {
         this.diceRolls = diceRolls;
     }
 }
