@@ -29,6 +29,7 @@ public class ActionContext {
     public  boolean attackerVictory;
     /** The dice roll information **/
     public  Integer diceRolls[][];
+    public int movingTroops;
 
     /** Constructor for ActionContext **/
     ActionContext(Phase phase, Player player){

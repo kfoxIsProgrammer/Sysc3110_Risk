@@ -47,7 +47,7 @@ public class RiskModel {
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
 
-        Color[] colorsToAllocate = {new Color(255, 255, 0), new Color(0,0,255),
+        Color[] colorsToAllocate = {new Color(255, 255, 0), new Color(244,244,244),
         new Color(255,0,0), new Color(0,255,0),
         new Color(255,0,255), new Color(0,255,255)};
 
@@ -241,11 +241,12 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
             case RETREAT_ARMY:
-                retreat(this.actionContext.player,
+               /* retreat(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
-                        0);
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player); //Should be Fortify
+                        0);*/
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                break;
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
@@ -276,7 +277,7 @@ public class RiskModel {
                 retreat(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
-                        this.actionContext.srcArmy);
+                        this.actionContext.dstArmy);
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
                 break;
             case FORTIFY_CONFIRM:
@@ -314,8 +315,6 @@ public class RiskModel {
             case FORTIFY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
                 break;
-            default:
-                System.out.println(actionContext.phase);
         }
         updateView();
     }
@@ -323,8 +322,10 @@ public class RiskModel {
         switch (this.actionContext.phase) {
             case DEPLOY_ARMY:
             case RETREAT_ARMY:
+                this.actionContext.setDstArmy(numTroops);
                 actionContext.setPhase(Phase.RETREAT_CONFIRM);
                 menuConfirm();
+                break;
             case ATTACK_ARMY:
                 this.actionContext.setSrcArmy(numTroops);
                 //ADDED FOR TESTING
@@ -455,7 +456,6 @@ public class RiskModel {
         defendingCountry.getOwner().removeCountry(defendingCountry);
         defendingCountry.setOwner(attackingCountry.getOwner());
         attackingCountry.getOwner().addCountry(defendingCountry);
-        this.actionContext.setPhase(Phase.RETREAT_CONFIRM);
         return true;
     }
     /**

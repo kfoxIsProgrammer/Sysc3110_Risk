@@ -68,7 +68,7 @@ public class RiskView extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
 
-        setResizable(false);
+        setResizable(true);
         //Constraints for the placement of MapPanel,SidePanel
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.NONE;
@@ -239,16 +239,18 @@ public class RiskView extends JFrame implements ActionListener {
      * @param actionContext the current context for the update
      */
     public void boardUpdate(ActionContext actionContext) {
-        switch (actionContext.phase) {
-            case ATTACK_SRC:
-                labelCountries(countryArray,true);
-                ((MapContainer) (mapContainer)).setActive(true);
-                attackSrcPanelEdit(actionContext.player);
-                cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
-                confirmPhase.setText("Confirm Attacker");
-                confirmPhase.setVisible(false);
-                break;
-            case ATTACK_DST:
+
+                switch (actionContext.phase) {
+                    case ATTACK_SRC:
+                        ((MapContainer) (mapContainer)).setActive(true);
+                        attackSrcPanelEdit(actionContext.player);
+                        labelCountries(countryArray, true);
+                        cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
+                        confirmPhase.setText("Confirm Attacker");
+                        confirmPhase.setVisible(false);
+                        break;
+
+                    case ATTACK_DST:
                        ((MapContainer) (mapContainer)).setActive(true);
                         highlightAdjacentCountries(actionContext.highlightedCountries, actionContext.srcCountry);
                         attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
@@ -277,7 +279,6 @@ public class RiskView extends JFrame implements ActionListener {
                         confirmPhase.setVisible(true);
                         break;
                     case RETREAT_ARMY:
-                        System.out.println("here");
                         ((MapContainer) (mapContainer)).setActive(false);
                         labelCountries(countryArray,true);
                         dicePanelEdit(actionContext.diceRolls, actionContext.srcCountry.getOwner(), actionContext.dstCountry.getOwner(), actionContext.attackerVictory);
@@ -291,12 +292,12 @@ public class RiskView extends JFrame implements ActionListener {
                                     confirmPhase.setActionCommand("" + retreatingTroops);
                                 } else {
                                     confirmPhase.setText("Ok");
-                                   confirmPhase.setActionCommand("skip");
+                                    confirmPhase.setActionCommand("skip");
                                 }
                             }
                         }else{
                             confirmPhase.setText("Ok");
-                            confirmPhase.setActionCommand("back");
+                            confirmPhase.setActionCommand("skip");
                         }
                         cardLayout.show(optionPanel, Phase.RETREAT_ARMY.toString());
                         confirmPhase.setVisible(true);
@@ -366,9 +367,10 @@ public class RiskView extends JFrame implements ActionListener {
     private void highlightAdjacentCountries(Country[] countries,Country attacking) {
         Country[] attacker = {attacking};
         labelCountries(attacker , true);
-        if(!(countries.length == 0)) {
+        if(countries != null) {
             labelCountries(countries, false);
         }
+
     }
     /**
      * labels countries using their coordinates
@@ -398,11 +400,11 @@ public class RiskView extends JFrame implements ActionListener {
     }
     /**
      * creates a popup window with a slider that lets the user decide the number of troops to send to battle
-     * @param actionContext context information
+     * @param attacker attacking country
      * @return the number of troops selected
      */
     private int troopSelectPanel(ActionContext actionContext,String message) {
-        if(actionContext.srcCountry.getArmy()>2) {
+        if (actionContext.srcCountry.getArmy() > 2) {
             AtomicBoolean sliderUsed = new AtomicBoolean(false);
             JFrame troopSelectPanel = new JFrame();
             JOptionPane troopPane = new JOptionPane();
@@ -435,23 +437,22 @@ public class RiskView extends JFrame implements ActionListener {
             } else { //player cancelled selection
                 return -1;
             }
-        }else if(actionContext.srcCountry.getArmy()==2){ // 1 troop to attack
-            JFrame f=new JFrame();
-            int x = JOptionPane.showConfirmDialog(f,"Attack with 1 troop?");
-            if(x==JOptionPane.YES_OPTION){
-                return x;
-            }else { //no troops to attack
+        } else if (actionContext.srcCountry.getArmy() == 2) { // 1 troop to attack
+            JFrame f = new JFrame();
+            int x = JOptionPane.showConfirmDialog(f, "Attack with 1 troop?");
+            if (x == JOptionPane.YES_OPTION) {
+                return 1;
+            } else { //no troops to attack
                 return -1;
             }
-        }
-        else{
-            JFrame f=new JFrame();
-            JOptionPane.showMessageDialog(f,"No troops to use");
+        } else {
+            JFrame f = new JFrame();
+            JOptionPane.showMessageDialog(f, "No troops to use");
             return -1;
         }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.printf("BRUH\n");
+        System.out.printf("Asas\n");
     }
 }
