@@ -187,16 +187,24 @@ public class RiskModel {
         System.out.printf("%s\n",clickedCountry.getName());
         switch(this.actionContext.phase){
             case DEPLOY_DST:
-                this.actionContext.setPhase(Phase.DEPLOY_ARMY);
-                this.actionContext.setDstCountry(clickedCountry);
+                if(clickedCountry.getOwner().equals(this.actionContext.player)) {
+                    this.actionContext.setPhase(Phase.DEPLOY_ARMY);
+                    this.actionContext.setDstCountry(clickedCountry);
+                }
                 break;
             case ATTACK_SRC:
-                this.actionContext.setPhase(Phase.ATTACK_DST);
-                this.actionContext.setSrcCountry(clickedCountry);
+                if(clickedCountry.getOwner().equals(this.actionContext.player)) {
+                    this.actionContext.setPhase(Phase.ATTACK_DST);
+                    this.actionContext.setSrcCountry(clickedCountry);
+                }
                 break;
             case ATTACK_DST:
-                this.actionContext.setPhase(Phase.ATTACK_ARMY);
-                this.actionContext.setDstCountry(clickedCountry);
+                if(Arrays.asList(clickedCountry.getAdjacentCountries())
+                        .contains(this.actionContext.srcCountry) &&
+                        !clickedCountry.getOwner().equals(this.actionContext.player)) {
+                    this.actionContext.setPhase(Phase.ATTACK_ARMY);
+                    this.actionContext.setDstCountry(clickedCountry);
+                }
                 break;
             case FORTIFY_SRC:
                 this.actionContext.setPhase(Phase.FORTIFY_DST);
@@ -220,7 +228,7 @@ public class RiskModel {
             case ATTACK_DST:
             case ATTACK_ARMY:
             case ATTACK_CONFIRM:
-                this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
             case RETREAT_ARMY:
                 retreat(this.actionContext.player,
@@ -348,15 +356,16 @@ public class RiskModel {
         Integer[] attackRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
         Integer[] defenderRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
 
+        Random random = new Random();
         //Get int array of dice rolls
         for(int i=0; i< attackRolls.length; i++){
             if(i+1 <= unitsToAttack) {
-                attackRolls[i] = (int) (Math.ceil(Math.random() * 5));
+                attackRolls[i] = (random.nextInt(5) + 1);
             }else{
                 attackRolls[i] = 0;
             }
             if(i+1 <= defendingCountry.getArmy()) {
-                defenderRolls[i] = (int) (Math.ceil(Math.random() * 5));
+                defenderRolls[i] = (random.nextInt(5) + 1);
             }else{
                 defenderRolls[i] = 0;
             }
@@ -405,7 +414,7 @@ public class RiskModel {
             this.actionContext.setDstArmy(defendingCountry.getArmy());
             this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
             this.actionContext.setAttackerVictory(true);
-            this.actionContext.setPhase(Phase.RETREAT_CONFIRM);
+
 
 
         }
@@ -415,17 +424,11 @@ public class RiskModel {
             this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
             this.actionContext.setDstArmy(defendingCountry.getArmy());
             this.actionContext.setAttackerVictory(false);
-            this.actionContext.setPhase(Phase.ATTACK_SRC);
-
-
         }
 
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
 
         }
-
-
-        riskView.boardUpdate(actionContext);
 
         return true;
     }

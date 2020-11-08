@@ -253,6 +253,7 @@ public class RiskView extends JFrame implements ActionListener {
                         attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
                         cardLayout.show(optionPanel, Phase.ATTACK_DST.toString());
                         confirmPhase.setText("Confirm Defender");
+                        confirmPhase.setVisible(false);
                         break;
                     case ATTACK_ARMY:
                         ((MapContainer) (mapContainer)).setActive(false);
@@ -266,8 +267,9 @@ public class RiskView extends JFrame implements ActionListener {
                             confirmPhase.setActionCommand("" + troops);
                         } else {
                             confirmPhase.setText("Pick another country");
-                            confirmPhase.setActionCommand("Back");
+                            confirmPhase.setActionCommand("back");
                         }
+                        confirmPhase.setVisible(true);
                         break;
                     case RETREAT_ARMY:
                         System.out.println("here");
@@ -278,12 +280,14 @@ public class RiskView extends JFrame implements ActionListener {
                         cardLayout.show(optionPanel, Phase.RETREAT_ARMY.toString());
                         confirmPhase.setText("Ok");
                         confirmPhase.setActionCommand("skip");
+                        confirmPhase.setVisible(true);
                         break;
                     default: //ATTACK_SRC is default for now
                        ((MapContainer) (mapContainer)).setActive(true);
                         attackSrcPanelEdit(actionContext.player);
                         cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
                         confirmPhase.setText("Confirm Attacker");
+                        confirmPhase.setVisible(false);
                         break;
                 }
                 break;
