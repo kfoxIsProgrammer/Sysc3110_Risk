@@ -416,29 +416,30 @@ public class RiskView extends JFrame implements ActionListener {
      * @return the number of troops selected
      */
     private int troopSelectPanel(ActionContext actionContext,String message) {
+        AtomicBoolean sliderUsed = new AtomicBoolean(false);
+        JFrame troopSelectPanel = new JFrame();
+        JOptionPane troopPane = new JOptionPane();
+        JSlider slider = new JSlider();
+        ChangeListener changeListener = changeEvent -> {
+            JSlider theSlider = (JSlider) changeEvent.getSource();
+            if (!theSlider.getValueIsAdjusting()) {
+                sliderUsed.set(true);
+                troopPane.setInputValue(theSlider.getValue());
+            }
+        };
+        slider.addChangeListener(changeListener);
+        troopPane.setMessage(new Object[]{message, slider});
+        troopPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+        troopPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
+        JFrame f = new JFrame();
         switch (actionContext.phase) {
             case ATTACK_ARMY:
                 if (actionContext.srcCountry.getArmy() >= 3) {
-                    AtomicBoolean sliderUsed = new AtomicBoolean(false);
-                    JFrame troopSelectPanel = new JFrame();
-                    JOptionPane troopPane = new JOptionPane();
-                    JSlider slider = new JSlider();
                     slider.setMaximum(actionContext.srcCountry.getArmy() - 1);
                     slider.setMinimum(1);
                     slider.setMajorTickSpacing(1);
                     slider.setPaintTicks(true);
                     slider.setPaintLabels(true);
-                    ChangeListener changeListener = changeEvent -> {
-                        JSlider theSlider = (JSlider) changeEvent.getSource();
-                        if (!theSlider.getValueIsAdjusting()) {
-                            sliderUsed.set(true);
-                            troopPane.setInputValue(theSlider.getValue());
-                        }
-                    };
-                    slider.addChangeListener(changeListener);
-                    troopPane.setMessage(new Object[]{message, slider});
-                    troopPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-                    troopPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
                     JDialog dialog = troopPane.createDialog(troopSelectPanel, "Select attacking troops");
                     dialog.setVisible(true);
 
@@ -448,7 +449,6 @@ public class RiskView extends JFrame implements ActionListener {
                         return -1;
                     }
                 } else if (actionContext.srcCountry.getArmy() == 2) { // 1 troop to attack
-                    JFrame f = new JFrame();
                     int x = JOptionPane.showConfirmDialog(f, "Attack with 1 troop?");
                     if (x == JOptionPane.YES_OPTION) {
                         return 1;
@@ -456,47 +456,28 @@ public class RiskView extends JFrame implements ActionListener {
                         return -1;
                     }
                 } else {
-                    JFrame f = new JFrame();
                     JOptionPane.showMessageDialog(f, "No troops to use");
                     return -1;
                 }
             case RETREAT_ARMY:
                 if (actionContext.srcArmy-actionContext.srcArmyDead >= 2) {
-                    AtomicBoolean sliderUsed = new AtomicBoolean(false);
-                    JFrame troopSelectPanel = new JFrame();
-                    JOptionPane troopPane = new JOptionPane();
-                    JSlider slider = new JSlider();
                     slider.setMaximum(actionContext.srcArmy-actionContext.srcArmyDead - 1);
                     slider.setMinimum(0);
                     slider.setMajorTickSpacing(1);
                     slider.setPaintTicks(true);
                     slider.setPaintLabels(true);
-                    ChangeListener changeListener = changeEvent -> {
-                        JSlider theSlider = (JSlider) changeEvent.getSource();
-                        if (!theSlider.getValueIsAdjusting()) {
-                            sliderUsed.set(true);
-                            troopPane.setInputValue(theSlider.getValue());
-                        }
-                    };
-                    slider.addChangeListener(changeListener);
-                    troopPane.setMessage(new Object[]{message, slider});
-                    troopPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-                    troopPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
                     JDialog dialog = troopPane.createDialog(troopSelectPanel, "You won! Select retreating troops");
                     dialog.setVisible(true);
-
                     if (!isNull(troopPane.getValue()) && (Integer) troopPane.getValue() == JOptionPane.OK_OPTION) {
                         return (sliderUsed.get()) ? Integer.parseInt((troopPane.getInputValue().toString())) : 0;
                     } else { //player cancelled selection
                         return -1;
                     }
                 } else if (actionContext.srcArmy-actionContext.srcArmyDead==1) { // 1 troop to attack
-                    JFrame f = new JFrame();
                     int x = JOptionPane.showConfirmDialog(f, "No troops to send back");
                     return 0;
 
                 } else {
-                    JFrame f = new JFrame();
                     JOptionPane.showMessageDialog(f, "No troops to use");
                     return -1;
                 }
