@@ -27,7 +27,9 @@ class MapContainer extends JPanel {
              */
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                riskController.countrySelected(e);
+                if(isActive) {
+                    riskController.countrySelected(e);
+                }
             }
         });
     }
