@@ -64,6 +64,9 @@ public class RiskController implements ActionListener {
         if(e.getActionCommand().equals("skip")){
             riskModel.menuSkip();
         }
+        else if(e.getActionCommand().contains("ng")){
+            riskModel.newGameHelper(e.getActionCommand());
+        }
         else if(e.getActionCommand().equals("confirm")){
             riskModel.menuConfirm();
         }
@@ -75,8 +78,10 @@ public class RiskController implements ActionListener {
         }
         else if(e.getActionCommand().equals("Forfeit")){
             riskModel.playerForfeit();
+
         }else if(e.getActionCommand().equals("ForfeitConfirmed")){
             riskModel.playerForfeit();
         }
+
     }
 }

@@ -31,13 +31,23 @@ public class RiskModel {
         map.printContinents();
         this.countries=map.countries;
         this.continents=map.continents;
-        newGame(2, new String[]{"jeff", "assman"});
+        //newGame(2, new String[]{"jeff", "assman"});
 
         this.riskController=new RiskController(this);
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
+        this.actionContext = new ActionContext(Phase.NEW_GAME, null);
         updateView();
 
-        this.play();
+    }
+
+    public void newGameHelper(String stringToProcess){
+
+        String[] values = stringToProcess.split(" ");
+        String[] valuesForGame = new String[values.length-1];
+        for(int i =1; i< values.length; i++){
+            valuesForGame[i-1] = values[i];
+        }
+        newGame(this.actionContext.srcArmy, valuesForGame);
     }
 
     /**
@@ -61,6 +71,7 @@ public class RiskModel {
 
         players=new Player[playerNum];
         for(int i = 0; i < playerNum; i++){
+
             players[i]=new Player(playerNames[i], startingArmySize, colorsToAllocate[i]);
         }
 
@@ -97,7 +108,7 @@ public class RiskModel {
         countriesArray = ran.toArray(countriesArray);
         this.countries=countriesArray;
         this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
-
+        updateView();
     }
     /**
      * Main control function for the Risk game
@@ -112,19 +123,26 @@ public class RiskModel {
      * 2. 1 player has won because they own the most countries and no one else can move
      * @return Pair of boolean (false = game over), int (what type of win condition)
      */
-    private boolean[] gameIsNotOver(){
+    private boolean gameIsOver(){
         int count = 0;
-        for(Player player: players)
-            if(player.getHasLost()){
+        Player winner = null;
+        for(Player player: players) {
+            if (player.getHasLost()) {
                 count++;
-            }
-
-        if(count == players.length || count == players.length - 1){
-            return new boolean[]{false, true};
+            }/*
+            if(!player.getHasLost()){
+                //This will only be used when the game is actually over
+                winner = player;
+            }*/
         }
-        else
-            return new boolean[]{true, false};
 
+        System.out.println(""+ count + (this.players.length-1));
+        if(count >= this.players.length-1){
+            //Set the game to the Game over
+            this.actionContext = new ActionContext(Phase.GAME_OVER, winner);
+            return true;
+        }
+        return false;
     }
     /**
      * Checks if anyone has met a lost condition when they attacker
@@ -138,7 +156,7 @@ public class RiskModel {
             //If they do not own anymore countries they lose
             if(player.getOwnedCountries().isEmpty()){
                 player.hasLost();
-                break;
+                return true;
             }
             //If they have no more available attacking units, they lose as well
             //If sum of total units = sum of all countries, you can't make a turn
@@ -149,6 +167,7 @@ public class RiskModel {
             }
             if(sumOfUnits == player.getOwnedCountries().size()){
                 player.hasLost();
+                return true;
             }
         }
         return false;
@@ -169,11 +188,32 @@ public class RiskModel {
     }
     private Player nextPlayer(Player player){
         //TODO handle invalid players
+
+        int indexOfCurrentPlayer = Arrays.asList(this.players).indexOf(player);
+        int modValue = this.players.length;
+
+        for(int nextIndex = (indexOfCurrentPlayer+1)%modValue;; nextIndex = (nextIndex+1)%modValue){
+                    if(!this.players[nextIndex].getHasLost()){
+                        return this.players[nextIndex];
+                    }
+                    //Error no more players call game is over
+                    if(this.players[nextIndex].equals(player)){
+                        gameIsOver();
+                        updateView();
+                        return null;
+                    }
+        }
+
+/*
         for(int i=0;;i=(i+1)%this.players.length){
             if(this.players[i].equals(player)){
-                return this.players[(i+1)%this.players.length];
+                if(!this.players[(i+1)%this.players.length].getHasLost()) {
+                    return this.players[(i + 1) % this.players.length];
+                }
             }
         }
+        */
+ 
     }
 
     public void mapClicked(Point point){
@@ -242,7 +282,7 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
             case RETREAT_ARMY:
-               /* retreat(this.actionContext.player,
+                /*retreat(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
                         0);*/
@@ -320,6 +360,10 @@ public class RiskModel {
     }
     public void menuNumTroops(int numTroops){
         switch (this.actionContext.phase) {
+            case NEW_GAME:
+                this.actionContext.srcArmy = numTroops;
+                menuConfirm();
+                break;
             case DEPLOY_ARMY:
             case RETREAT_ARMY:
                 this.actionContext.setDstArmy(numTroops);
@@ -419,7 +463,7 @@ public class RiskModel {
         }
 
 
-        System.out.println(attackingArmy + " " +defendingArmy);
+        //System.out.println(attackingArmy + " " +defendingArmy);
 
         //Send dice rolls
         actionContext.setDiceRolls(new Integer[][]{attackRolls, defenderRolls});
@@ -444,7 +488,10 @@ public class RiskModel {
         }
 
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
-
+            if(gameIsOver()){
+                //Force game over here
+                updateView();
+            }
         }
 
         return true;
@@ -543,12 +590,13 @@ public class RiskModel {
         if(actionContext.phase==Phase.FORFEIT_CLICKED){
             actionContext.player.hasLost();
             if(gameIsOver()){
-                updateView();
+               actionContext=new ActionContext(Phase.GAME_OVER,nextPlayer(actionContext.player));
             }else{
                 actionContext = new ActionContext(Phase.ATTACK_SRC,nextPlayer(actionContext.player));
             }
+        }else {
+            actionContext.setPhase(Phase.FORFEIT_CLICKED);
         }
-        actionContext.setPhase(Phase.FORFEIT_CLICKED);
         updateView();
     }
 }

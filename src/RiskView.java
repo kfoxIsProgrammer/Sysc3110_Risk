@@ -2,11 +2,16 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Objects.isNull;
@@ -53,6 +58,8 @@ public class RiskView extends JFrame implements ActionListener {
 
     private JPanel optionPanel;
     private JButton forfeitButton;
+    private JFrame selectFrame;
+    private ArrayList<JTextField> names;
 
     /**constructor for RiskView
      * @param controller controller for the RiskView
@@ -60,6 +67,7 @@ public class RiskView extends JFrame implements ActionListener {
      * @param countries Array of all countries on the map
      */
     public RiskView(RiskController controller, BufferedImage modelMapImage, Country[] countries){
+
         //TODO info update , use country.getCentercoords
         mapImage = modelMapImage;
         riskController = controller;
@@ -98,7 +106,7 @@ public class RiskView extends JFrame implements ActionListener {
         mapContainer.setBorder(new EtchedBorder(EtchedBorder.RAISED));
         mapContainer.setLayout(null);
         insertMapImage(); // add image in the background
-        labelCountries(countryArray,true); // add labels for countries initially
+       //labelCountries(countryArray,true); // add labels for countries initially
         mapContainer.add(mapLayeredPane);
 
         return mapContainer;
@@ -136,6 +144,7 @@ public class RiskView extends JFrame implements ActionListener {
         forfeitButton = new JButton("Forfeit");
         forfeitButton.setActionCommand("Forfeit");
         forfeitButton.setSize(50,40);
+        forfeitButton.addActionListener(riskController);
 
         skipButton.setSize(50, 40);
         skipButton.setActionCommand("skip");
@@ -246,10 +255,51 @@ public class RiskView extends JFrame implements ActionListener {
     public void boardUpdate(ActionContext actionContext) {
         forfeitButton.setText("Forfeit");
         switch (actionContext.phase) {
+            case NEW_GAME:
+                if(actionContext.srcArmy==0) {
+                    numberSelectPanel(actionContext, "Select number of players");
+                }else {
+                    selectFrame =new JFrame();
+                    JPanel selectPanel = new JPanel();
+                    selectPanel.setLayout(new GridBagLayout());
+                    GridBagConstraints gbc = new GridBagConstraints();
+                    names = new ArrayList<>(actionContext.srcArmy);
+                    JButton submit = new JButton("Submit");
+                    for(int i =1; i<=actionContext.srcArmy;i++){
+                        gbc.gridy=i-1;
+                        gbc.gridx=0;
+                        selectPanel.add(new JLabel("Player "+i+": "),gbc);
+                        JTextField name=new JTextField();
+                        name.setPreferredSize(new Dimension(100,40));
+                        gbc.gridx=1;
+                        selectPanel.add(name,gbc);
+                        names.add(name); 
+                    }
+                    
+                    gbc.gridx=0;
+                    gbc.gridy=actionContext.srcArmy+2;
+                    gbc.fill=GridBagConstraints.BOTH;
+                    gbc.gridwidth=2;
+
+                    submit.addActionListener(this);
+                    submit.setActionCommand("compile");
+                    
+                    selectPanel.add(submit,gbc);
+                    selectPanel.setVisible(true);
+                    selectFrame.setContentPane(selectPanel);
+                    selectFrame.setSize(new Dimension(200,100*actionContext.srcArmy+2));
+                    selectFrame.setVisible(true);
+                }
+                break;
             case ATTACK_SRC:
+                selectFrame.setVisible(false);
                 labelCountries(countryArray,true);
                 ((MapContainer) (mapContainer)).setActive(true);
-                attackSrcPanelEdit(actionContext.player);
+                try {
+                    attackSrcPanelEdit(actionContext.player);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
                 confirmPhase.setText("Confirm Attacker");
                 confirmPhase.setVisible(false);
@@ -257,7 +307,7 @@ public class RiskView extends JFrame implements ActionListener {
             case ATTACK_DST:
                 ((MapContainer) (mapContainer)).setActive(true);
                 if(isNull(actionContext.highlightedCountries)){
-                    displayPopup("Cannot attack with 1 troop, select a different country");
+                    JOptionPane.showMessageDialog(null,"No troops to use");
                     confirmPhase.setText("Select another country");
                     confirmPhase.setActionCommand("back");
                     confirmPhase.setVisible(true);
@@ -276,7 +326,7 @@ public class RiskView extends JFrame implements ActionListener {
                         confirmPhase.setEnabled(false);
                         int attackingTroops = 0;
                         while (attackingTroops==0){
-                            attackingTroops = troopSelectPanel(actionContext,"Select number of troops: ");
+                            attackingTroops = numberSelectPanel(actionContext,"Select number of troops: ");
                         }
                         if (attackingTroops>0){
                             confirmPhase.setText("Attack with "+attackingTroops+" troops");
@@ -289,7 +339,6 @@ public class RiskView extends JFrame implements ActionListener {
                         confirmPhase.setVisible(true);
                         break;
                     case RETREAT_ARMY:
-                        System.out.println("here");
                         ((MapContainer) (mapContainer)).setActive(false);
                         labelCountries(countryArray,true);
                         dicePanelEdit(actionContext.diceRolls, actionContext.srcCountry.getOwner(), actionContext.dstCountry.getOwner(), actionContext.attackerVictory);
@@ -297,7 +346,7 @@ public class RiskView extends JFrame implements ActionListener {
                         if(actionContext.attackerVictory) {
                             int retreatingTroops = -1;
                             while (retreatingTroops == -1) {
-                                retreatingTroops = troopSelectPanel(actionContext, "Select number of troops to retreat: ");
+                                retreatingTroops = numberSelectPanel(actionContext, "Select number of troops to retreat: ");
                                 if (retreatingTroops >= 0) {
                                     confirmPhase.setText("Send " + retreatingTroops + " troops back");
                                     confirmPhase.setActionCommand("" + retreatingTroops);
@@ -315,7 +364,7 @@ public class RiskView extends JFrame implements ActionListener {
                         break;
             case FORFEIT_CLICKED:
                 confirmPhase.setVisible(false);
-                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + "You are about to forfeit your battle! Confirm", "WARNING",
+                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + ", you are about to forfeit your battle! Confirm", "WARNING",
                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     forfeitButton.setText("Confirm forfeit?");
                     forfeitButton.setActionCommand("Forfeit");
@@ -323,23 +372,38 @@ public class RiskView extends JFrame implements ActionListener {
                     confirmPhase.setText("Cancel forfeit");
                     confirmPhase.setActionCommand("back");
                 }
-                    default:
-                        System.out.println(actionContext.phase);
+            case GAME_OVER:
+                infoPanelEdit(actionContext);
+
+                if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + ", you Won!\nPlay again?", "Congratulations",
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    forfeitButton.setText("Play Again");
+                    forfeitButton.setActionCommand("newGame");
+                } else {
+                    dispatchEvent(new WindowEvent(this,WindowEvent.WINDOW_CLOSING));
+                }
+            default:
+                System.out.println(actionContext.phase);
                 break;
         }
     }
-
-    private void displayPopup(String s) {
-        JFrame f=new JFrame();
-        JOptionPane.showMessageDialog(f,"No troops to use");
+    
+    public void compileNames(List<JTextField> names){
+        String nameString="ng ";
+        for(JTextField JTF:names){
+            nameString+=JTF.getText()+" ";
+        }
+        riskController.actionPerformed(new ActionEvent(this,1,nameString));
     }
 
     /**
      * edits the attackSrcPanel with information from a context
      * @param player player whose turn is to attack
      */
-    private void attackSrcPanelEdit(Player player) {
+    private void attackSrcPanelEdit(Player player) throws BadLocationException {
+        attackSrcText.getHighlighter().removeAllHighlights();
         attackSrcText.setText(player.getName() + ", select attacking country from map");
+        attackSrcText.getHighlighter().addHighlight(0,player.getName().length(), new DefaultHighlighter.DefaultHighlightPainter(player.getColor()));
     }
     /**
      * edits the text in attackSrcPanel based on the country attacking
@@ -430,22 +494,22 @@ public class RiskView extends JFrame implements ActionListener {
      * @param actionContext context information
      * @return the number of troops selected
      */
-    private int troopSelectPanel(ActionContext actionContext,String message) {
+    private int numberSelectPanel(ActionContext actionContext, String message) {
         AtomicBoolean sliderUsed = new AtomicBoolean(false);
         JFrame troopSelectPanel = new JFrame();
-        JOptionPane troopPane = new JOptionPane();
+        JOptionPane numberPane = new JOptionPane();
         JSlider slider = new JSlider();
         ChangeListener changeListener = changeEvent -> {
             JSlider theSlider = (JSlider) changeEvent.getSource();
             if (!theSlider.getValueIsAdjusting()) {
                 sliderUsed.set(true);
-                troopPane.setInputValue(theSlider.getValue());
+                numberPane.setInputValue(theSlider.getValue());
             }
         };
         slider.addChangeListener(changeListener);
-        troopPane.setMessage(new Object[]{message, slider});
-        troopPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-        troopPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
+        numberPane.setMessage(new Object[]{message, slider});
+        numberPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+        numberPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
         JFrame f = new JFrame();
         slider.setMajorTickSpacing(1);
         slider.setPaintTicks(true);
@@ -455,11 +519,11 @@ public class RiskView extends JFrame implements ActionListener {
                 if (actionContext.srcCountry.getArmy() >= 3) {
                     slider.setMaximum(actionContext.srcCountry.getArmy() - 1);
                     slider.setMinimum(1);
-                    JDialog dialog = troopPane.createDialog(troopSelectPanel, "Select attacking troops");
+                    JDialog dialog = numberPane.createDialog(troopSelectPanel, "Select attacking troops");
                     dialog.setVisible(true);
 
-                    if (!isNull(troopPane.getValue()) && (Integer) troopPane.getValue() == JOptionPane.OK_OPTION) {
-                        return (sliderUsed.get()) ? Integer.parseInt((troopPane.getInputValue().toString())) : 0;
+                    if (!isNull(numberPane.getValue()) && (Integer) numberPane.getValue() == JOptionPane.OK_OPTION) {
+                        return (sliderUsed.get()) ? Integer.parseInt((numberPane.getInputValue().toString())) : 0;
                     } else { //player cancelled selection
                         return -1;
                     }
@@ -478,10 +542,10 @@ public class RiskView extends JFrame implements ActionListener {
                 if (actionContext.srcArmy-actionContext.srcArmyDead >= 2) {
                     slider.setMaximum(actionContext.srcArmy-actionContext.srcArmyDead - 1);
                     slider.setMinimum(0);
-                    JDialog dialog = troopPane.createDialog(troopSelectPanel, "You won! Select retreating troops");
+                    JDialog dialog = numberPane.createDialog(troopSelectPanel, "You won! Select retreating troops");
                     dialog.setVisible(true);
-                    if (!isNull(troopPane.getValue()) && (Integer) troopPane.getValue() == JOptionPane.OK_OPTION) {
-                        return (sliderUsed.get()) ? Integer.parseInt((troopPane.getInputValue().toString())) : 0;
+                    if (!isNull(numberPane.getValue()) && (Integer) numberPane.getValue() == JOptionPane.OK_OPTION) {
+                        return (sliderUsed.get()) ? Integer.parseInt((numberPane.getInputValue().toString())) : 0;
                     } else { //player cancelled selection
                         return -1;
                     }
@@ -493,12 +557,25 @@ public class RiskView extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(f, "No troops to use");
                     return -1;
                 }
-            default:
+            case NEW_GAME:
+                slider.setMinimum(2);
+                slider.setMaximum(6);
+                JDialog dialog = numberPane.createDialog(troopSelectPanel, "Use slider to select number of Players");
+                dialog.setVisible(true);
+                if (!isNull(numberPane.getValue()) && ((Integer) numberPane.getValue() == JOptionPane.OK_OPTION)){
+                    riskController.actionPerformed(new ActionEvent(this,1,""+((sliderUsed.get()) ? Integer.parseInt((numberPane.getInputValue().toString())) :2 )));
+                    return (sliderUsed.get()) ? Integer.parseInt((numberPane.getInputValue().toString())) :2 ;
+                } else { //player cancelled selection
+                    dispatchEvent(new WindowEvent(this,WindowEvent.WINDOW_CLOSING));
+                }
+                default:
                 return -1;
         }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.printf("BRUH\n");
+       if(e.getActionCommand().equals("compile")){
+           compileNames(names);
+       }
     }
 }
