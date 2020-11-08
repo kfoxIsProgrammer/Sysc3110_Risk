@@ -248,6 +248,7 @@ public class RiskView extends JFrame implements ActionListener {
 
 
                 switch (currentPhase) {
+
                     case ATTACK_DST:
                        ((MapContainer) (mapContainer)).setActive(true);
                         highlightAdjacentCountries(actionContext.highlightedCountries, actionContext.srcCountry);
