@@ -42,6 +42,7 @@ public class RiskModel {
     }
 
     public void newGameHelper(String stringToProcess){
+        //System.out.println(stringToProcess);
 
         String[] values = stringToProcess.split(" ");
         String[] valuesForGame = new String[values.length-1];
@@ -50,7 +51,6 @@ public class RiskModel {
         }
 
         newGame(this.actionContext.srcArmy, values);
-
     }
 
     /**
@@ -110,7 +110,7 @@ public class RiskModel {
         countriesArray = ran.toArray(countriesArray);
         this.countries=countriesArray;
         this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
-
+        updateView();
     }
     /**
      * Main control function for the Risk game
@@ -464,7 +464,7 @@ public class RiskModel {
         }
 
 
-        System.out.println(attackingArmy + " " +defendingArmy);
+        //System.out.println(attackingArmy + " " +defendingArmy);
 
         //Send dice rolls
         actionContext.setDiceRolls(new Integer[][]{attackRolls, defenderRolls});
