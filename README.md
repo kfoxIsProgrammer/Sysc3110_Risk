@@ -32,6 +32,8 @@ Potential Bug 1. Could you make sure that the attack algorithm is correct. I mig
 
 Class Cohesion isn't the best. RiskModel still has the map in it's components, while the map holds the same data.
 
+Make sure that the maps folder is in the same directory as the jar 
+
 __Roadmap:__
 
 The next goal for our game is to introduce the playable Deploy and Fortify phases.
