@@ -18,8 +18,8 @@ import static java.util.Objects.isNull;
 
 /**
  * This is responsible for creating the viewport.
- * @author Kshitij Sawhney
- * @version 11 / 2 / 2020
+ * @author Kshitij Sawhney, Kevin Fox
+ * @version 11 / 9 / 2020
  */
 
 public class RiskView extends JFrame implements ActionListener {
@@ -41,6 +41,7 @@ public class RiskView extends JFrame implements ActionListener {
     private JPanel dicePanel;
     /**Image background for the MapPanel*/
     private final BufferedImage mapImage;
+    private JButton skipButton;
     /**Button to confirm completion of current phase*/
     private JButton confirmPhase;
     /**JTextPane for attackSrcPanel*/
@@ -55,10 +56,13 @@ public class RiskView extends JFrame implements ActionListener {
     private final Country[] countryArray;
     /**JTextArea that gets updated as the game goes on**/
     private JTextArea infoArea;
-
+    /**JPanel used for option buttons to be added*/
     private JPanel optionPanel;
+    /**JButton for a player forfeit*/
     private JButton forfeitButton;
+    /**JFrame for entering player names*/
     private JFrame selectFrame;
+    /**ArrayList<JTextField> holds the names entered by the user*/
     private ArrayList<JTextField> names;
 
     /**constructor for RiskView
@@ -140,17 +144,21 @@ public class RiskView extends JFrame implements ActionListener {
         confirmPhase = new JButton();
         confirmPhase.setSize(200, 40);
 
-        JButton skipButton = new JButton("Skip");
+        skipButton = new JButton("Skip");
         forfeitButton = new JButton("Forfeit");
         forfeitButton.setActionCommand("Forfeit");
         forfeitButton.setSize(50,40);
         forfeitButton.addActionListener(riskController);
+        forfeitButton.setEnabled(false);
 
         skipButton.setSize(50, 40);
         skipButton.setActionCommand("skip");
+        skipButton.setEnabled(false);
 
         confirmPhase.addActionListener(riskController);
         skipButton.addActionListener(riskController);
+        confirmPhase.setVisible(false);
+        confirmPhase.setEnabled(false);
 
         buttonPanel.add(confirmPhase, BorderLayout.WEST);
         buttonPanel.add(skipButton, BorderLayout.EAST);
@@ -259,7 +267,7 @@ public class RiskView extends JFrame implements ActionListener {
                 if(actionContext.srcArmy==0) {
                     numberSelectPanel(actionContext, "Select number of players");
                 }else {
-                    selectFrame =new JFrame();
+                    selectFrame =new JFrame("Enter the names for the players");
                     JPanel selectPanel = new JPanel();
                     selectPanel.setLayout(new GridBagLayout());
                     GridBagConstraints gbc = new GridBagConstraints();
@@ -281,20 +289,28 @@ public class RiskView extends JFrame implements ActionListener {
                     gbc.fill=GridBagConstraints.BOTH;
                     gbc.gridwidth=2;
 
+
                     submit.addActionListener(this);
                     submit.setActionCommand("compile");
                     
                     selectPanel.add(submit,gbc);
                     selectPanel.setVisible(true);
+
                     selectFrame.setContentPane(selectPanel);
                     selectFrame.setSize(new Dimension(200,100*actionContext.srcArmy+2));
                     selectFrame.setVisible(true);
+                    selectFrame.setSize(500,350);
                 }
                 break;
             case ATTACK_SRC:
                 if(selectFrame!=null) {
                     selectFrame.setVisible(false);
                 }
+                //Let the user interact with these buttons before here, causes bugs
+                confirmPhase.setEnabled(true);
+                skipButton.setEnabled(true);
+                forfeitButton.setEnabled(true);
+
                 labelCountries(countryArray,true);
                 ((MapContainer) (mapContainer)).setActive(true);
                 try {
@@ -381,7 +397,7 @@ public class RiskView extends JFrame implements ActionListener {
                 if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + ", you Won!\nPlay again?", "Congratulations",
                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     forfeitButton.setText("Play Again");
-                    forfeitButton.setActionCommand("newGame");
+                    forfeitButton.setActionCommand("newGameUser");
                 } else {
                     dispatchEvent(new WindowEvent(this,WindowEvent.WINDOW_CLOSING));
                 }
@@ -391,7 +407,12 @@ public class RiskView extends JFrame implements ActionListener {
                 break;
         }
     }
-    
+
+    /**
+     * This method is used to process the ng String for giving the player names
+     * to the model
+     * @param names the arraylist of player names
+     */
     public void compileNames(List<JTextField> names){
         String nameString="ng ";
         for(JTextField JTF:names){
@@ -568,6 +589,7 @@ public class RiskView extends JFrame implements ActionListener {
                 slider.setMinimum(2);
                 slider.setMaximum(6);
                 JDialog dialog = numberPane.createDialog(troopSelectPanel, "Use slider to select number of Players");
+                dialog.setSize(400,200);
                 dialog.setVisible(true);
                 if (!isNull(numberPane.getValue()) && ((Integer) numberPane.getValue() == JOptionPane.OK_OPTION)){
                     riskController.actionPerformed(new ActionEvent(this,1,""+((sliderUsed.get()) ? Integer.parseInt((numberPane.getInputValue().toString())) :2 )));

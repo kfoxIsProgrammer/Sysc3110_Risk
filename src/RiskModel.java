@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.sql.Array;
 import java.util.*;
 
 /**
@@ -28,22 +27,19 @@ public class RiskModel {
      * @param names the names of players
      */
     public RiskModel(String[] names){
-        MapImport mapReader=new MapImport("maps/demo.zip");
-        this.map=mapReader.getMap();
-        map.printCountries();
-        map.printContinents();
-        this.countries=map.countries;
-        this.continents=map.continents;
-        newGame(names.length, names);
-
-        this.riskController=new RiskController(this);
-        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
-        updateView();
-
+        newGameStart(names);
     }
 
     /** Constructor of Risk Model*/
     private RiskModel(){
+        newGameStart(null);
+    }
+
+    /**
+     * This is the method that starts the game
+     * @param namesToProcess
+     */
+    public void newGameStart(String[] namesToProcess){
         MapImport mapReader=new MapImport("maps/demo.zip");
         this.map=mapReader.getMap();
         map.printCountries();
@@ -53,23 +49,27 @@ public class RiskModel {
 
         this.riskController=new RiskController(this);
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
-        this.actionContext = new ActionContext(Phase.NEW_GAME, null);
+
+        if(namesToProcess == null){
+            this.actionContext = new ActionContext(Phase.NEW_GAME, null);
+        }
+        else{
+            newGamePlayerCreator(namesToProcess.length, namesToProcess);
+        }
         updateView();
-
     }
-
     /**
      * Method to process the names sent from the view
      * @param stringToProcess the names of the view in one string
      */
-    public void newGameHelper(String stringToProcess){
+    public void newGameNameProcessor(String stringToProcess){
 
         String[] values = stringToProcess.split(" ");
         String[] valuesForGame = new String[values.length-1];
         for(int i =1; i< values.length; i++){
             valuesForGame[i-1] = values[i];
         }
-        newGame(this.actionContext.srcArmy, valuesForGame);
+        newGamePlayerCreator(this.actionContext.srcArmy, valuesForGame);
         updateView();
     }
 
@@ -77,7 +77,7 @@ public class RiskModel {
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
      */
-    private void newGame(int playerNum, String[] playerNames){
+    private void newGamePlayerCreator(int playerNum, String[] playerNames){
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
 
@@ -646,7 +646,6 @@ public class RiskModel {
      */
     private void updateView(){
         this.riskView.boardUpdate(this.actionContext);
-
     }
 
     public static void main(String[] args) {

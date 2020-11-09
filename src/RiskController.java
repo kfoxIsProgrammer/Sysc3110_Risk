@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 /**
  * Controller class to receive events from the view and send it to the Model
  * @author Kevin Fox
- * @version 11.07.2020
+ * @version 11.09.2020
  */
 public class RiskController implements ActionListener {
 
@@ -26,9 +26,6 @@ public class RiskController implements ActionListener {
      * @param playerNames the player names
      * @return the model of the new game to be attached to the view
      */
-    public void startNewGame(int players, String[] playerNames){
-        //this.riskModel.newGame(players, playerNames);
-    }
 
     /**
      * Helper function to check if any chars in a string are ints
@@ -56,7 +53,6 @@ public class RiskController implements ActionListener {
     }
     /**
      * This command is for dealing with button clicks, mostly army number
-     *
      * @param e the button click event from the view
      */
     @Override
@@ -65,7 +61,7 @@ public class RiskController implements ActionListener {
             riskModel.menuSkip();
         }
         else if(e.getActionCommand().contains("ng")){
-            riskModel.newGameHelper(e.getActionCommand());
+            riskModel.newGameNameProcessor(e.getActionCommand());
         }
         else if(e.getActionCommand().equals("confirm")){
             riskModel.menuConfirm();
@@ -79,8 +75,8 @@ public class RiskController implements ActionListener {
         else if(e.getActionCommand().equals("Forfeit")){
             riskModel.playerForfeit();
 
-        }else if(e.getActionCommand().equals("ForfeitConfirmed")){
-            riskModel.playerForfeit();
+        }else if(e.getActionCommand().equals("newGameUser")){
+            riskModel.newGameStart(null);
         }
 
     }
