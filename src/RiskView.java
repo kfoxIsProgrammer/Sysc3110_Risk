@@ -292,7 +292,9 @@ public class RiskView extends JFrame implements ActionListener {
                 }
                 break;
             case ATTACK_SRC:
-                selectFrame.setVisible(false);
+                if(selectFrame!=null) {
+                    selectFrame.setVisible(false);
+                }
                 labelCountries(countryArray,true);
                 ((MapContainer) (mapContainer)).setActive(true);
                 try {
