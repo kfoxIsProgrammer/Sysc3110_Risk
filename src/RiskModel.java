@@ -23,6 +23,25 @@ public class RiskModel {
     /** The current RiskController**/
     RiskController riskController;
 
+    /**
+     * 1 param constructor for testing purposes
+     * @param names the names of players
+     */
+    public RiskModel(String[] names){
+        MapImport mapReader=new MapImport("maps/demo.zip");
+        this.map=mapReader.getMap();
+        map.printCountries();
+        map.printContinents();
+        this.countries=map.countries;
+        this.continents=map.continents;
+        newGame(names.length, names);
+
+        this.riskController=new RiskController(this);
+        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
+        updateView();
+
+    }
+
     /** Constructor of Risk Model*/
     private RiskModel(){
         MapImport mapReader=new MapImport("maps/demo.zip");
@@ -31,7 +50,6 @@ public class RiskModel {
         map.printContinents();
         this.countries=map.countries;
         this.continents=map.continents;
-        //newGame(2, new String[]{"jeff", "assman"});
 
         this.riskController=new RiskController(this);
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
@@ -40,6 +58,10 @@ public class RiskModel {
 
     }
 
+    /**
+     * Method to process the names sent from the view
+     * @param stringToProcess the names of the view in one string
+     */
     public void newGameHelper(String stringToProcess){
 
         String[] values = stringToProcess.split(" ");
@@ -108,13 +130,6 @@ public class RiskModel {
         countriesArray = ran.toArray(countriesArray);
         this.countries=countriesArray;
         this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
-        updateView();
-    }
-    /**
-     * Main control function for the Risk game
-     */
-    private void play(){
-
     }
 
     /**
@@ -186,6 +201,12 @@ public class RiskModel {
         }
         return null;
     }
+
+    /**
+     * Method to select the next player that still is in the game
+     * @param player the currentPlayer to determine position
+     * @return the next Player still in game
+     */
     private Player nextPlayer(Player player){
         //TODO handle invalid players
 
@@ -216,6 +237,11 @@ public class RiskModel {
  
     }
 
+    /**
+     * Method to handle when the user clicks on the map of the view
+     * This will also return the country to the view
+     * @param point the x,y position of where the click happened
+     */
     public void mapClicked(Point point){
         Country clickedCountry=pointToCountry(point);
         System.out.printf("(%d,%d):\t",point.x,point.y);
@@ -268,6 +294,10 @@ public class RiskModel {
         }
         updateView();
     }
+
+    /**
+     * Method used to deal with when the user clicks the skip button
+     */
     public void menuSkip(){
         switch (this.actionContext.phase){
             case DEPLOY_DST:
@@ -297,6 +327,10 @@ public class RiskModel {
         }
         updateView();
     }
+
+    /**
+     * Method to deal with when the user clicks a confirm button
+     */
     public void menuConfirm(){
         //TODO error checking
         switch (this.actionContext.phase) {
@@ -330,6 +364,10 @@ public class RiskModel {
         }
         updateView();
     }
+
+    /**
+     * Methods to deal with when the user clicks a back button
+     */
     public void menuBack(){
         switch(this.actionContext.phase){
             case DEPLOY_DST:
@@ -358,6 +396,11 @@ public class RiskModel {
         }
         updateView();
     }
+
+    /**
+     * Method to deal with numbers sent from the view
+     * @param numTroops the number of troops to handle
+     */
     public void menuNumTroops(int numTroops){
         switch (this.actionContext.phase) {
             case NEW_GAME:
@@ -496,6 +539,15 @@ public class RiskModel {
 
         return true;
     }
+
+    /**
+     * Method to process a successful attack when sending units back to the attacking country
+     * @param player the current player
+     * @param attackingCountry the Country of the attacking player
+     * @param defendingCountry the defending country that has lost
+     * @param unitsToRetreat the number of units to send to the attacking country
+     * @return boolean True: success, False: fail
+     */
     private boolean retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
 
         defendingCountry.setArmy((this.actionContext.srcArmy-this.actionContext.srcArmyDead)-unitsToRetreat);
@@ -568,29 +620,15 @@ public class RiskModel {
         return toTest;
     }
 
-    private void updateView(){
-        this.riskView.boardUpdate(this.actionContext);
-
-    }
-
-    public static void main(String[] args) {
-       new RiskModel();
-    }
-
-    public void countryHasBeenSelected(int x, int y) {
-    }
-
-    public void startNewGame(int players, String[] playerNames) {
-    }
-
-    public void sendAction(String actionCommand) {
-    }
-
+    /**
+     * This method is called to determine how to handle a player selecting forfeit
+     * This will also check if the game is over
+     */
     public void playerForfeit() {
         if(actionContext.phase==Phase.FORFEIT_CLICKED){
             actionContext.player.hasLost();
             if(gameIsOver()){
-               actionContext=new ActionContext(Phase.GAME_OVER,nextPlayer(actionContext.player));
+                actionContext=new ActionContext(Phase.GAME_OVER,nextPlayer(actionContext.player));
             }else{
                 actionContext = new ActionContext(Phase.ATTACK_SRC,nextPlayer(actionContext.player));
             }
@@ -599,4 +637,17 @@ public class RiskModel {
         }
         updateView();
     }
+
+    /**
+     * Method to updateView
+     */
+    private void updateView(){
+        this.riskView.boardUpdate(this.actionContext);
+
+    }
+
+    public static void main(String[] args) {
+        new RiskModel();
+    }
+
 }
