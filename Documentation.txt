@@ -1,3 +1,5 @@
+Milestone1
+
 Risk Model:
   The important objects(Player, Country, Continent) are stored in arraylists since they are the easiest to iterate through
 1.Constructor:
@@ -60,3 +62,9 @@ Command Parser:
     Command Parsing:
         The command code is checked in the Deploy, Fortify, and Attack methods. This is done because some commands are allowed during certain phases while others are not. Each phase's
         function checks to see if the command is valid and can be returned to the risk model, or if its invalid or requires information to be displayed.
+        
+        
+        
+   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+   Milestone2
