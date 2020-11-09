@@ -127,9 +127,9 @@ public class RiskModel {
                 }
             }
         }
-        Country[] countriesArray=new Country[ran.size()];
-        countriesArray = ran.toArray(countriesArray);
-        this.countries=countriesArray;
+        //Country[] countriesArray=new Country[ran.size()];
+        //countriesArray = ran.toArray(countriesArray);
+        //this.countries=countriesArray;
         this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
     }
 
@@ -583,7 +583,7 @@ public class RiskModel {
     private boolean fortify(Player player, Country sourceCountry, Country destinationCountry, int unitsToSend){
         Stack countriesWithinBorder = new Stack();
         boolean valid = false;
-        countriesWithinBorder = getConnectedOwnedCountries(sourceCountry, player, countriesWithinBorder);
+        countriesWithinBorder = getConnectedOwnedCountries(sourceCountry, sourceCountry, player, countriesWithinBorder);
         while (!countriesWithinBorder.isEmpty()){
             if(destinationCountry == countriesWithinBorder.pop()){
                 valid = true;
@@ -617,12 +617,12 @@ public class RiskModel {
      * @param toTest Stack containing all of the connected owned countries
      * @return Stack that contains all the countries connected to source through friendly territory
      */
-    public Stack getConnectedOwnedCountries(Country sourceCountry, Player user, Stack toTest){
+    public Stack getConnectedOwnedCountries(Country sourceCountry,Country root, Player user, Stack toTest){
         for(Country count: sourceCountry.getAdjacentCountries()){
-            if(count.getOwner() == user && !toTest.contains(count)){
+            if(count.getOwner() == user && !toTest.contains(count) && count != root){
                 //  System.out.println(count.getName());
                 toTest.add(count);
-                return(getConnectedOwnedCountries(count, user, toTest));
+                return(getConnectedOwnedCountries(count,root, user, toTest));
             }
         }
         return toTest;

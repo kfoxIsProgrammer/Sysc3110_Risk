@@ -3,6 +3,7 @@ import junit.framework.TestCase;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import static org.junit.Assert.*;
 //Tests applicable for milestone 2
@@ -102,7 +103,7 @@ public class RiskModelTest extends TestCase {
      * access  it.
      */
     public void testEveryCountryIsClickable(){
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         for(int i = 0; i < test.countries.length; i++){
             assertTrue(test.countries[i].containsPoint(getValidPoint(test.countries[i])));
         }
@@ -254,23 +255,108 @@ public class RiskModelTest extends TestCase {
         assertEquals(test.players[1],test.actionContext.player);
         assertEquals(Phase.ATTACK_SRC, test.actionContext.phase);
     }
+
+    /***
+     * Tests that the array of country objects in model is in the right order for the default map
+     */
     public void testCountriesArrayOrder(){
         RiskModel test = new RiskModel(twoPlayers);
 
         String[] toTest = {"Alaska","Alberta","Central America","Eastern United States","Greenland","Northwest Territory",
                 "Ontario","Quebec","Western United States","Argentina","Brazil","Peru","Venezuela","Great Britain","Iceland",
                 "Northern Europe","Scandinavia","Southern Europe","Ukraine","Western Europe","Congo","East Africa","Egypt",
-                "Madagascar","North Africa","South Africa","Afghanistan","China","India","Irkutsk","Japan","Kamchatka","Middle East","Mongolia","Siam ","Siberia","Ural ",
+                "Madagascar","North Africa","South Africa","Afghanistan","China","India","Irkutsk","Japan","Kamchatka","Middle East","Mongolia","Siam","Siberia","Ural",
                 "Yakutsk","Eastern Australia","Indonesia","New Guinea","Western Australia"};
         for(int i = 0; i < toTest.length; i++){
             assertEquals(toTest[i],test.countries[i].getName());
         }
         // Not a big deal if fails, just should be fixed in order to help with testing
+    }
+
+    /***
+     * Test that forfeit with only 2 players will lead to a gameover
+     */
+    public void testTwoPlayerForfeit(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.playerForfeit();
+        assertEquals(Phase.FORFEIT_CLICKED,test.actionContext.phase);
+        test.playerForfeit();
+        assertEquals(Phase.GAME_OVER,test.actionContext.phase);
+    }
+
+    /***
+     * Tests that a forfeit with 6 players will cause the game to continue without the forfeited player
+     */
+    public void testSixPlayerOneForfeit(){
+        RiskModel test = new RiskModel(sixPlayers);
+        test.playerForfeit();
+        assertEquals(Phase.FORFEIT_CLICKED,test.actionContext.phase);
+        test.playerForfeit();
+        assertEquals(Phase.ATTACK_SRC,test.actionContext.phase);
+        assertEquals(test.players[1], test.actionContext.player);
+        for(int i = 0; i<5; i++){test.menuSkip();}
+        assertEquals(test.players[1], test.actionContext.player);
+
+    }
+
+    /***
+     * Tests the getConnected method returns the correct countries
+     */
+    public void testGetConnectedCountries(){
+        RiskModel test = new RiskModel(twoPlayers);
+        Stack <Country> toTest = new Stack();
+        test.players[0].getOwnedCountries().clear();
+        test.players[1].getOwnedCountries().clear();
+        for(int i = 0; i < test.countries.length; i++){
+            test.countries[i].setOwner(null);
+        }
+        test.players[0].addCountry(test.countries[0]);//add Alaska
+        test.countries[0].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.countries[1]);//add alberta
+        test.countries[1].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.countries[5]);//add NorthWest Territory
+        test.countries[5].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.countries[6]);//add Ontario
+        test.countries[6].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.countries[7]);//add Quebec
+        test.countries[7].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.countries[8]); // add western United states
+        test.countries[8].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.countries[3]); // add Eastern united states
+        test.countries[3].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.countries[27]);//add china
+        test.countries[27].setOwner(test.players[0]);
+        toTest = test.getConnectedOwnedCountries(test.countries[1], test.countries[1],test.players[0],toTest);
+        //should not include china
+        assertEquals(6, toTest.size());
+        assertTrue(toTest.contains(test.countries[6]));
+        assertTrue(toTest.contains(test.countries[7]));
+        assertTrue(toTest.contains(test.countries[5]));
+        assertTrue(toTest.contains(test.countries[0]));
+        assertTrue(toTest.contains(test.countries[8]));
+        assertTrue(toTest.contains(test.countries[3]));
+
+
+
+
+
+
+
+
 
 
 
 
     }
+
+
 
 
 
