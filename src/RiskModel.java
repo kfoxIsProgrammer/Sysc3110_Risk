@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.sql.Array;
 import java.util.*;
 
 /**
@@ -28,22 +27,19 @@ public class RiskModel {
      * @param names the names of players
      */
     public RiskModel(String[] names){
-        MapImport mapReader=new MapImport("maps/demo.zip");
-        this.map=mapReader.getMap();
-        map.printCountries();
-        map.printContinents();
-        this.countries=map.countries;
-        this.continents=map.continents;
-        newGame(names.length, names);
-
-        this.riskController=new RiskController(this);
-        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
-        updateView();
-
+        newGameStart(names);
     }
 
     /** Constructor of Risk Model*/
-    public RiskModel(){
+    private RiskModel(){
+        newGameStart(null);
+    }
+
+    /**
+     * This is the method that starts the game
+     * @param namesToProcess the string array of player names
+     */
+    public void newGameStart(String[] namesToProcess){
         MapImport mapReader=new MapImport("maps/demo.zip");
         this.map=mapReader.getMap();
         map.printCountries();
@@ -53,23 +49,27 @@ public class RiskModel {
 
         this.riskController=new RiskController(this);
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
-        this.actionContext = new ActionContext(Phase.NEW_GAME, null);
+
+        if(namesToProcess == null){
+            this.actionContext = new ActionContext(Phase.NEW_GAME, null);
+        }
+        else{
+            newGamePlayerCreator(namesToProcess.length, namesToProcess);
+        }
         updateView();
-
     }
-
     /**
      * Method to process the names sent from the view
      * @param stringToProcess the names of the view in one string
      */
-    public void newGameHelper(String stringToProcess){
+    public void newGameNameProcessor(String stringToProcess){
 
         String[] values = stringToProcess.split(" ");
         String[] valuesForGame = new String[values.length-1];
         for(int i =1; i< values.length; i++){
             valuesForGame[i-1] = values[i];
         }
-        newGame(this.actionContext.srcArmy, valuesForGame);
+        newGamePlayerCreator(this.actionContext.srcArmy, valuesForGame);
         updateView();
     }
 
@@ -77,7 +77,7 @@ public class RiskModel {
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
      */
-    private void newGame(int playerNum, String[] playerNames){
+    private void newGamePlayerCreator(int playerNum, String[] playerNames){
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
 
@@ -152,7 +152,7 @@ public class RiskModel {
             }*/
         }
 
-        System.out.println(""+ count + (this.players.length-1));
+
         if(count >= this.players.length-1){
             //Set the game to the Game over
             this.actionContext = new ActionContext(Phase.GAME_OVER, winner);
@@ -266,7 +266,9 @@ public class RiskModel {
                     this.actionContext.setSrcCountry(clickedCountry);
                     ArrayList<Country> enemyCountries = new ArrayList<>();
                     if (clickedCountry.getArmy() > 1) {
+
                         for (Country c : clickedCountry.getAdjacentCountries()) {
+                            System.out.println(c.getName());
                             if (c.getOwner() != this.actionContext.player) {
                                 enemyCountries.add(c);
                             }
@@ -325,6 +327,10 @@ public class RiskModel {
             case FORTIFY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
+            case FORFEIT_CLICKED:
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                break;
+
         }
         updateView();
     }
@@ -336,31 +342,42 @@ public class RiskModel {
         //TODO error checking
         switch (this.actionContext.phase) {
             case DEPLOY_CONFIRM:
-                deploy(this.actionContext.player,
+                if(deploy(this.actionContext.player,
                        this.actionContext.dstCountry,
-                       this.actionContext.srcArmy);
-                this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
+                       this.actionContext.srcArmy))
+                    this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
+                else
+                    System.out.println("Deploy Failed");
                 break;
             case ATTACK_CONFIRM:
-                attack(this.actionContext.player,
+                if(attack(this.actionContext.player,
                        this.actionContext.srcCountry,
                        this.actionContext.dstCountry,
-                       this.actionContext.srcArmy);
-                this.actionContext.phase=Phase.RETREAT_ARMY;
+                       this.actionContext.srcArmy))
+
+                    this.actionContext.phase = Phase.RETREAT_ARMY;
+                 else
+                    System.out.println("Attack failed");
+
                 break;
             case RETREAT_CONFIRM:
-                retreat(this.actionContext.player,
+                if(retreat(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
-                        this.actionContext.dstArmy);
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                        this.actionContext.dstArmy))
+                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                else
+                    System.out.println("Retreat failed");
                 break;
             case FORTIFY_CONFIRM:
-                fortify(this.actionContext.player,
+                if(fortify(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
-                        this.actionContext.srcArmy);
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                        this.actionContext.srcArmy))
+                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                else{
+                    System.out.println("Fortify failed");
+                }
                 break;
         }
         updateView();
@@ -388,11 +405,15 @@ public class RiskModel {
                         this.actionContext.dstCountry,
                         0);
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                break;
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
             case FORTIFY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
+                break;
+            case FORFEIT_CLICKED:
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
                 break;
         }
         updateView();
@@ -463,12 +484,12 @@ public class RiskModel {
         Random random = new Random();
         //Get int array of dice rolls
         for(int i=0; i< attackRolls.length; i++){
-            if(i+1 <= unitsToAttack) {
+            if(i <= unitsToAttack) {
                 attackRolls[i] = (random.nextInt(5) + 1);
             }else{
                 attackRolls[i] = 0;
             }
-            if(i+1 <= defendingCountry.getArmy()) {
+            if(i <= defendingCountry.getArmy()) {
                 defenderRolls[i] = (random.nextInt(5) + 1);
             }else{
                 defenderRolls[i] = 0;
@@ -479,15 +500,8 @@ public class RiskModel {
         Arrays.sort(attackRolls, Collections.reverseOrder());
         Arrays.sort(defenderRolls, Collections.reverseOrder());
 
-        Queue<Integer> attackersQueue = new LinkedList<>();
-        Queue<Integer> defenderQueue = new LinkedList<>();
-
-        for(int val: attackRolls){
-            attackersQueue.add(val);
-        }
-        for(int val: defenderRolls){
-            defenderQueue.add(val);
-        }
+        Queue<Integer> attackersQueue = new LinkedList<>(Arrays.asList(attackRolls));
+        Queue<Integer> defenderQueue = new LinkedList<>(Arrays.asList(defenderRolls));
 
         //Compare rolls until someone loses
         for(int i=0; i< attackRolls.length; i++){
@@ -496,13 +510,13 @@ public class RiskModel {
             if((!attackersQueue.isEmpty() && !defenderQueue.isEmpty())
                     && (attackingArmy >0 && defendingArmy>0)) {
                 if(attackVal > defendVal ){
-                    defenderQueue.remove();
                     defendingArmy--;
                 }
                 else{
-                    attackersQueue.remove();
                     attackingArmy--;
                 }
+                defenderQueue.remove();
+                attackersQueue.remove();
             }
         }
 
@@ -589,20 +603,13 @@ public class RiskModel {
     }
 
     /**
-     * Return the ArrayList of countries.
-     * @return ArrayList containing all the country objects
+     * Return the Array of countries.
+     * @return Array containing all the country objects
      */
     public Country[] getCountries(){
         return this.countries;
     }
-    /**
-     * Getter for player countries
-     * @param player player object
-     * @return ArrayList of the countries the player owns
-     */
-    public ArrayList<Country> getPlayerCountries(Player player){
-        return new ArrayList<>(player.getOwnedCountries().values());
-    }
+
     /**
      * Method that returns a stack of all the countries that the source country is connected to via friendly territory.
      * @param sourceCountry the source Country
@@ -644,7 +651,6 @@ public class RiskModel {
      */
     private void updateView(){
         this.riskView.boardUpdate(this.actionContext);
-
     }
 
     public static void main(String[] args) {
