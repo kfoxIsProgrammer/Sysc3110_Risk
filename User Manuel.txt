@@ -53,9 +53,10 @@ milestone 2---------------------------------------------------------------------
 7.In order to attack the user must click on the country they own, then an adjacent enemy country to attack. The user country must also have enough troops to attack.
 8. After clicking the 2 countries the user will prompted and asked to confirm the attack.
 9. if the attack is won the user will be prompted to send some units back if needed.
-10. The user can continue to launch attacks until they run out of units, skip turn or forfeit the game. 
-11. The game ends when all users but one run out of moves, lose all their countries or forfeit.
-12 after a game ends the user will be prompted to start again.
+10. The action display section, above the button section will display the details of the attack.
+11. The user can continue to launch attacks until they run out of units, skip turn or forfeit the game. 
+12. The game ends when all users but one run out of moves, lose all their countries or forfeit.
+13. after a game ends the user will be prompted to start again.
 
 
 
