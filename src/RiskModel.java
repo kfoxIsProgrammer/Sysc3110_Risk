@@ -266,7 +266,9 @@ public class RiskModel {
                     this.actionContext.setSrcCountry(clickedCountry);
                     ArrayList<Country> enemyCountries = new ArrayList<>();
                     if (clickedCountry.getArmy() > 1) {
+
                         for (Country c : clickedCountry.getAdjacentCountries()) {
+                            System.out.println(c.getName());
                             if (c.getOwner() != this.actionContext.player) {
                                 enemyCountries.add(c);
                             }
@@ -463,12 +465,12 @@ public class RiskModel {
         Random random = new Random();
         //Get int array of dice rolls
         for(int i=0; i< attackRolls.length; i++){
-            if(i+1 <= unitsToAttack) {
+            if(i <= unitsToAttack) {
                 attackRolls[i] = (random.nextInt(5) + 1);
             }else{
                 attackRolls[i] = 0;
             }
-            if(i+1 <= defendingCountry.getArmy()) {
+            if(i <= defendingCountry.getArmy()) {
                 defenderRolls[i] = (random.nextInt(5) + 1);
             }else{
                 defenderRolls[i] = 0;
@@ -496,13 +498,13 @@ public class RiskModel {
             if((!attackersQueue.isEmpty() && !defenderQueue.isEmpty())
                     && (attackingArmy >0 && defendingArmy>0)) {
                 if(attackVal > defendVal ){
-                    defenderQueue.remove();
                     defendingArmy--;
                 }
                 else{
-                    attackersQueue.remove();
                     attackingArmy--;
                 }
+                defenderQueue.remove();
+                attackersQueue.remove();
             }
         }
 

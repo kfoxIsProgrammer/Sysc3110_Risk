@@ -374,6 +374,7 @@ public class RiskView extends JFrame implements ActionListener {
                     confirmPhase.setText("Cancel forfeit");
                     confirmPhase.setActionCommand("back");
                 }
+                break;
             case GAME_OVER:
                 infoPanelEdit(actionContext);
 
@@ -384,6 +385,7 @@ public class RiskView extends JFrame implements ActionListener {
                 } else {
                     dispatchEvent(new WindowEvent(this,WindowEvent.WINDOW_CLOSING));
                 }
+                break;
             default:
                 System.out.println(actionContext.phase);
                 break;
@@ -552,7 +554,10 @@ public class RiskView extends JFrame implements ActionListener {
                         return -1;
                     }
                 } else if (actionContext.srcArmy-actionContext.srcArmyDead==1) { // 1 troop to attack
-                    int x = JOptionPane.showConfirmDialog(f, "No troops to send back");
+                    int x = JOptionPane.showConfirmDialog(f, "No troops to send back",
+                            "Troop Retreat",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.PLAIN_MESSAGE);
                     return 0;
 
                 } else {
