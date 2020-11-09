@@ -1,3 +1,5 @@
+Milestone 1 -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 1.	When the program starts the user will be prompted to input the number of players that will be participating in the game. This number must be between 2 and 6, 
 anything else will result in the user having to re enter their input.
 
@@ -40,4 +42,21 @@ Will return to the main command menu.
 
 7.	The game will end when only one player remains. A player can be eliminated if they lose all their countries or if they can no longer make any moves. If players end up 
 running out of armies to move, the winner will be decided by whomever has the most countries owned. 
+
+milestone 2------------------------------------------------------------------------------------------------------------------------------------
+1. When the program starts, a scroll bar will prompt the user to enter the amount of players that will be playing.
+2. After the amount of players are selected the user will be prompted to enter the names of all the players, they cannot be left blank.
+3. Next the main game will begin, the first player's turn will begin.
+4. The main display is separated into 3 sections, a clickable map section, an action display section and a section for buttons.
+5. Each country on the map will have a tag over it and it's color will determine who owns it. The user's color can be seen in the button section of the ui on the right hand side.
+6. The only phase in the current milestone is the attack phase, which will continue until the current player forfeits or skips turn by clicking their respective buttons.
+7.In order to attack the user must click on the country they own, then an adjacent enemy country to attack. The user country must also have enough troops to attack.
+8. After clicking the 2 countries the user will prompted and asked to confirm the attack.
+9. if the attack is won the user will be prompted to send some units back if needed.
+10. The user can continue to launch attacks until they run out of units, skip turn or forfeit the game. 
+11. The game ends when all users but one run out of moves, lose all their countries or forfeit.
+12 after a game ends the user will be prompted to start again.
+
+
+
  
