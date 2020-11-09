@@ -225,6 +225,9 @@ public class RiskModelTest extends TestCase {
         assertEquals(test.players[0],test.actionContext.player);
     }
 
+    /***
+     * Skips through an entire cycle of turns of 6 players
+     */
     public void testSkipSixButtonCycle(){
         RiskModel test = new RiskModel(sixPlayers);
         assertEquals(test.players[0],test.actionContext.player);
@@ -235,7 +238,10 @@ public class RiskModelTest extends TestCase {
         assertEquals(test.players[0],test.actionContext.player);
     }
 
-    public void testSkipInAttackDstPgase(){
+    /***
+     * makes sure skipping works from attack_dst phase
+     */
+    public void testSkipInAttackDstPhase(){
         RiskModel test = new RiskModel(twoPlayers);
         ArrayList<Country> playerOwnedCountries = new ArrayList<Country>(test.players[0].getOwnedCountries().values());
         Country sourceCountryToTest = null;
@@ -247,6 +253,23 @@ public class RiskModelTest extends TestCase {
         test.menuSkip();
         assertEquals(test.players[1],test.actionContext.player);
         assertEquals(Phase.ATTACK_SRC, test.actionContext.phase);
+    }
+    public void testCountriesArrayOrder(){
+        RiskModel test = new RiskModel(twoPlayers);
+
+        String[] toTest = {"Alaska","Alberta ","Central America","Eastern United States","Greenland","Northwest Territory",
+                "Ontario ","Quebec ","Western United States","Argentina","Brazil","Peru","Venezuela","Great Britain ","Iceland",
+                "Northern Europe","Scandinavia","Southern Europe","Ukraine ","Western Europe","Congo ","East Africa","Egypt",
+                "Madagascar","North Africa","South Africa","Afghanistan","China","India ","Irkutsk","Japan","Kamchatka","Middle East","Mongolia","Siam ","Siberia","Ural ",
+                "Yakutsk","Eastern Australia","Indonesia","New Guinea","Western Australia"};
+        for(int i = 0; i < toTest.length; i++){
+            assertEquals(toTest[i],test.countries[i].getName());
+        }
+        // Not a big deal if fails, just should be fixed in order to help with testing
+
+
+
+
     }
 
 
