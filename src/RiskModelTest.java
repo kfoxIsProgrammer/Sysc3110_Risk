@@ -200,7 +200,7 @@ public class RiskModelTest extends TestCase {
         test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
 
         test.menuNumTroops(1); //Clicks number of troops}
-        assertEquals(Phase.ATTACK_CONFIRM, test.actionContext.phase);//confirms phase went back to choosing src country
+        assertEquals(Phase.RETREAT_ARMY, test.actionContext.phase);//confirms phase went back to choosing src country
     }
 
     /***
@@ -343,27 +343,47 @@ public class RiskModelTest extends TestCase {
         assertTrue(toTest.contains(test.countries[8]));
         assertTrue(toTest.contains(test.countries[3]));
 
-
-
-
-
-
-
-
-
-
-
-
     }
 
+    /***
+     * Should not have any country connected to Alberta
+     */
+    public void testGetConnectedCountriesThatReturnsnone(){
+        RiskModel test = new RiskModel(twoPlayers);
+        Stack <Country> toTest = new Stack();
+        test.players[0].getOwnedCountries().clear();
+        test.players[1].getOwnedCountries().clear();
+        for(int i = 0; i < test.countries.length; i++){
+            test.countries[i].setOwner(null);
+        }
+        test.players[0].addCountry(test.countries[41]);//add Western australia
+        test.countries[41].setOwner(test.players[0]);
 
+        test.players[0].addCountry(test.countries[1]);//add alberta
+        test.countries[1].setOwner(test.players[0]);
 
+        test.players[0].addCountry(test.countries[40]);//add New Guinea
+        test.countries[40].setOwner(test.players[0]);
 
+        test.players[0].addCountry(test.countries[39]);//add Indonesia
+        test.countries[39].setOwner(test.players[0]);
 
+        test.players[0].addCountry(test.countries[38]);//add Eastern Australia
+        test.countries[38].setOwner(test.players[0]);
 
+        test.players[0].addCountry(test.countries[37]); // add western Yakutsk
+        test.countries[37].setOwner(test.players[0]);
 
+        test.players[0].addCountry(test.countries[36]); // add Ural
+        test.countries[36].setOwner(test.players[0]);
 
+        test.players[0].addCountry(test.countries[35]);//add siberia
+        test.countries[35].setOwner(test.players[0]);
+        toTest = test.getConnectedOwnedCountries(test.countries[1], test.countries[1],test.players[0],toTest);
+        //should not include china
+        assertEquals(0, toTest.size());
 
+    }
 
 
 }
