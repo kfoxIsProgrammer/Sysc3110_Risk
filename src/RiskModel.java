@@ -70,6 +70,7 @@ public class RiskModel {
             valuesForGame[i-1] = values[i];
         }
         newGame(this.actionContext.srcArmy, valuesForGame);
+        updateView();
     }
 
     /**
