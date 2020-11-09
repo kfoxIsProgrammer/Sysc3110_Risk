@@ -7,6 +7,9 @@
 
 public enum Phase {
 
+    /** New Game**/
+    NEW_GAME,
+    GAME_OVER,
     /** Deploy phase selecting a source country **/
     DEPLOY_DST,
     /** Deploy phase selecting number of troops to deploy **/
@@ -32,5 +35,7 @@ public enum Phase {
     /** Fortify phase selecting number of troops to send **/
     FORTIFY_ARMY,
     /** Fortify phase confirmation **/
-    FORTIFY_CONFIRM
+    FORTIFY_CONFIRM,
+    /**Player has clicked Forfeit button, ask for confirmation**/
+    FORFEIT_CLICKED,
 }
