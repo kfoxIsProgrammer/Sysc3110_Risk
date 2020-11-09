@@ -37,7 +37,7 @@ public class RiskModel {
 
     /**
      * This is the method that starts the game
-     * @param namesToProcess
+     * @param namesToProcess the string array of player names
      */
     public void newGameStart(String[] namesToProcess){
         MapImport mapReader=new MapImport("maps/demo.zip");
@@ -152,7 +152,7 @@ public class RiskModel {
             }*/
         }
 
-        System.out.println(""+ count + (this.players.length-1));
+
         if(count >= this.players.length-1){
             //Set the game to the Game over
             this.actionContext = new ActionContext(Phase.GAME_OVER, winner);
@@ -327,6 +327,10 @@ public class RiskModel {
             case FORTIFY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
+            case FORFEIT_CLICKED:
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                break;
+
         }
         updateView();
     }
@@ -338,31 +342,42 @@ public class RiskModel {
         //TODO error checking
         switch (this.actionContext.phase) {
             case DEPLOY_CONFIRM:
-                deploy(this.actionContext.player,
+                if(deploy(this.actionContext.player,
                        this.actionContext.dstCountry,
-                       this.actionContext.srcArmy);
-                this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
+                       this.actionContext.srcArmy))
+                    this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
+                else
+                    System.out.println("Deploy Failed");
                 break;
             case ATTACK_CONFIRM:
-                attack(this.actionContext.player,
+                if(attack(this.actionContext.player,
                        this.actionContext.srcCountry,
                        this.actionContext.dstCountry,
-                       this.actionContext.srcArmy);
-                this.actionContext.phase=Phase.RETREAT_ARMY;
+                       this.actionContext.srcArmy))
+
+                    this.actionContext.phase = Phase.RETREAT_ARMY;
+                 else
+                    System.out.println("Attack failed");
+
                 break;
             case RETREAT_CONFIRM:
-                retreat(this.actionContext.player,
+                if(retreat(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
-                        this.actionContext.dstArmy);
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                        this.actionContext.dstArmy))
+                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                else
+                    System.out.println("Retreat failed");
                 break;
             case FORTIFY_CONFIRM:
-                fortify(this.actionContext.player,
+                if(fortify(this.actionContext.player,
                         this.actionContext.srcCountry,
                         this.actionContext.dstCountry,
-                        this.actionContext.srcArmy);
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                        this.actionContext.srcArmy))
+                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                else{
+                    System.out.println("Fortify failed");
+                }
                 break;
         }
         updateView();
@@ -390,11 +405,15 @@ public class RiskModel {
                         this.actionContext.dstCountry,
                         0);
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                break;
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
             case FORTIFY_CONFIRM:
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
+                break;
+            case FORFEIT_CLICKED:
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
                 break;
         }
         updateView();
@@ -481,15 +500,8 @@ public class RiskModel {
         Arrays.sort(attackRolls, Collections.reverseOrder());
         Arrays.sort(defenderRolls, Collections.reverseOrder());
 
-        Queue<Integer> attackersQueue = new LinkedList<>();
-        Queue<Integer> defenderQueue = new LinkedList<>();
-
-        for(int val: attackRolls){
-            attackersQueue.add(val);
-        }
-        for(int val: defenderRolls){
-            defenderQueue.add(val);
-        }
+        Queue<Integer> attackersQueue = new LinkedList<>(Arrays.asList(attackRolls));
+        Queue<Integer> defenderQueue = new LinkedList<>(Arrays.asList(defenderRolls));
 
         //Compare rolls until someone loses
         for(int i=0; i< attackRolls.length; i++){
@@ -591,20 +603,13 @@ public class RiskModel {
     }
 
     /**
-     * Return the ArrayList of countries.
-     * @return ArrayList containing all the country objects
+     * Return the Array of countries.
+     * @return Array containing all the country objects
      */
     public Country[] getCountries(){
         return this.countries;
     }
-    /**
-     * Getter for player countries
-     * @param player player object
-     * @return ArrayList of the countries the player owns
-     */
-    public ArrayList<Country> getPlayerCountries(Player player){
-        return new ArrayList<>(player.getOwnedCountries().values());
-    }
+
     /**
      * Method that returns a stack of all the countries that the source country is connected to via friendly territory.
      * @param sourceCountry the source Country

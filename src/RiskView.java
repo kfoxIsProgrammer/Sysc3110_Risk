@@ -262,6 +262,7 @@ public class RiskView extends JFrame implements ActionListener {
      */
     public void boardUpdate(ActionContext actionContext) {
         forfeitButton.setText("Forfeit");
+        forfeitButton.setActionCommand("Forfeit");
         switch (actionContext.phase) {
             case NEW_GAME:
                 if(actionContext.srcArmy==0) {
@@ -382,13 +383,14 @@ public class RiskView extends JFrame implements ActionListener {
                         break;
             case FORFEIT_CLICKED:
                 confirmPhase.setVisible(false);
+                skipButton.setEnabled(false);
                 if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + ", you are about to forfeit your battle! Confirm", "WARNING",
                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     forfeitButton.setText("Confirm forfeit?");
                     forfeitButton.setActionCommand("Forfeit");
                 } else {
-                    confirmPhase.setText("Cancel forfeit");
-                    confirmPhase.setActionCommand("back");
+                    forfeitButton.setText("Cancel forfeit");
+                    forfeitButton.setActionCommand("back");
                 }
                 break;
             case GAME_OVER:
