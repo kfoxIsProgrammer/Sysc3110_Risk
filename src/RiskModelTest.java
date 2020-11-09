@@ -12,6 +12,9 @@ import static org.junit.Assert.*;
 
 public class RiskModelTest extends TestCase {
 
+    String[] twoPlayers = {"Jon", "joey"};
+    String[] sixPlayers = {"Jon", "joey","Ross","Chandler","Rogers","test"};
+
     /***
      * Tests every point in between the x and y min max values to find a valid point to send back
      * @param country Country object that is tested
@@ -86,7 +89,7 @@ public class RiskModelTest extends TestCase {
  * Tests that the correct map is being loaded in on startup by measuring country and continent array size.
  */
     public void testInitialDefaultMap() {
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         assertEquals(42, test.countries.length);
         assertEquals(6,test.continents.length);
         assertNotEquals(null, test.riskController);
@@ -111,7 +114,7 @@ public class RiskModelTest extends TestCase {
      * waiting for destination country.
      */
     public void testClickingSourceCountry() {
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         ArrayList<Country> playerOwnedCountries = new ArrayList<Country>(test.players[0].getOwnedCountries().values());
         Country sourceCountryToTest = null;
         //find a country the player owns that has enough soldiers to attack
@@ -127,7 +130,7 @@ public class RiskModelTest extends TestCase {
      * source country.
      */
     public void testClickingBackOutOfDstCountry() {
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         Country sourceCountryToTest = null;
         ArrayList<Country> playerOwnedCountries = new ArrayList<Country>(test.players[0].getOwnedCountries().values());
         sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
@@ -140,7 +143,7 @@ public class RiskModelTest extends TestCase {
      * Test whether it can correctly proceed to the attack_army phase by clicking on a dst country
      */
     public void testClickingDstCountry() {
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         Country sourceCountryToTest;
 
 
@@ -159,7 +162,7 @@ public class RiskModelTest extends TestCase {
      * Tests clicking blank pace after reaching army phase of attack
      */
     public void testClickingBackOutOfArmyCountry() {
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         Country sourceCountryToTest;
 
 
@@ -182,7 +185,7 @@ public class RiskModelTest extends TestCase {
      */
     public void testSelectingArmySize() {
 
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         Country sourceCountryToTest;
 
 
@@ -203,7 +206,7 @@ public class RiskModelTest extends TestCase {
      * Test the functionality of the skip button
      */
     public void testSkipButton(){
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         assertEquals(test.players[0],test.actionContext.player);
         test.menuSkip();
         assertEquals(test.players[1],test.actionContext.player);
@@ -213,7 +216,7 @@ public class RiskModelTest extends TestCase {
      * skips through whole list of players.
      */
     public void testSkipButtonCycle(){
-        RiskModel test = new RiskModel();
+        RiskModel test = new RiskModel(twoPlayers);
         assertEquals(test.players[0],test.actionContext.player);
         for(int i = 0; i < test.players.length; i++) {
             test.menuSkip();
@@ -221,6 +224,31 @@ public class RiskModelTest extends TestCase {
 
         assertEquals(test.players[0],test.actionContext.player);
     }
+
+    public void testSkipSixButtonCycle(){
+        RiskModel test = new RiskModel(sixPlayers);
+        assertEquals(test.players[0],test.actionContext.player);
+        for(int i = 0; i < test.players.length; i++) {
+            test.menuSkip();
+        }
+
+        assertEquals(test.players[0],test.actionContext.player);
+    }
+
+    public void testSkipInAttackDstPgase(){
+        RiskModel test = new RiskModel(twoPlayers);
+        ArrayList<Country> playerOwnedCountries = new ArrayList<Country>(test.players[0].getOwnedCountries().values());
+        Country sourceCountryToTest = null;
+        //find a country the player owns that has enough soldiers to attack
+        sourceCountryToTest= getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
+        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on src Country
+        assertEquals(sourceCountryToTest.getName(),test.actionContext.srcCountry.getName()); // confirms country
+        assertEquals(Phase.ATTACK_DST, test.actionContext.phase); //confirms phase changes to search for dst Country
+        test.menuSkip();
+        assertEquals(test.players[1],test.actionContext.player);
+        assertEquals(Phase.ATTACK_SRC, test.actionContext.phase);
+    }
+
 
 
 
