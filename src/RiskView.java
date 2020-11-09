@@ -310,7 +310,9 @@ public class RiskView extends JFrame implements ActionListener {
                 //Let the user interact with these buttons before here, causes bugs
                 confirmPhase.setEnabled(true);
                 skipButton.setEnabled(true);
+                skipButton.setVisible(true);
                 forfeitButton.setEnabled(true);
+
 
                 labelCountries(countryArray,true);
                 ((MapContainer) (mapContainer)).setActive(true);
@@ -324,6 +326,7 @@ public class RiskView extends JFrame implements ActionListener {
                 confirmPhase.setVisible(false);
                 break;
             case ATTACK_DST:
+                confirmPhase.setVisible(false);
                 ((MapContainer) (mapContainer)).setActive(true);
                 if(isNull(actionContext.highlightedCountries)){
                     JOptionPane.showMessageDialog(null,"No troops to use");
@@ -382,12 +385,14 @@ public class RiskView extends JFrame implements ActionListener {
                         confirmPhase.setVisible(true);
                         break;
             case FORFEIT_CLICKED:
-                confirmPhase.setVisible(false);
-                skipButton.setEnabled(false);
+                skipButton.setVisible(false);
                 if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + ", you are about to forfeit your battle! Confirm", "WARNING",
                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    forfeitButton.setText("Confirm forfeit?");
+                    forfeitButton.setText("Confirm forfeit");
                     forfeitButton.setActionCommand("Forfeit");
+                    confirmPhase.setVisible(true);
+                    confirmPhase.setText("Cancel Forfeit");
+                    confirmPhase.setActionCommand("back");
                 } else {
                     forfeitButton.setText("Cancel forfeit");
                     forfeitButton.setActionCommand("back");
