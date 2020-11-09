@@ -46,7 +46,7 @@ running out of armies to move, the winner will be decided by whomever has the mo
 milestone 2------------------------------------------------------------------------------------------------------------------------------------
 1. When the program starts, a scroll bar will prompt the user to enter the amount of players that will be playing.
 2. After the amount of players are selected the user will be prompted to enter the names of all the players, they cannot be left blank.
-3. Next the main game will begin, the first player's turn will begin.
+3. Next the main game will start, the first player's turn will begin.
 4. The main display is separated into 3 sections, a clickable map section, an action display section and a section for buttons.
 5. Each country on the map will have a tag over it and it's color will determine who owns it. The user's color can be seen in the button section of the ui on the right hand side.
 6. The only phase in the current milestone is the attack phase, which will continue until the current player forfeits or skips turn by clicking their respective buttons.
