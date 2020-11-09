@@ -26,7 +26,11 @@ The model sends tranactional State information to the view using a Context class
 
 __Known issues:__
 
-__ToDO: Add the known issues after testing__
+Bug 1. When the user is prompted to enter player names, if any of the inputs are left blank you will crash. Sorry :D
+
+Potential Bug 1. Could you make sure that the attack algorithm is correct. I might have misunderstood the rule for risk.
+
+Class Cohesion isn't the best. RiskModel has still has the map in it's components, while the map holds the same data.
 
 __Roadmap:__
 
