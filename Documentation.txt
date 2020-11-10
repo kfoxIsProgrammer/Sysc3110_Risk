@@ -1,3 +1,5 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Milestone1
 
 Risk Model:
@@ -29,6 +31,14 @@ Once the dice rolls were made, then the array of dice rolls had to be sorted in 
 which is used to sort the array in desc order.
 
 6. The RiskModel is a combination of Model and Controller in the MVC pattern this was useful for references, but in the future the decoupling of these two functionalities will be made.
+
+7. getConnectedOwnedCountries is a method used for finding a country that is within the border of a player's territory in order to determine a valid selection for fortify.
+   The method is recursive and will go through the the adjacent countries of a selected country and add them to a stack. the stack is passed through the country and if the        stack already contains the country it will not be added and will return the stack. It should return a stack that contains every connected owned country to the source 
+   country.
+
+8. fortify method will take in a source and destination country and will make sure the destination is connected using the getConncetedOwnedCountries method to make sure it's valid and then send units from source country to destination country.
+
+9. Deploy method will simply sends unit a player has to allocate and adds it to selected owned country
 
 Command Parser:
     The main CommandParser class does all the interacting with the user and converts their input from a string to a format the rest of the code can understand.
@@ -68,3 +78,92 @@ Command Parser:
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
    Milestone2
+   
+   To make our code work, we have refactored our arrayLists back to arrays. It was to give some members better support.
+   We also have a few design to figure out. We know our classes don't have good cohesion, therefore, we will refine our design in the next iteration. 
+   The gui took a lot of effort and caused us to take the quickest path to a solution vs an informed one.
+    
+   
+   RiskModel:
+       All events in the RiskModel are controlled by an ActionContext. This class is a transactional/state representation of what phase/action needs to be performed.
+   
+   1.Constructor:
+                Calls the newGameUser method which is used to initialize the game's View, Controller and ActionContext
+                
+   2.newGameStart:
+           We decided to implement milestone4s import function and we now import a map and json data about the map with a map importer
+           Once the map is imported, it then creates a RiskController that is put in the RiskView Constructor. This ensures that the model is connected to the view and the                  controller is connected to the view.
+           
+   3. newGameCreator:
+            This is the old random game maker. It has been updated to assign players with a color. 
+            
+   4.menuSkip:
+         this method is to handle a skip action made by the user, based on the current ActionContext. 
+         
+   5.menuConfirm:
+         this method is to handle a confirm action made by the user, based on the current ActionContext. 
+         
+   6.menuBack:
+         this method is to handle a back action made by the user, based on the current ActionContext. 
+         
+   7. updateView()
+            this is the method to send the actionContext to the view. It is called when an action is performed in the model and the state changes.
+            Data is also passed within the ActionContext, which represents the game states.
+         
+   RiskView:
+        RiskView is a GUI based class that extends JFrame and Implements ActionLister. It is driven by MouseClick events and ButtonClick.
+        The MouseClicks are used only on the map to get a position to send to the controller. These MouseClicks are to represent if you clicked a country's hitbox.
+        It uses a combination of LayeredPanes, and a CardLayout to display all the information from the game at every Phase. Your name is color matched to the labels of the 
+        countries you own and enemy neighbours get highlighted. You also get to select the number of troops to send to attack/retreat/deploy via a slider popup.
+          
+   Phase:
+        This was our enumeration class that represents the different states and actions that are invovled in the game of risk.
+        Each phase provides control flow to the view and the model. 
+        
+        
+  RiskModelTest:
+      1. getValidPoints takes in a country and get the min/max x/y values to cycle through until it finds a valid point to test.
+      2.
+  
+          
+          
+          
+  RiskController:
+         This class implements actionListener and holds three methods
+         
+         
+         1: actionPerformed: 
+                  actionPerformed is used as the listener for all the buttons. This lets us use the controller class to determine the control flow of buttons.
+                  
+         2: countrySelected:
+                  This method is called when you click on the map on view. It is used to get the x,y coordinate from the map and send that to the model. The model will then
+                  check if those coordinates are a country and then update the ActionContext and update the view.
+                  
+         3. IsInt:
+                A helper function to determine if a String has an integer in it. This is used when selecting number of troops from the view.
+          
+          
+          
+  MapImport:
+       This class is used to unpack our choice of data. We used a JSON file to represent each countries: name, adjacenies, hitbox/position and rank.
+       Also a PNG file is used as our game image to show on the view. 
+       
+       This class uses an external library called com.google.gson to parse the JSON file.
+       
+       
+  ActionContext:
+           This is our transactional/state model. Our whole game runs off what state the ActionContext holds. 
+           It was a second iteration from milestone1. It has grown to be help minimize what data needs to be shared to the view.
+           
+           ActionContext also is manipulated by different methods based on the current enum Phase. This is to control the flow of action.
+          
+          
+ UML: 
+    The uml has changed based on some TA feedback. We have added aggregation relationships as well as the implemented/extended class.
+    
+    
+Sequence Diagram:
+     I tried to be as close to what methods were called as possible. I also made the of what the ActionContext looks like for what action
+   
+   
+   -------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -30,7 +30,9 @@ Bug 1. When the user is prompted to enter player names, if any of the inputs are
 
 Potential Bug 1. Could you make sure that the attack algorithm is correct. I might have misunderstood the rule for risk.
 
-Class Cohesion isn't the best. RiskModel has still has the map in it's components, while the map holds the same data.
+Class Cohesion isn't the best. RiskModel still has the map in it's components, while the map holds the same data.
+
+Make sure that the maps folder is in the same directory as the jar 
 
 __Roadmap:__
 
