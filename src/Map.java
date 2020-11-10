@@ -7,10 +7,10 @@ import java.awt.image.BufferedImage;
  */
 public class Map {
     /** List of the countries in the game **/
-    public final Country[] countries;
+    private final Country[] countries;
     /** List of all the continents in the game **/
-    public final Continent[] continents;
-    /** Image path **/
+    private final Continent[] continents;
+    /** The map image **/
     private transient BufferedImage mapImage;
 
     /**
@@ -24,19 +24,29 @@ public class Map {
     }
 
     /**
-     * getter for MapImage
-     * @return the mapImage in memory
-     */
-    public BufferedImage getMapImage() {
-        return mapImage;
-    }
-
-    /**
-     * Setter for mapImage
-     * @param mapImage the image in memory
+     * @param mapImage The map image
      */
     public void setMapImage(BufferedImage mapImage) {
         this.mapImage = mapImage;
+    }
+
+    /**
+     * @return The array of countries
+     */
+    public Country[] getCountries() {
+        return countries;
+    }
+    /**
+     * @return The array of continents
+     */
+    public Continent[] getContinents() {
+        return continents;
+    }
+    /**
+     * @return The map image
+     */
+    public BufferedImage getMapImage() {
+        return mapImage;
     }
 
     /**

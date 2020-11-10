@@ -1,6 +1,5 @@
 import junit.framework.TestCase;
 
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -91,8 +90,8 @@ public class RiskModelTest extends TestCase {
  */
     public void testInitialDefaultMap() {
         RiskModel test = new RiskModel(twoPlayers);
-        assertEquals(42, test.countries.length);
-        assertEquals(6,test.continents.length);
+        assertEquals(42, test.map.getCountries().length);
+        assertEquals(6,test.map.getContinents().length);
         assertNotEquals(null, test.riskController);
 
         assertEquals(Phase.ATTACK_SRC,test.actionContext.phase);
@@ -104,8 +103,8 @@ public class RiskModelTest extends TestCase {
      */
     public void testEveryCountryIsClickable(){
         RiskModel test = new RiskModel(twoPlayers);
-        for(int i = 0; i < test.countries.length; i++){
-            assertTrue(test.countries[i].containsPoint(getValidPoint(test.countries[i])));
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            assertTrue(test.map.getCountries()[i].containsPoint(getValidPoint(test.map.getCountries()[i])));
         }
 
     }
@@ -268,7 +267,7 @@ public class RiskModelTest extends TestCase {
                 "Madagascar","North Africa","South Africa","Afghanistan","China","India","Irkutsk","Japan","Kamchatka","Middle East","Mongolia","Siam","Siberia","Ural",
                 "Yakutsk","Eastern Australia","Indonesia","New Guinea","Western Australia"};
         for(int i = 0; i < toTest.length; i++){
-            assertEquals(toTest[i],test.countries[i].getName());
+            assertEquals(toTest[i],test.map.getCountries()[i].getName());
         }
         // Not a big deal if fails, just should be fixed in order to help with testing
     }
@@ -307,63 +306,40 @@ public class RiskModelTest extends TestCase {
         Stack <Country> toTest = new Stack();
         test.players[0].getOwnedCountries().clear();
         test.players[1].getOwnedCountries().clear();
-        for(int i = 0; i < test.countries.length; i++){
-            test.countries[i].setOwner(null);
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].addCountry(test.countries[0]);//add Alaska
-        test.countries[0].setOwner(test.players[0]);
+        test.players[0].addCountry(test.map.getCountries()[0]);//add Alaska
+        test.map.getCountries()[0].setOwner(test.players[0]);
 
-        test.players[0].addCountry(test.countries[1]);//add alberta
-        test.countries[1].setOwner(test.players[0]);
+        test.players[0].addCountry(test.map.getCountries()[1]);//add alberta
+        test.map.getCountries()[1].setOwner(test.players[0]);
 
-        test.players[0].addCountry(test.countries[5]);//add NorthWest Territory
-        test.countries[5].setOwner(test.players[0]);
+        test.players[0].addCountry(test.map.getCountries()[5]);//add NorthWest Territory
+        test.map.getCountries()[5].setOwner(test.players[0]);
 
-        test.players[0].addCountry(test.countries[6]);//add Ontario
-        test.countries[6].setOwner(test.players[0]);
+        test.players[0].addCountry(test.map.getCountries()[6]);//add Ontario
+        test.map.getCountries()[6].setOwner(test.players[0]);
 
-        test.players[0].addCountry(test.countries[7]);//add Quebec
-        test.countries[7].setOwner(test.players[0]);
+        test.players[0].addCountry(test.map.getCountries()[7]);//add Quebec
+        test.map.getCountries()[7].setOwner(test.players[0]);
 
-        test.players[0].addCountry(test.countries[8]); // add western United states
-        test.countries[8].setOwner(test.players[0]);
+        test.players[0].addCountry(test.map.getCountries()[8]); // add western United states
+        test.map.getCountries()[8].setOwner(test.players[0]);
 
-        test.players[0].addCountry(test.countries[3]); // add Eastern united states
-        test.countries[3].setOwner(test.players[0]);
+        test.players[0].addCountry(test.map.getCountries()[3]); // add Eastern united states
+        test.map.getCountries()[3].setOwner(test.players[0]);
 
-        test.players[0].addCountry(test.countries[27]);//add china
-        test.countries[27].setOwner(test.players[0]);
-        toTest = test.getConnectedOwnedCountries(test.countries[1], test.countries[1],test.players[0],toTest);
+        test.players[0].addCountry(test.map.getCountries()[27]);//add china
+        test.map.getCountries()[27].setOwner(test.players[0]);
+        toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
         //should not include china
         assertEquals(6, toTest.size());
-        assertTrue(toTest.contains(test.countries[6]));
-        assertTrue(toTest.contains(test.countries[7]));
-        assertTrue(toTest.contains(test.countries[5]));
-        assertTrue(toTest.contains(test.countries[0]));
-        assertTrue(toTest.contains(test.countries[8]));
-        assertTrue(toTest.contains(test.countries[3]));
-
-
-
-
-
-
-
-
-
-
-
-
+        assertTrue(toTest.contains(test.map.getCountries()[6]));
+        assertTrue(toTest.contains(test.map.getCountries()[7]));
+        assertTrue(toTest.contains(test.map.getCountries()[5]));
+        assertTrue(toTest.contains(test.map.getCountries()[0]));
+        assertTrue(toTest.contains(test.map.getCountries()[8]));
+        assertTrue(toTest.contains(test.map.getCountries()[3]));
     }
-
-
-
-
-
-
-
-
-
-
-
 }

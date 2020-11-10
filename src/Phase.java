@@ -6,7 +6,6 @@
  */
 
 public enum Phase {
-
     /** New Game**/
     NEW_GAME,
     GAME_OVER,

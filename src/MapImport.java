@@ -76,11 +76,11 @@ public class MapImport {
         Gson gson=new Gson();
         map=gson.fromJson(jsonData,Map.class);
 
-        for(Country country: map.countries){
+        for(Country country: map.getCountries()){
             int numAdjacentCountries=country.getAdjacentCountryIDs().length;
             Country[] adjacentCountries=new Country[numAdjacentCountries];
             for(int i=0;i<numAdjacentCountries;i++){
-                adjacentCountries[i]=map.countries[country.getAdjacentCountryIDs()[i]];
+                adjacentCountries[i]= map.getCountries()[country.getAdjacentCountryIDs()[i]];
             }
             country.setAdjacentCountries(adjacentCountries);
 

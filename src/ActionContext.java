@@ -37,7 +37,9 @@ public class ActionContext {
         this.phase=phase;
         this.player=player;
     }
-    /** Setters for ActionContext instance variables **/
+    ActionContext(){
+        this.phase=Phase.NEW_GAME;
+    }
 
     /**
      * sets the number of moving troops
@@ -46,7 +48,6 @@ public class ActionContext {
     public void setMovingTroops(int movingTroops) {
         this.movingTroops = movingTroops;
     }
-
     /**
      * Setter for phase
      * @param phase the current phase of the risk game
@@ -54,7 +55,6 @@ public class ActionContext {
     public void setPhase(Phase phase) {
         this.phase = phase;
     }
-
     /**
      * Setter for current Player
      * @param player the player that made a move
@@ -62,7 +62,6 @@ public class ActionContext {
     public void setPlayer(Player player) {
         this.player = player;
     }
-
     /**
      * Setter for countries for the view to highlight
      * @param highlightedCountries array of countries to highlight on the view
@@ -70,7 +69,6 @@ public class ActionContext {
     public void setHighlightedCountries(Country[] highlightedCountries) {
         this.highlightedCountries = highlightedCountries;
     }
-
     /**
      * Setter for the country thats making an action
      * @param srcCountry the country making an action
@@ -78,7 +76,6 @@ public class ActionContext {
     public void setSrcCountry(Country srcCountry) {
         this.srcCountry = srcCountry;
     }
-
     /**
      * Setter for the country that an action is towards
      * @param dstCountry the country getting an action
@@ -86,7 +83,6 @@ public class ActionContext {
     public void setDstCountry(Country dstCountry) {
         this.dstCountry = dstCountry;
     }
-
     /**
      * Setter for source country's army value
      * @param srcArmy the army coming from the source country
@@ -94,7 +90,6 @@ public class ActionContext {
     public void setSrcArmy(int srcArmy) {
         this.srcArmy = srcArmy;
     }
-
     /**
      * Setter for destination country's army value
      * @param dstArmy the army at the destination country
@@ -102,7 +97,6 @@ public class ActionContext {
     public void setDstArmy(int dstArmy) {
         this.dstArmy = dstArmy;
     }
-
     /**
      * Setter for number of lost units for the source country during an attack
      * @param srcArmyDead army value that was lost for the source country during an attack
@@ -117,7 +111,6 @@ public class ActionContext {
     public void setDstArmyDead(int dstArmyDead) {
         this.dstArmyDead = dstArmyDead;
     }
-
     /**
      * Setter for if the source country of an attack was successful
      * @param attackerVictory boolean value to represent if the source
@@ -126,7 +119,6 @@ public class ActionContext {
     public void setAttackerVictory(boolean attackerVictory) {
         this.attackerVictory = attackerVictory;
     }
-
     /**
      * Setter for the dice rolls during an attack, to be displayed later
      * @param diceRolls the 2d array representing dice rolls

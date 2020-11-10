@@ -10,10 +10,7 @@ import java.util.*;
 public class RiskModel {
     /**List of all the players in the game **/
     Player[] players;
-    /**   list of the countries in the game **/
-    Country[] countries;
-    /** List of all the continents in the game **/
-    Continent[] continents;
+    /** The map of the game **/
     Map map;
     /** The current action context **/
     ActionContext actionContext;
@@ -27,12 +24,30 @@ public class RiskModel {
      * @param names the names of players
      */
     public RiskModel(String[] names){
+        this.map=new MapImport("maps/demo.zip").getMap();
+        this.actionContext=new ActionContext(Phase.NEW_GAME,null);
+
+        this.riskController=new RiskController(this);
+        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.map.getCountries());
         newGameStart(names);
+        this.riskView.boardUpdate(this.actionContext);
     }
 
     /** Constructor of Risk Model*/
     private RiskModel(){
-        newGameStart(null);
+        this.map=new MapImport("maps/demo.zip").getMap();
+        this.actionContext=new ActionContext(Phase.NEW_GAME,null);
+
+        this.riskController=new RiskController(this);
+        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.map.getCountries());
+        this.riskView.boardUpdate(this.actionContext);
+
+    }
+
+    public void newGame(String[] playerNames){
+        newGameStart(playerNames);
+        //map.printCountries();
+        //map.printContinents();
     }
 
     /**
@@ -40,67 +55,50 @@ public class RiskModel {
      * @param namesToProcess the string array of player names
      */
     public void newGameStart(String[] namesToProcess){
-        MapImport mapReader=new MapImport("maps/demo.zip");
-        this.map=mapReader.getMap();
-        map.printCountries();
-        map.printContinents();
-        this.countries=map.countries;
-        this.continents=map.continents;
-
-        this.riskController=new RiskController(this);
-        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.countries);
-
-        if(namesToProcess == null){
-            this.actionContext = new ActionContext(Phase.NEW_GAME, null);
-        }
-        else{
-            newGamePlayerCreator(namesToProcess.length, namesToProcess);
-        }
-        updateView();
+        newGamePlayerCreator(namesToProcess);
+        this.riskView.boardUpdate(this.actionContext);
     }
     /**
      * Method to process the names sent from the view
-     * @param stringToProcess the names of the view in one string
+     *
+     * @param playerNames The names of the players
      */
-    public void newGameNameProcessor(String stringToProcess){
-
-        String[] values = stringToProcess.split(" ");
-        String[] valuesForGame = new String[values.length-1];
-        for(int i =1; i< values.length; i++){
-            valuesForGame[i-1] = values[i];
-        }
-        newGamePlayerCreator(this.actionContext.srcArmy, valuesForGame);
-        updateView();
+    public void newGameNameProcessor(String[] playerNames){
+        newGamePlayerCreator(playerNames);
+        this.riskView.boardUpdate(this.actionContext);
     }
-
     /**
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
      */
-    private void newGamePlayerCreator(int playerNum, String[] playerNames){
+    private void newGamePlayerCreator(String[] playerNames){
         int startingArmySize;
         Random rand = new Random(System.currentTimeMillis());
 
-        Color[] colorsToAllocate = {new Color(200, 150, 0), new Color(125,125,125),
-        new Color(255,0,0), new Color(0,255,0),
-        new Color(255,0,255), new Color(0,255,255)};
+        Color[] colorsToAllocate={
+                new Color(200, 150, 0),
+                new Color(125, 125, 125),
+                new Color(255, 0  , 0),
+                new Color(0  , 255, 0),
+                new Color(255, 0  , 255),
+                new Color(0  , 255, 255)
+        };
 
         //Determines starting army size which depends on amount of players
-        if (playerNum == 2) {
+        if (playerNames.length == 2) {
             startingArmySize = 50;
         } else {
-            startingArmySize = (50) - 5 * playerNum;
+            startingArmySize = (50) - 5 * playerNames.length;
         }
 
-        players=new Player[playerNum];
-        for(int i = 0; i < playerNum; i++){
-
+        players=new Player[playerNames.length];
+        for(int i = 0; i < playerNames.length; i++){
             players[i]=new Player(playerNames[i], startingArmySize, colorsToAllocate[i]);
         }
 
         //make randomized list of the countries
         ArrayList<Country> ran = new ArrayList<>();
-        Collections.addAll(ran,this.countries);
+        Collections.addAll(ran,this.map.getCountries());
         Collections.shuffle(ran, rand);
         Stack<Country> addStack = new Stack<>();
         addStack.addAll(ran);
@@ -140,23 +138,17 @@ public class RiskModel {
      * @return Pair of boolean (false = game over), int (what type of win condition)
      */
     private boolean gameIsOver(){
-        int count = 0;
-        Player winner = null;
+        int numPlayers=this.players.length-1;
+        Player winner;
         for(Player player: players) {
-            if (player.getHasLost()) {
-                count++;
-            }/*
-            if(!player.getHasLost()){
-                //This will only be used when the game is actually over
-                winner = player;
-            }*/
-        }
-
-
-        if(count >= this.players.length-1){
-            //Set the game to the Game over
-            this.actionContext = new ActionContext(Phase.GAME_OVER, winner);
-            return true;
+            if(player.getHasLost()){
+                numPlayers--;
+            }
+            else{
+                winner=player;
+                this.actionContext = new ActionContext(Phase.GAME_OVER, winner);
+                return true;
+            }
         }
         return false;
     }
@@ -195,14 +187,13 @@ public class RiskModel {
      * @return The country that the points is inside, null if it isn't in any country
      */
     private Country pointToCountry(Point point){
-        for(Country country: this.countries){
+        for(Country country: this.map.getCountries()){
             if(country.containsPoint(point)){
                 return country;
             }
         }
         return null;
     }
-
     /**
      * Method to select the next player that still is in the game
      * @param player the currentPlayer to determine position
@@ -221,7 +212,7 @@ public class RiskModel {
                     //Error no more players call game is over
                     if(this.players[nextIndex].equals(player)){
                         gameIsOver();
-                        updateView();
+                        this.riskView.boardUpdate(this.actionContext);
                         return null;
                     }
         }
@@ -295,9 +286,8 @@ public class RiskModel {
                 this.actionContext.setDstCountry(clickedCountry);
                 break;
         }
-        updateView();
+        this.riskView.boardUpdate(this.actionContext);
     }
-
     /**
      * Method used to deal with when the user clicks the skip button
      */
@@ -330,11 +320,9 @@ public class RiskModel {
             case FORFEIT_CLICKED:
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
                 break;
-
         }
-        updateView();
+        this.riskView.boardUpdate(this.actionContext);
     }
-
     /**
      * Method to deal with when the user clicks a confirm button
      */
@@ -354,10 +342,9 @@ public class RiskModel {
                        this.actionContext.srcCountry,
                        this.actionContext.dstCountry,
                        this.actionContext.srcArmy))
-
                     this.actionContext.phase = Phase.RETREAT_ARMY;
-                 else
-                    System.out.println("Attack failed");
+                else
+                     System.out.println("Attack failed");
 
                 break;
             case RETREAT_CONFIRM:
@@ -380,9 +367,8 @@ public class RiskModel {
                 }
                 break;
         }
-        updateView();
+        this.riskView.boardUpdate(this.actionContext);
     }
-
     /**
      * Methods to deal with when the user clicks a back button
      */
@@ -416,9 +402,8 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
                 break;
         }
-        updateView();
+        this.riskView.boardUpdate(this.actionContext);
     }
-
     /**
      * Method to deal with numbers sent from the view
      * @param numTroops the number of troops to handle
@@ -548,13 +533,12 @@ public class RiskModel {
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
             if(gameIsOver()){
                 //Force game over here
-                updateView();
+                this.riskView.boardUpdate(this.actionContext);
             }
         }
 
         return true;
     }
-
     /**
      * Method to process a successful attack when sending units back to the attacking country
      * @param player the current player
@@ -607,9 +591,8 @@ public class RiskModel {
      * @return Array containing all the country objects
      */
     public Country[] getCountries(){
-        return this.countries;
+        return this.map.getCountries();
     }
-
     /**
      * Method that returns a stack of all the countries that the source country is connected to via friendly territory.
      * @param sourceCountry the source Country
@@ -643,18 +626,10 @@ public class RiskModel {
         }else {
             actionContext.setPhase(Phase.FORFEIT_CLICKED);
         }
-        updateView();
-    }
-
-    /**
-     * Method to updateView
-     */
-    private void updateView(){
         this.riskView.boardUpdate(this.actionContext);
     }
 
     public static void main(String[] args) {
         new RiskModel();
     }
-
 }

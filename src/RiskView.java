@@ -23,46 +23,50 @@ import static java.util.Objects.isNull;
  */
 
 public class RiskView extends JFrame implements ActionListener {
-    /**Controller for the view*/
+    /** Controller for the view **/
     private final RiskController riskController;
-    /**container for the MapLayeredPane*/
+    /** container for the MapLayeredPane **/
     private JPanel mapContainer; //JLayeredPane needs the parent Container to have a null Layout Manager
-    /**JLayeredPane that contains the mapImage in the background and labels in the foreground */
+    /** JLayeredPane that contains the mapImage in the background and labels in the foreground **/
     private JLayeredPane mapLayeredPane;
-    /**Layout for OptionPane that permits swapping views*/
+    /** Layout for OptionPane that permits swapping views **/
     private CardLayout cardLayout;
-    /**cardlayout subpanel for ATTACK_SRC phase*/
+    private JPanel newGamePanel;
+    private JSlider newGameNumPlayers;
+    /** Card Layout subpanel for ATTACK_SRC phase **/
     private JPanel attackSrcPanel;
-    /**cardlayout subpanel for ATTACK_DST phase*/
+    /** Card Layout subpanel for ATTACK_DST phase **/
     private JPanel attackDstPanel;
-    /**cardlayout subpanel for ATTACK_ARMY phase*/
+    private JPanel attackArmyPanel;
+    private JSlider attackNumTroops;
+    /** Card Layout subpanel for ATTACK_ARMY phase **/
     private JPanel attackConfirmPanel;
-    /**cardlayout subpanel for ATTACK_DICE phase*/
+    /** Card Layout subpanel for ATTACK_DICE phase **/
     private JPanel dicePanel;
-    /**Image background for the MapPanel*/
+    /** Image background for the MapPanel **/
     private final BufferedImage mapImage;
     private JButton skipButton;
-    /**Button to confirm completion of current phase*/
+    /** Button to confirm completion of current phase **/
     private JButton confirmPhase;
-    /**JTextPane for attackSrcPanel*/
+    /** JTextPane for attackSrcPanel **/
     private JTextArea attackSrcText;
-    /**JTextPane for attackDstPanel*/
+    /** JTextPane for attackDstPanel **/
     private JTextArea attackDstText;
-    /**JTextPane for attackConfirmPanel*/
+    /** JTextPane for attackConfirmPanel **/
     private JTextArea attackConfirmText;
-    /**JTextPane for attackConfirmPanel*/
+    /** JTextPane for attackConfirmPanel **/
     private JTextArea dicePanelText;
-    /**Array of all Country objects in the map*/ //TODO use this for updating labels
+    /** Array of all Country objects in the map **/ //TODO use this for updating labels
     private final Country[] countryArray;
-    /**JTextArea that gets updated as the game goes on**/
+    /** JTextArea that gets updated as the game goes on **/
     private JTextArea infoArea;
-    /**JPanel used for option buttons to be added*/
+    /** JPanel used for option buttons to be added **/
     private JPanel optionPanel;
-    /**JButton for a player forfeit*/
+    /** JButton for a player forfeit **/
     private JButton forfeitButton;
-    /**JFrame for entering player names*/
+    /** JFrame for entering player names **/
     private JFrame selectFrame;
-    /**ArrayList<JTextField> holds the names entered by the user*/
+    /** ArrayList<JTextField> holds the names entered by the user **/
     private ArrayList<JTextField> names;
 
     /**constructor for RiskView
@@ -71,7 +75,6 @@ public class RiskView extends JFrame implements ActionListener {
      * @param countries Array of all countries on the map
      */
     public RiskView(RiskController controller, BufferedImage modelMapImage, Country[] countries){
-
         //TODO info update , use country.getCentercoords
         mapImage = modelMapImage;
         riskController = controller;
@@ -235,6 +238,18 @@ public class RiskView extends JFrame implements ActionListener {
         attackConfirmPanel.add(attackConfirmText);
         optionPanel.add(attackConfirmPanel, Phase.ATTACK_ARMY.toString());
 
+        //attack army panel
+        attackArmyPanel=new JPanel();
+        attackNumTroops=new JSlider();
+        attackArmyPanel.add(attackNumTroops);
+        optionPanel.add(attackArmyPanel);
+
+        //New Game Panel
+        newGamePanel=new JPanel();
+        newGameNumPlayers=new JSlider(2,6);
+        newGamePanel.add(newGameNumPlayers);
+        optionPanel.add(newGamePanel);
+
         //creating dicePanel
         dicePanel = new JPanel();
         dicePanelText = new JTextArea();
@@ -247,13 +262,8 @@ public class RiskView extends JFrame implements ActionListener {
         dicePanel.add(dicePanelText);
         optionPanel.add(dicePanel, Phase.RETREAT_ARMY.toString());
 
-        /*for future use
-         * optionPanel.add(troopMoverPanelSelectSource(),"troopMoverPanelSelectSource");
-         * optionPanel.add(troopMoverPanelSelectDestination(),"troopMoverPanelSelectDestination");
-         * optionPanel.add(deployPanelSelectDestination()."deployPanelSelectDestination")
-         */
-
-        cardLayout.show(attackSrcPanel, Phase.ATTACK_SRC.toString());   //for now game starts in attack phase
+        //cardLayout.show(attackSrcPanel, Phase.ATTACK_SRC.toString());   //for now game starts in attack phase
+        //cardLayout.show(newGamePanel,Phase.NEW_GAME.toString());
         return optionPanel;
     }
     /**
@@ -292,7 +302,7 @@ public class RiskView extends JFrame implements ActionListener {
 
 
                     submit.addActionListener(this);
-                    submit.setActionCommand("compile");
+                    submit.setActionCommand("names");
                     
                     selectPanel.add(submit,gbc);
                     selectPanel.setVisible(true);
@@ -333,57 +343,58 @@ public class RiskView extends JFrame implements ActionListener {
                     confirmPhase.setText("Select another country");
                     confirmPhase.setActionCommand("back");
                     confirmPhase.setVisible(true);
+                }
+                else{
+                    highlightAdjacentCountries(actionContext.highlightedCountries, actionContext.srcCountry);
+                    attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
+                    cardLayout.show(optionPanel, Phase.ATTACK_DST.toString());
+                    confirmPhase.setText("back");
+                    confirmPhase.setActionCommand("back");
+                    confirmPhase.setVisible(true);
+                }
+                break;
+            case ATTACK_ARMY:
+                ((MapContainer) (mapContainer)).setActive(false);
+
+                attackConfirmPanelEdit(actionContext.dstCountry, actionContext.srcCountry);
+                cardLayout.show(optionPanel, Phase.ATTACK_ARMY.toString());
+                confirmPhase.setEnabled(false);
+
+                int attackingTroops = numberSelectPanel(actionContext,"Select number of troops: ");
+                if (attackingTroops>0){
+                    confirmPhase.setText("Attack with "+attackingTroops+" troops");
+                    confirmPhase.setActionCommand(""+attackingTroops);
                 }else{
-                        highlightAdjacentCountries(actionContext.highlightedCountries, actionContext.srcCountry);
-                        attackDstPanelEdit(actionContext.srcCountry); // to update the label in the panel
-                        cardLayout.show(optionPanel, Phase.ATTACK_DST.toString());
-                        confirmPhase.setText("back");
-                        confirmPhase.setActionCommand("back");
-                        confirmPhase.setVisible(true);
-                        break;}
-                    case ATTACK_ARMY:
-                        ((MapContainer) (mapContainer)).setActive(false);
-                        attackConfirmPanelEdit(actionContext.dstCountry, actionContext.srcCountry);
-                        cardLayout.show(optionPanel, Phase.ATTACK_ARMY.toString());
-                        confirmPhase.setEnabled(false);
-                        int attackingTroops = 0;
-                        while (attackingTroops==0){
-                            attackingTroops = numberSelectPanel(actionContext,"Select number of troops: ");
-                        }
-                        if (attackingTroops>0){
-                            confirmPhase.setText("Attack with "+attackingTroops+" troops");
-                            confirmPhase.setActionCommand(""+attackingTroops);
-                        }else{
-                            confirmPhase.setText("select countries again");
-                            confirmPhase.setActionCommand("back");
-                        }
-                        confirmPhase.setEnabled(true);
-                        confirmPhase.setVisible(true);
-                        break;
-                    case RETREAT_ARMY:
-                        ((MapContainer) (mapContainer)).setActive(false);
-                        labelCountries(countryArray,true);
-                        dicePanelEdit(actionContext.diceRolls, actionContext.srcCountry.getOwner(), actionContext.dstCountry.getOwner(), actionContext.attackerVictory);
-                        infoPanelEdit(actionContext);
-                        if(actionContext.attackerVictory) {
-                            int retreatingTroops = -1;
-                            while (retreatingTroops == -1) {
-                                retreatingTroops = numberSelectPanel(actionContext, "Select number of troops to retreat: ");
-                                if (retreatingTroops >= 0) {
-                                    confirmPhase.setText("Send " + retreatingTroops + " troops back");
-                                    confirmPhase.setActionCommand("" + retreatingTroops);
-                                } else {
-                                    confirmPhase.setText("Ok");
-                                   confirmPhase.setActionCommand("skip");
-                                }
-                            }
-                        }else{
+                    confirmPhase.setText("select countries again");
+                    confirmPhase.setActionCommand("back");
+                }
+                confirmPhase.setEnabled(true);
+                confirmPhase.setVisible(true);
+                break;
+            case RETREAT_ARMY:
+                ((MapContainer) (mapContainer)).setActive(false);
+                labelCountries(countryArray,true);
+                dicePanelEdit(actionContext.diceRolls, actionContext.srcCountry.getOwner(), actionContext.dstCountry.getOwner(), actionContext.attackerVictory);
+                infoPanelEdit(actionContext);
+                if(actionContext.attackerVictory) {
+                    int retreatingTroops = -1;
+                    while (retreatingTroops == -1) {
+                        retreatingTroops = numberSelectPanel(actionContext, "Select number of troops to retreat: ");
+                        if (retreatingTroops >= 0) {
+                            confirmPhase.setText("Send " + retreatingTroops + " troops back");
+                            confirmPhase.setActionCommand("" + retreatingTroops);
+                        } else {
                             confirmPhase.setText("Ok");
-                            confirmPhase.setActionCommand("skip");
+                           confirmPhase.setActionCommand("skip");
                         }
-                        cardLayout.show(optionPanel, Phase.RETREAT_ARMY.toString());
-                        confirmPhase.setVisible(true);
-                        break;
+                    }
+                }else{
+                    confirmPhase.setText("Ok");
+                    confirmPhase.setActionCommand("skip");
+                }
+                cardLayout.show(optionPanel, Phase.RETREAT_ARMY.toString());
+                confirmPhase.setVisible(true);
+                break;
             case FORFEIT_CLICKED:
                 skipButton.setVisible(false);
                 if (JOptionPane.showConfirmDialog(null, actionContext.player.getName() + ", you are about to forfeit your battle! Confirm", "WARNING",
@@ -421,11 +432,16 @@ public class RiskView extends JFrame implements ActionListener {
      * @param names the arraylist of player names
      */
     public void compileNames(List<JTextField> names){
-        String nameString="ng ";
-        for(JTextField JTF:names){
-            nameString+=JTF.getText()+" ";
+        String[] namesArray=new String[names.size()];
+        for(int i=0;i<names.size();i++){
+            if(names.get(i).getText().length()==0){
+                namesArray[i]="Player "+(i+1);
+            }
+            else{
+                namesArray[i]=names.get(i).getText();
+            }
         }
-        riskController.actionPerformed(new ActionEvent(this,1,nameString));
+        riskController.newGame(namesArray);
     }
 
     /**
@@ -443,6 +459,9 @@ public class RiskView extends JFrame implements ActionListener {
      */
     private void attackDstPanelEdit(Country Src) {
         attackDstText.setText("Select country to attack using " + Src.getName());
+    }
+    private void attackNumTroopsPanelEdit(int max){
+
     }
     /**
      * edits the attackConfirmPanel with corresponding context information
@@ -598,19 +617,20 @@ public class RiskView extends JFrame implements ActionListener {
                 JDialog dialog = numberPane.createDialog(troopSelectPanel, "Use slider to select number of Players");
                 dialog.setSize(400,200);
                 dialog.setVisible(true);
+
                 if (!isNull(numberPane.getValue()) && ((Integer) numberPane.getValue() == JOptionPane.OK_OPTION)){
                     riskController.actionPerformed(new ActionEvent(this,1,""+((sliderUsed.get()) ? Integer.parseInt((numberPane.getInputValue().toString())) :2 )));
                     return (sliderUsed.get()) ? Integer.parseInt((numberPane.getInputValue().toString())) :2 ;
                 } else { //player cancelled selection
                     dispatchEvent(new WindowEvent(this,WindowEvent.WINDOW_CLOSING));
                 }
-                default:
+            default:
                 return -1;
         }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-       if(e.getActionCommand().equals("compile")){
+       if(e.getActionCommand().equals("names")){
            compileNames(names);
        }
     }
