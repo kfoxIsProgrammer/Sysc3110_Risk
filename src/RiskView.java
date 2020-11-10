@@ -341,7 +341,7 @@ public class RiskView extends JFrame implements ActionListener {
                 ((MapContainer) (mapContainer)).setActive(true);
                 if(isNull(actionContext.highlightedCountries)){
                     JOptionPane.showMessageDialog(null,"No troops to use");
-                    confirmPhase.setText("Select another country");
+                    confirmPhase.setText("Select new country");
                     confirmPhase.setActionCommand("back");
                     confirmPhase.setVisible(true);
                 }
