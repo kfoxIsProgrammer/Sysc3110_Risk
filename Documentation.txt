@@ -109,6 +109,16 @@ Command Parser:
    7. updateView()
             this is the method to send the actionContext to the view. It is called when an action is performed in the model and the state changes.
             Data is also passed within the ActionContext, which represents the game states.
+            
+   8. getConnectedOwnedCountries is a method used for finding a country that is within the border of a player's territory in order to determine a valid selection for fortify.
+   The method is recursive and will go through the the adjacent countries of a selected country and add them to a stack. the stack is passed through the country and if the     
+   stack already contains the country it will not be added and will return the stack. It should return a stack that contains every connected owned country to the source 
+   country.
+
+9. fortify method will take in a source and destination country and will make sure the destination is connected using the getConncetedOwnedCountries method to make sure it's 
+valid and then send units from source country to destination country.
+
+10. Deploy method will simply sends unit a player has to allocate and adds it to selected owned country
          
    RiskView:
         RiskView is a GUI based class that extends JFrame and Implements ActionLister. It is driven by MouseClick events and ButtonClick.
@@ -123,7 +133,9 @@ Command Parser:
         
   RiskModelTest:
       1. getValidPoints takes in a country and get the min/max x/y values to cycle through until it finds a valid point to test.
-      2.
+       2. getValidSrcCountryForAttack returns a country from player's owned country that is valid as a source to attack from. It finds the first country that has an enemy     
+         adjacent and also has enough troops to attack.
+      3. getValidDstCountryForAttack returns a country from the source country's adjacent countries that is valid to attack. It chooses first country that is owned by enemy.
   
           
           
