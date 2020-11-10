@@ -32,6 +32,14 @@ which is used to sort the array in desc order.
 
 6. The RiskModel is a combination of Model and Controller in the MVC pattern this was useful for references, but in the future the decoupling of these two functionalities will be made.
 
+7. getConnectedOwnedCountries is a method used for finding a country that is within the border of a player's territory in order to determine a valid selection for fortify.
+   The method is recursive and will go through the the adjacent countries of a selected country and add them to a stack. the stack is passed through the country and if the        stack already contains the country it will not be added and will return the stack. It should return a stack that contains every connected owned country to the source 
+   country.
+
+8. fortify method will take in a source and destination country and will make sure the destination is connected using the getConncetedOwnedCountries method to make sure it's valid and then send units from source country to destination country.
+
+9. Deploy method will simply sends unit a player has to allocate and adds it to selected owned country
+
 Command Parser:
     The main CommandParser class does all the interacting with the user and converts their input from a string to a format the rest of the code can understand.
     The Command object is the data type used to pass information from the parser to the RiskModel. It contains an enum for the command type. This was done to
@@ -101,24 +109,12 @@ Command Parser:
    7. updateView()
             this is the method to send the actionContext to the view. It is called when an action is performed in the model and the state changes.
             Data is also passed within the ActionContext, which represents the game states.
-            
-            
-   8. getConnectedOwnedCountries is a method used for finding a country that is within the border of a player's territory in order to determine a valid selection for fortify.
-   The method is recursive and will go through the adjacent countries of a selected country and add them to a stack. the stack is passed through the country and if 
-   the stack already contains the country it will not be added and will return the stack. It should return a stack that contains every connected owned country to the source 
-   country.
-
-    9. fortify method will take in a source and destination country and will make sure the destination is connected using the getConncetedOwnedCountries method to make sure 
-       it's valid and then send units from source country to destination country.
-
-    10. Deploy method will simply sends unit a player has to allocate and adds it to selected owned country
          
    RiskView:
-        RiskView is a GUI based class that extends JFrame and Implements ActionLister
-        It is driven by MouseClick events and ButtonClick.
-        The MouseClicks are used only on the map to get a position to send to the controller.
-        These MouseClicks are to represent if you clicked a country's hitbox. 
-          
+        RiskView is a GUI based class that extends JFrame and Implements ActionLister. It is driven by MouseClick events and ButtonClick.
+        The MouseClicks are used only on the map to get a position to send to the controller. These MouseClicks are to represent if you clicked a country's hitbox.
+        It uses a combination of LayeredPanes, and a CardLayout to display all the information from the game at every Phase. Your name is color matched to the labels of the 
+        countries you own and enemy neighbours get highlighted. You also get to select the number of troops to send to attack/retreat/deploy via a slider popup.
           
    Phase:
         This was our enumeration class that represents the different states and actions that are invovled in the game of risk.
@@ -126,11 +122,8 @@ Command Parser:
         
         
   RiskModelTest:
-      1. getValidPoints method takes in a country and get the min/max x/y values to cycle through until it finds a valid point to test.
-      2. getValidSrcCountryForAttack returns a country from player's owned country that is valid as a source to attack from. It finds the first country that has an enemy     
-         adjacent and also has enough troops to attack.
-      3. getValidDstCountryForAttack returns a country from the source country's adjacent countries that is valid to attack. It chooses first country that is owned by enemy.
-     
+      1. getValidPoints takes in a country and get the min/max x/y values to cycle through until it finds a valid point to test.
+      2.
   
           
           
