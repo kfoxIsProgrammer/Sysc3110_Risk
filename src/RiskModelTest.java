@@ -8,8 +8,14 @@ import static org.junit.Assert.*;
 //Tests applicable for milestone 2
 
 
-
-
+/**
+ * Tests the risk model
+ *
+ * PRESS ENTER WHEN ANY POPUP POPS UP
+ *
+ * @author Dimitry Kouthine
+ * @version 11.09.2020
+ */
 public class RiskModelTest extends TestCase {
 
     String[] twoPlayers = {"Jon", "joey"};
@@ -97,7 +103,7 @@ public class RiskModelTest extends TestCase {
         assertEquals(Phase.ATTACK_SRC,test.actionContext.phase);
     }
 
-    /***
+    /**
      * Confirms that for every country in the game there is at least one valid point that can be clicked in order to
      * access  it.
      */
@@ -199,7 +205,7 @@ public class RiskModelTest extends TestCase {
         test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
 
         test.menuNumTroops(1); //Clicks number of troops}
-        assertEquals(Phase.ATTACK_CONFIRM, test.actionContext.phase);//confirms phase went back to choosing src country
+        assertEquals(Phase.RETREAT_ARMY, test.actionContext.phase);//confirms phase went back to choosing src country
     }
 
     /***
@@ -341,5 +347,44 @@ public class RiskModelTest extends TestCase {
         assertTrue(toTest.contains(test.map.getCountries()[0]));
         assertTrue(toTest.contains(test.map.getCountries()[8]));
         assertTrue(toTest.contains(test.map.getCountries()[3]));
+    }
+    /***
+     * Should not have any country connected to Alberta
+     */
+    public void testGetConnectedCountriesThatReturnsnone(){
+        RiskModel test = new RiskModel(twoPlayers);
+        Stack <Country> toTest = new Stack();
+        test.players[0].getOwnedCountries().clear();
+        test.players[1].getOwnedCountries().clear();
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
+        test.players[0].addCountry(test.map.getCountries()[41]);//add Western australia
+        test.map.getCountries()[41].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.map.getCountries()[1]);//add alberta
+        test.map.getCountries()[1].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.map.getCountries()[40]);//add New Guinea
+        test.map.getCountries()[40].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.map.getCountries()[39]);//add Indonesia
+        test.map.getCountries()[39].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.map.getCountries()[38]);//add Eastern Australia
+        test.map.getCountries()[38].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.map.getCountries()[37]); // add western Yakutsk
+        test.map.getCountries()[37].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.map.getCountries()[36]); // add Ural
+        test.map.getCountries()[36].setOwner(test.players[0]);
+
+        test.players[0].addCountry(test.map.getCountries()[35]);//add siberia
+        test.map.getCountries()[35].setOwner(test.players[0]);
+        toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
+        //should not include china
+        assertEquals(0, toTest.size());
+
     }
 }

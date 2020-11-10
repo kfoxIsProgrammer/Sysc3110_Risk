@@ -1,5 +1,3 @@
-
-
 /**Describing a Continent on the map in a game of RISK
  * @author  Kshitij Sawhney
  * @version  10 / 22 / 2020
@@ -7,10 +5,8 @@
 public class Continent {
     /**Name of the continent*/
     private String name;
-
     /**List of countries within the continent*/
     private Country[] countryList;
-
     /**Number of troops received as bonus for full ownership*/
     private int bonusArmyValue;
 
@@ -31,13 +27,11 @@ public class Continent {
     public String getName() {
         return name;
     }
-
     /**Getter for bonusArmyValue
      * @return number of bonus troops*/
     public int getBonusArmyValue() {
         return bonusArmyValue;
     }
-
     /**Getter for countryList
      * @return list of countries contained within the continent*/
     public Country[] getCountryList() {

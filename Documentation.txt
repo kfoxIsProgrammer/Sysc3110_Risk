@@ -157,10 +157,9 @@ valid and then send units from source country to destination country.
           
           
   MapImport:
-       This class is used to unpack our choice of data. We used a JSON file to represent each countries: name, adjacenies, hitbox/position and rank.
-       Also a PNG file is used as our game image to show on the view. 
-       
-       This class uses an external library called com.google.gson to parse the JSON file.
+       The map data is stored in JSON and imported using gson. The map background image is stored as a png. To prevent these files from getting mismatched when many maps are being used,
+       both the json and the png file are contained withing a zip file. The extension of this may later be rename to .RiskMap to make it more obvious. The way the gson serializes the objects
+       requires that there are no circular references, or that any circular references are marked with the transient keyword
        
        
   ActionContext:

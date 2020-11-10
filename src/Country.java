@@ -14,8 +14,9 @@ public class Country {
     private transient int minX,minY,maxX,maxY;
     /** The coordinates of the country's center **/
     private transient Point centerCoordinates;
-    /** ArrayList of countries that lie adjacent to the current country **/
+    /** Array of countries that lie adjacent to the current country **/
     private transient Country[] adjacentCountries;
+    /** Array of country Ids that lie adjacent to the current country **/
     private int[] adjacentCountriesIDs;
     /** Name of the owner **/
     private Player owner;
@@ -149,7 +150,6 @@ public class Country {
     public void setAdjacentCountries(Country[] adjacentCountries){
         this.adjacentCountries=adjacentCountries;
     }
-
     /**
      * Minimum x coordinate of the country's viewable box
      * @param minX minimum x coordinate
@@ -157,7 +157,6 @@ public class Country {
     public void setMinX(int minX) {
         this.minX = minX;
     }
-
     /**
      * Minimum y coordinate of the country's viewable box
      * @param minY minimum y coordinate
@@ -179,7 +178,6 @@ public class Country {
     public void setMaxY(int maxY) {
         this.maxY = maxY;
     }
-
     /**
      * Setter of the center coordinate for displaying the number of units
      * @param centerCoordinates the center x,y coordinate of the country
@@ -195,6 +193,9 @@ public class Country {
         int[] arrayOfMaxAndMin = {minX,maxX,minY,maxY};
         return arrayOfMaxAndMin;
     }
+    /**
+     * @return The country's name
+     */
     public String getName() {
         return name;
     }

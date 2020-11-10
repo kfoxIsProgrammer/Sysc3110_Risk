@@ -11,16 +11,17 @@ import java.awt.event.MouseEvent;
  * @version 11.09.2020
  */
 public class RiskController implements ActionListener{
+    /** The model to send commands to **/
     private RiskModel riskModel;
-
+    /** Constructor for RiskController **/
     public RiskController(RiskModel model){
         this.riskModel = model;
     }
-
+    /** Handles the new game event **/
     public void newGame(String[] playerNames){
         this.riskModel.newGame(playerNames);
     }
-
+    /** Checks if a given string can be parsed into an integer **/
     private boolean isInt(String text){
         for (char c: text.toCharArray()) {
             if (!Character.isDigit(c)){
@@ -29,10 +30,11 @@ public class RiskController implements ActionListener{
         }
         return true;
     }
-
+    /** Handles events when the map is clicked **/
     public void countrySelected(MouseEvent mouseEvent){
         this.riskModel.mapClicked(new Point(mouseEvent.getX(), mouseEvent.getY()));
     }
+    /** Handles events when a menu item is clicked **/
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getActionCommand().equals("skip")){

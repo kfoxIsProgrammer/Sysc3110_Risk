@@ -41,13 +41,11 @@ public class RiskModel {
         this.riskController=new RiskController(this);
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.map.getCountries());
         this.riskView.boardUpdate(this.actionContext);
-
     }
 
+    /** Very important method... can't remove **/
     public void newGame(String[] playerNames){
         newGameStart(playerNames);
-        //map.printCountries();
-        //map.printContinents();
     }
 
     /**
@@ -138,17 +136,20 @@ public class RiskModel {
      * @return Pair of boolean (false = game over), int (what type of win condition)
      */
     private boolean gameIsOver(){
-        int numPlayers=this.players.length-1;
-        Player winner;
+        int numPlayers=this.players.length;
+        Player winner=null;
+
         for(Player player: players) {
             if(player.getHasLost()){
                 numPlayers--;
             }
-            else{
+            else {
                 winner=player;
-                this.actionContext = new ActionContext(Phase.GAME_OVER, winner);
-                return true;
             }
+        }
+        if(numPlayers==1){
+            this.actionContext = new ActionContext(Phase.GAME_OVER, winner);
+            return true;
         }
         return false;
     }

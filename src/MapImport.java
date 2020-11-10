@@ -16,7 +16,9 @@ import java.util.zip.ZipFile;
  * @version 11.01.2020
  */
 public class MapImport {
+    /** A destination object for the imported data **/
     private Map map;
+    /** The loaded image **/
     private BufferedImage mapImage;
     /** List of the countries in the game **/
     private Country[] countries;
@@ -56,6 +58,7 @@ public class MapImport {
         }
     }
 
+    /** Loads the map image from file into a buffer **/
     private boolean parseMapImage(ZipFile zipFile, ZipEntry entry){
         try {
             this.mapImage=ImageIO.read(zipFile.getInputStream(entry));

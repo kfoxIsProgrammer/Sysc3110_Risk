@@ -45,6 +45,7 @@ public class RiskView extends JFrame implements ActionListener {
     private JPanel dicePanel;
     /** Image background for the MapPanel **/
     private final BufferedImage mapImage;
+    /** I bet you $5 they dont read this **/
     private JButton skipButton;
     /** Button to confirm completion of current phase **/
     private JButton confirmPhase;
