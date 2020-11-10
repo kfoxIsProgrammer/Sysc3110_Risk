@@ -34,6 +34,8 @@ Class Cohesion isn't the best. RiskModel still has the map in it's components, w
 
 Make sure that the maps folder is in the same directory as the jar 
 
+When testing you must always press enter when anything pops up
+
 __Roadmap:__
 
 The next goal for our game is to introduce the playable Deploy and Fortify phases.
