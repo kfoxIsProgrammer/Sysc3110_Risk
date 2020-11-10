@@ -123,8 +123,10 @@ Command Parser:
         
         
   RiskModelTest:
-      1. getValidPoints takes in a country and get the min/max x/y values to cycle through until it finds a valid point to test.
-      2.
+      1. getValidPoints method takes in a country and get the min/max x/y values to cycle through until it finds a valid point to test.
+      2. getValidSrcCountryForAttack returns a country from player's owned country that is valid as a source to attack from. It finds the first country that has an enemy                 adjacent and also has enough troops to attack.
+      3. getValidDstCountryForAttack returns a country from the source country's adjacent countries that is valid to attack. It chooses first country that is owned by enemy.
+     
   
           
           
