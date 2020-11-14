@@ -1,5 +1,3 @@
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,12 +10,14 @@ import java.awt.event.MouseEvent;
  */
 public class RiskController implements ActionListener{
     /** The model to send commands to **/
-    private RiskModel riskModel;
+    private final RiskModel riskModel;
+
     /** Constructor for RiskController **/
     public RiskController(RiskModel model){
         this.riskModel = model;
     }
     /** Handles the new game event **/
+
     public void newGame(String[] playerNames){
         this.riskModel.newGame(playerNames);
     }
@@ -41,17 +41,13 @@ public class RiskController implements ActionListener{
             riskModel.menuSkip();
         }
         else if(e.getActionCommand().equals("names")){
-
+            //TODO handle new game
         }
         else if(e.getActionCommand().equals("confirm")){
             riskModel.menuConfirm();
         }
         else if(e.getActionCommand().equals("back")){
             riskModel.menuBack();
-        }
-        else if(e.getActionCommand().equals("Forfeit")){
-            riskModel.playerForfeit();
-
         }
         else if(isInt(e.getActionCommand())){
             riskModel.menuNumTroops(Integer.parseInt(e.getActionCommand()));

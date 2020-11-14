@@ -4,11 +4,11 @@
  */
 public class Continent {
     /**Name of the continent*/
-    private String name;
+    public final String name;
     /**List of countries within the continent*/
-    private Country[] countryList;
+    public final Country[] countryList;
     /**Number of troops received as bonus for full ownership*/
-    private int bonusArmyValue;
+    public final int bonusArmyValue;
 
     /**
      *3 param Constructor for Continent

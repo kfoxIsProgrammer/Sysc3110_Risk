@@ -91,7 +91,7 @@ public class RiskModel {
 
         players=new Player[playerNames.length];
         for(int i = 0; i < playerNames.length; i++){
-            players[i]=new Player(playerNames[i], startingArmySize, colorsToAllocate[i]);
+            players[i]=new PlayerHuman(playerNames[i], colorsToAllocate[i], startingArmySize);
         }
 
         //make randomized list of the countries
@@ -111,14 +111,14 @@ public class RiskModel {
                 }
             }
         }
-        for(Player play: players){
-            while (play.getArmiesToAllocate() > 0){
-                ArrayList<Country> temp = new ArrayList<>(play.getOwnedCountries().values());
+        for(Player player: players){
+            while (player.getArmiesToAllocate() > 0){
+                ArrayList<Country> temp = player.getCountries();
                 Collections.shuffle(temp,rand);
                 for(Country count: temp){
-                    if (play.getArmiesToAllocate() >0) {
+                    if (player.getArmiesToAllocate() >0) {
                         count.addArmy(1);
-                        play.removeArmy(1);
+                        player.removeArmy(1);
                     }
                 }
             }
@@ -163,19 +163,19 @@ public class RiskModel {
 
         for(Player player : playersToCheck){
             //If they do not own anymore countries they lose
-            if(player.getOwnedCountries().isEmpty()){
-                player.hasLost();
+            if(player.getCountries().isEmpty()){
+                player.setHasLost();
                 return true;
             }
             //If they have no more available attacking units, they lose as well
             //If sum of total units = sum of all countries, you can't make a turn
             //and you lose.
             int sumOfUnits = 0;
-            for(Country country: player.getOwnedCountries().values()){
+            for(Country country: player.getCountries()){
                 sumOfUnits += country.getArmy();
             }
-            if(sumOfUnits == player.getOwnedCountries().size()){
-                player.hasLost();
+            if(sumOfUnits == player.getCountries().size()){
+                player.setHasLost();
                 return true;
             }
         }
@@ -207,15 +207,15 @@ public class RiskModel {
         int modValue = this.players.length;
 
         for(int nextIndex = (indexOfCurrentPlayer+1)%modValue;; nextIndex = (nextIndex+1)%modValue){
-                    if(!this.players[nextIndex].getHasLost()){
-                        return this.players[nextIndex];
-                    }
-                    //Error no more players call game is over
-                    if(this.players[nextIndex].equals(player)){
-                        gameIsOver();
-                        this.riskView.boardUpdate(this.actionContext);
-                        return null;
-                    }
+            if(!this.players[nextIndex].getHasLost()){
+                return this.players[nextIndex];
+            }
+            //Error no more players call game is over
+            if(this.players[nextIndex].equals(player)){
+                gameIsOver();
+                this.riskView.boardUpdate(this.actionContext);
+                return null;
+            }
         }
 
 /*
@@ -227,7 +227,7 @@ public class RiskModel {
             }
         }
         */
- 
+
     }
 
     /**
@@ -245,15 +245,15 @@ public class RiskModel {
         }
         //TODO error checking
         System.out.printf("%s\n",clickedCountry.getName());
-        switch(this.actionContext.phase){
+        switch(this.actionContext.getPhase()){
             case DEPLOY_DST:
-                if(clickedCountry.getOwner().equals(this.actionContext.player)) {
+                if(clickedCountry.getOwner().equals(this.actionContext.getPlayer())) {
                     this.actionContext.setPhase(Phase.DEPLOY_ARMY);
                     this.actionContext.setDstCountry(clickedCountry);
                 }
                 break;
             case ATTACK_SRC:
-                if(clickedCountry.getOwner().equals(this.actionContext.player)) {
+                if(clickedCountry.getOwner().equals(this.actionContext.getPlayer())) {
                     this.actionContext.setPhase(Phase.ATTACK_DST);
                     this.actionContext.setSrcCountry(clickedCountry);
                     ArrayList<Country> enemyCountries = new ArrayList<>();
@@ -261,19 +261,19 @@ public class RiskModel {
 
                         for (Country c : clickedCountry.getAdjacentCountries()) {
                             System.out.println(c.getName());
-                            if (c.getOwner() != this.actionContext.player) {
+                            if (c.getOwner() != this.actionContext.getPlayer()) {
                                 enemyCountries.add(c);
                             }
                         }
                         Country[] temp = new Country[enemyCountries.size()];
-                        this.actionContext.highlightedCountries = enemyCountries.toArray(temp);
+                        this.actionContext.setHighlightedCountries(enemyCountries.toArray(temp));
                     }
                 }
                 break;
             case ATTACK_DST:
                 if(Arrays.asList(clickedCountry.getAdjacentCountries())
-                        .contains(this.actionContext.srcCountry) &
-                        !clickedCountry.getOwner().equals(this.actionContext.player)) {
+                        .contains(this.actionContext.getSrcCountry()) &
+                        !clickedCountry.getOwner().equals(this.actionContext.getPlayer())) {
                     this.actionContext.setPhase(Phase.ATTACK_ARMY);
                     this.actionContext.setDstCountry(clickedCountry);
                 }
@@ -293,33 +293,28 @@ public class RiskModel {
      * Method used to deal with when the user clicks the skip button
      */
     public void menuSkip(){
-        switch (this.actionContext.phase){
+        switch (this.actionContext.getPhase()){
             case DEPLOY_DST:
             case DEPLOY_ARMY:
             case DEPLOY_CONFIRM:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
             case ATTACK_SRC:
             case ATTACK_DST:
             case ATTACK_ARMY:
             case ATTACK_CONFIRM:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.getPlayer());
                 break;
             case RETREAT_ARMY:
-                /*retreat(this.actionContext.player,
-                        this.actionContext.srcCountry,
-                        this.actionContext.dstCountry,
-                        0);*/
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                this.actionContext.setDstArmy(0);
+                menuConfirm();
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
             case FORTIFY_CONFIRM:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
-                break;
-            case FORFEIT_CLICKED:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.getPlayer()));
                 break;
         }
         this.riskView.boardUpdate(this.actionContext);
@@ -329,40 +324,39 @@ public class RiskModel {
      */
     public void menuConfirm(){
         //TODO error checking
-        switch (this.actionContext.phase) {
+        switch (this.actionContext.getPhase()) {
             case DEPLOY_CONFIRM:
-                if(deploy(this.actionContext.player,
-                       this.actionContext.dstCountry,
-                       this.actionContext.srcArmy))
-                    this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
+                if(deploy(this.actionContext.getPlayer(),
+                        this.actionContext.getDstCountry(),
+                        this.actionContext.getSrcArmy()))
+                    this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.getPlayer());
                 else
                     System.out.println("Deploy Failed");
                 break;
             case ATTACK_CONFIRM:
-                if(attack(this.actionContext.player,
-                       this.actionContext.srcCountry,
-                       this.actionContext.dstCountry,
-                       this.actionContext.srcArmy))
-                    this.actionContext.phase = Phase.RETREAT_ARMY;
+                if(attack(this.actionContext.getPlayer(),
+                        this.actionContext.getSrcCountry(),
+                        this.actionContext.getDstCountry(),
+                        this.actionContext.getSrcArmy()))
+                    this.actionContext.setPhase(Phase.RETREAT_ARMY);
                 else
-                     System.out.println("Attack failed");
-
+                    System.out.println("Attack failed");
                 break;
             case RETREAT_CONFIRM:
-                if(retreat(this.actionContext.player,
-                        this.actionContext.srcCountry,
-                        this.actionContext.dstCountry,
-                        this.actionContext.dstArmy))
-                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                if(retreat(this.actionContext.getPlayer(),
+                        this.actionContext.getSrcCountry(),
+                        this.actionContext.getDstCountry(),
+                        this.actionContext.getDstArmy()))
+                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 else
                     System.out.println("Retreat failed");
                 break;
             case FORTIFY_CONFIRM:
-                if(fortify(this.actionContext.player,
-                        this.actionContext.srcCountry,
-                        this.actionContext.dstCountry,
-                        this.actionContext.srcArmy))
-                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                if(fortify(this.actionContext.getPlayer(),
+                        this.actionContext.getSrcCountry(),
+                        this.actionContext.getDstCountry(),
+                        this.actionContext.getSrcArmy()))
+                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.getPlayer()));
                 else{
                     System.out.println("Fortify failed");
                 }
@@ -374,33 +368,30 @@ public class RiskModel {
      * Methods to deal with when the user clicks a back button
      */
     public void menuBack(){
-        switch(this.actionContext.phase){
+        switch(this.actionContext.getPhase()){
             case DEPLOY_DST:
             case DEPLOY_ARMY:
             case DEPLOY_CONFIRM:
-                this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
+                this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.getPlayer());
                 break;
             case ATTACK_SRC:
             case ATTACK_DST:
             case ATTACK_ARMY:
             case ATTACK_CONFIRM:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
             case RETREAT_ARMY:
-                retreat(this.actionContext.player,
-                        this.actionContext.srcCountry,
-                        this.actionContext.dstCountry,
+                retreat(this.actionContext.getPlayer(),
+                        this.actionContext.getSrcCountry(),
+                        this.actionContext.getDstCountry(),
                         0);
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
             case FORTIFY_CONFIRM:
-                this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
-                break;
-            case FORFEIT_CLICKED:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.getPlayer());
                 break;
         }
         this.riskView.boardUpdate(this.actionContext);
@@ -410,9 +401,9 @@ public class RiskModel {
      * @param numTroops the number of troops to handle
      */
     public void menuNumTroops(int numTroops){
-        switch (this.actionContext.phase) {
+        switch (this.actionContext.getPhase()) {
             case NEW_GAME:
-                this.actionContext.srcArmy = numTroops;
+                this.actionContext.setSrcArmy(numTroops);
                 menuConfirm();
                 break;
             case DEPLOY_ARMY:
@@ -546,9 +537,8 @@ public class RiskModel {
      * @return boolean True: success, False: fail
      */
     private boolean retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
-
-        defendingCountry.setArmy((this.actionContext.srcArmy-this.actionContext.srcArmyDead)-unitsToRetreat);
-        attackingCountry.removeArmy((this.actionContext.srcArmy-this.actionContext.srcArmyDead)-unitsToRetreat);
+        defendingCountry.setArmy((this.actionContext.getSrcArmy()-this.actionContext.getSrcArmyDead())-unitsToRetreat);
+        attackingCountry.removeArmy((this.actionContext.getSrcArmy()-this.actionContext.getSrcArmyDead())-unitsToRetreat);
         defendingCountry.getOwner().removeCountry(defendingCountry);
         defendingCountry.setOwner(attackingCountry.getOwner());
         attackingCountry.getOwner().addCountry(defendingCountry);
@@ -563,7 +553,7 @@ public class RiskModel {
      * @return boolean  that returns a true if the function was successful.
      */
     private boolean fortify(Player player, Country sourceCountry, Country destinationCountry, int unitsToSend){
-        Stack countriesWithinBorder = new Stack();
+        Stack<Country> countriesWithinBorder = new Stack<>();
         boolean valid = false;
         countriesWithinBorder = getConnectedOwnedCountries(sourceCountry, sourceCountry, player, countriesWithinBorder);
         while (!countriesWithinBorder.isEmpty()){
@@ -572,9 +562,9 @@ public class RiskModel {
             }
         }
         if(sourceCountry.getOwner()!=player ||
-            destinationCountry.getOwner()!=player ||
-            !valid ||
-            (sourceCountry.getArmy()-1)<unitsToSend ){
+                destinationCountry.getOwner()!=player ||
+                !valid ||
+                (sourceCountry.getArmy()-1)<unitsToSend ){
             return false;
         }
         else{
@@ -598,10 +588,9 @@ public class RiskModel {
      * @param toTest Stack containing all of the connected owned countries
      * @return Stack that contains all the countries connected to source through friendly territory
      */
-    public Stack getConnectedOwnedCountries(Country sourceCountry,Country root, Player user, Stack toTest){
+    public Stack<Country> getConnectedOwnedCountries(Country sourceCountry,Country root, Player user, Stack<Country> toTest){
         for(Country count: sourceCountry.getAdjacentCountries()){
             if(count.getOwner() == user && !toTest.contains(count) && count != root){
-                //  System.out.println(count.getName());
                 toTest.add(count);
                 return(getConnectedOwnedCountries(count,root, user, toTest));
             }
@@ -609,23 +598,6 @@ public class RiskModel {
         return toTest;
     }
 
-    /**
-     * This method is called to determine how to handle a player selecting forfeit
-     * This will also check if the game is over
-     */
-    public void playerForfeit() {
-        if(actionContext.phase==Phase.FORFEIT_CLICKED){
-            actionContext.player.hasLost();
-            if(gameIsOver()){
-                actionContext=new ActionContext(Phase.GAME_OVER,nextPlayer(actionContext.player));
-            }else{
-                actionContext = new ActionContext(Phase.ATTACK_SRC,nextPlayer(actionContext.player));
-            }
-        }else {
-            actionContext.setPhase(Phase.FORFEIT_CLICKED);
-        }
-        this.riskView.boardUpdate(this.actionContext);
-    }
 
     public static void main(String[] args) {
         new RiskModel();

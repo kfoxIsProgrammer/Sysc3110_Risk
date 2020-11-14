@@ -14,7 +14,7 @@ public class Map {
     private transient BufferedImage mapImage;
 
     /**
-     * 2 param contstructor of a Map
+     * Constructor of a Map
      * @param countries array of countries on the map
      * @param continents array of continents on the map
      */

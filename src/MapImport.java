@@ -36,10 +36,10 @@ public class MapImport {
             for(Enumeration<? extends ZipEntry> entryReader = zipFile.entries(); entryReader.hasMoreElements();){
                 ZipEntry entry=entryReader.nextElement();
 
-                if(entry.getName().toLowerCase().split("\\.(?=[^\\.]+$)")[1].equals("png")){
+                if(entry.getName().toLowerCase().split("\\.")[1].equals("png")){
                     imageLoaded=parseMapImage(zipFile, entry);
                 }
-                else if(entry.getName().toLowerCase().split("\\.(?=[^\\.]+$)")[1].equals("json")){
+                else if(entry.getName().toLowerCase().split("\\.")[1].equals("json")){
                     InputStream inputStream=zipFile.getInputStream(entry);
 
                     Scanner s = new Scanner(inputStream).useDelimiter("\\A");
@@ -133,16 +133,6 @@ public class MapImport {
 
             // Convert JSON File to Java Object
             Map map = gson.fromJson(reader, Map.class);
-
-//            readOldData("oldmaps/test.txt");
-//
-//            Country[] countries3=new Country[this.countries.size()];
-//            countries3=this.countries.toArray(countries3);
-//
-//            Continent[] continents3=new Continent[this.continents.size()];
-//            continents3=this.continents.toArray(continents3);
-//
-//            Map tess=new Map(countries3,continents3);
 
             System.out.printf("%s\n",gson.toJson(map));
 

@@ -36,6 +36,4 @@ public enum Phase {
     FORTIFY_ARMY,
     /** Fortify phase confirmation **/
     FORTIFY_CONFIRM,
-    /**Player has clicked Forfeit button, ask for confirmation**/
-    FORFEIT_CLICKED,
 }

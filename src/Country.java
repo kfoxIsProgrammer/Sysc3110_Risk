@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 
 /**Describing a country on the map in a game of RISK
  *
@@ -32,11 +33,6 @@ public class Country {
     public Country(String name, Point[] vertices) {
         this.name = name;
         this.vertices = vertices;
-        this.minX = minX;
-        this.minY = minY;
-        this.maxX = maxX;
-        this.maxY = maxY;
-        this.centerCoordinates = centerCoordinates;
     }
 
     /**
@@ -55,8 +51,7 @@ public class Country {
             int numIntersections=0;
 
             //Create a ray that passes through the bounding box
-            Point ray1=new Point(this.minX-25,this.minY-25);
-            Point ray2=point;
+            Point ray=new Point(this.minX-25,this.minY-25);
 
             //Get every connected pair of vertices
             Point[] vertices=this.getVertices();
@@ -73,8 +68,8 @@ public class Country {
                 eqnC=(vertex2.x*vertex1.y)-(vertex1.x*vertex2.y);
 
                 //Plug the endpoints of the ray into the line equation
-                float solution1 = (eqnA * ray1.x) + (eqnB * ray1.y) + eqnC;
-                float solution2 = (eqnA * ray2.x) + (eqnB * ray2.y) + eqnC;
+                float solution1 = (eqnA * ray.x) + (eqnB * ray.y) + eqnC;
+                float solution2 = (eqnA * point.x) + (eqnB * point.y) + eqnC;
 
                 //If the sign of both the solutions is the same, the are on the same side of the line therefore no intersection
                 if ((solution1>0 && solution2>0)||
@@ -83,9 +78,9 @@ public class Country {
                 }
 
                 //Get the equation of the ray in the form Ax+By+C=0
-                eqnA=ray2.y-ray1.y;
-                eqnB=ray1.x-ray2.x;
-                eqnC=(ray2.x*ray1.y)-(ray1.x*ray2.y);
+                eqnA= point.y-ray.y;
+                eqnB=ray.x- point.x;
+                eqnC=(point.x*ray.y)-(ray.x* point.y);
 
                 //Plug the endpoints of the line into the ray equation
                 solution1 = (eqnA * vertex1.x) + (eqnB * vertex1.y) + eqnC;
@@ -190,8 +185,7 @@ public class Country {
      * @return The Name of the country
      */
     public int[] getMinMaxValues(){
-        int[] arrayOfMaxAndMin = {minX,maxX,minY,maxY};
-        return arrayOfMaxAndMin;
+        return new int[]{minX,maxX,minY,maxY};
     }
     /**
      * @return The country's name
@@ -240,6 +234,20 @@ public class Country {
      */
     public Country[] getAdjacentCountries() {
         return adjacentCountries;
+    }
+    /**
+     * @return A list of adjacent countries owned by player
+     */
+    public Country[] getAdjacentOwnedCountries(Player player) {
+        ArrayList<Country> adjacentOwnedCountriesList=new ArrayList<>();
+        for(Country country: adjacentCountries){
+            if(country.getOwner()==player){
+                adjacentOwnedCountriesList.add(country);
+            }
+        }
+        Country[] adjacentOwnedCountries=new Country[adjacentOwnedCountriesList.size()];
+        adjacentOwnedCountries=adjacentOwnedCountriesList.toArray(adjacentOwnedCountries);
+        return adjacentOwnedCountries;
     }
     /**
      * @return A list of adjacent country IDs

@@ -8,46 +8,37 @@
 
 public class ActionContext {
     /** The current phase **/
-    public  Phase phase;
+    private Phase phase;
     /** The current player **/
-    public  Player player;
+    private Player player;
     /** The countries on the map that should be highlighted **/
-    public  Country[] highlightedCountries;
+    private Country[] highlightedCountries;
     /** Source country **/
-    public  Country srcCountry;
+    private Country srcCountry;
     /** Destination country **/
-    public  Country dstCountry;
+    private Country dstCountry;
     /** Source army size **/
-    public  int srcArmy;
+    private int srcArmy;
     /** Destination army size **/
-    public  int dstArmy;
+    private int dstArmy;
     /** Source army lost troops **/
-    public  int srcArmyDead;
+    private int srcArmyDead;
     /** Destination army lost troops **/
-    public  int dstArmyDead;
+    private int dstArmyDead;
     /** Whether or not the attacker won **/
-    public  boolean attackerVictory;
+    private boolean attackerVictory;
     /** The dice roll information **/
-    public  Integer diceRolls[][];
-    /**Troops moving at given time**/
-    public int movingTroops;
+    private Integer[][] diceRolls;
 
     /** Constructor for ActionContext **/
-    ActionContext(Phase phase, Player player){
+    public ActionContext(Phase phase, Player player){
         this.phase=phase;
         this.player=player;
     }
-    ActionContext(){
+    public ActionContext(){
         this.phase=Phase.NEW_GAME;
     }
 
-    /**
-     * sets the number of moving troops
-     * @param movingTroops
-     */
-    public void setMovingTroops(int movingTroops) {
-        this.movingTroops = movingTroops;
-    }
     /**
      * Setter for phase
      * @param phase the current phase of the risk game
@@ -70,7 +61,7 @@ public class ActionContext {
         this.highlightedCountries = highlightedCountries;
     }
     /**
-     * Setter for the country thats making an action
+     * Setter for the country that is making an action
      * @param srcCountry the country making an action
      */
     public void setSrcCountry(Country srcCountry) {
@@ -125,5 +116,39 @@ public class ActionContext {
      */
     public void setDiceRolls(Integer[][] diceRolls) {
         this.diceRolls = diceRolls;
+    }
+
+    public Phase getPhase() {
+        return phase;
+    }
+    public Player getPlayer() {
+        return player;
+    }
+    public Country[] getHighlightedCountries() {
+        return highlightedCountries;
+    }
+    public Country getSrcCountry() {
+        return srcCountry;
+    }
+    public Country getDstCountry() {
+        return dstCountry;
+    }
+    public int getSrcArmy() {
+        return srcArmy;
+    }
+    public int getDstArmy() {
+        return dstArmy;
+    }
+    public int getSrcArmyDead() {
+        return srcArmyDead;
+    }
+    public int getDstArmyDead() {
+        return dstArmyDead;
+    }
+    public boolean isAttackerVictory() {
+        return attackerVictory;
+    }
+    public Integer[][] getDiceRolls() {
+        return diceRolls;
     }
 }
