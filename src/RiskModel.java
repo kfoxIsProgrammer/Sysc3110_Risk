@@ -303,7 +303,7 @@ public class RiskModel {
             case ATTACK_DST:
             case ATTACK_ARMY:
             case ATTACK_CONFIRM:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
                 break;
             case RETREAT_ARMY:
                 /*retreat(this.actionContext.player,
@@ -316,10 +316,10 @@ public class RiskModel {
             case FORTIFY_DST:
             case FORTIFY_ARMY:
             case FORTIFY_CONFIRM:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                this.actionContext=new ActionContext(Phase.DEPLOY_DST,nextPlayer(this.actionContext.player));
                 break;
             case FORFEIT_CLICKED:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.player));
+                this.actionContext=new ActionContext(Phase.DEPLOY_DST,nextPlayer(this.actionContext.player));
                 break;
         }
         this.riskView.boardUpdate(this.actionContext);
@@ -400,7 +400,7 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.player);
                 break;
             case FORFEIT_CLICKED:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.player);
+                this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.player);
                 break;
         }
         this.riskView.boardUpdate(this.actionContext);
@@ -416,6 +416,9 @@ public class RiskModel {
                 menuConfirm();
                 break;
             case DEPLOY_ARMY:
+                this.actionContext.setDstArmy(numTroops);
+                actionContext.setPhase(Phase.DEPLOY_CONFIRM);
+                menuConfirm();
             case RETREAT_ARMY:
                 this.actionContext.setDstArmy(numTroops);
                 actionContext.setPhase(Phase.RETREAT_CONFIRM);
