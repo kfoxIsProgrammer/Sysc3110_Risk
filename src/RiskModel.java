@@ -464,69 +464,77 @@ public class RiskModel {
         int defendingArmy = defendingCountry.getArmy();
         int attackingArmy = unitsToAttack;
 
-        Integer[] attackRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
-        Integer[] defenderRolls = new Integer[Math.max(unitsToAttack, defendingCountry.getArmy())];
 
-        Random random = new Random();
-        //Get int array of dice rolls
-        for(int i=0; i< attackRolls.length; i++){
-            if(i <= unitsToAttack) {
+        ArrayList<Integer> rollsAttackerMade = new ArrayList<>();
+        ArrayList<Integer> rollsDefenderMade = new ArrayList<>();
+
+        while(attackingArmy > 0 && defendingArmy > 0) {
+            Integer[] defenderRolls = new Integer[defendingArmy < 2? defendingArmy: 2];
+            Integer[] attackRolls = new Integer[attackingArmy < 3? attackingArmy: 3];
+
+            Random random = new Random();
+
+            //Min of(attackers left alive, 3)
+            //vs
+            //Min of(defenders alive, 2)
+
+            //Allocate the dice rolls for attackers, maximum of 3 attacker rolls per 2 defenders
+            for (int i = 0; i < attackingArmy && i < 3; i++) {
                 attackRolls[i] = (random.nextInt(5) + 1);
-            }else{
-                attackRolls[i] = 0;
             }
-            if(i <= defendingCountry.getArmy()) {
+            //Allocate the dice rolls of the defenders, maximum of 2 defender rolls per 2 defenders
+            for (int i = 0; i < defendingArmy && i < 2; i++) {
                 defenderRolls[i] = (random.nextInt(5) + 1);
-            }else{
-                defenderRolls[i] = 0;
             }
-        }
 
-        //Sort each array in desc order
-        Arrays.sort(attackRolls, Collections.reverseOrder());
-        Arrays.sort(defenderRolls, Collections.reverseOrder());
+            //Sort each array in desc order
+            Arrays.sort(attackRolls, Collections.reverseOrder());
+            Arrays.sort(defenderRolls, Collections.reverseOrder());
 
-        Queue<Integer> attackersQueue = new LinkedList<>(Arrays.asList(attackRolls));
-        Queue<Integer> defenderQueue = new LinkedList<>(Arrays.asList(defenderRolls));
+            //Create the queue to check dice rolls from
+            Queue<Integer> attackersQueue = new LinkedList<>(Arrays.asList(attackRolls));
+            Queue<Integer> defenderQueue = new LinkedList<>(Arrays.asList(defenderRolls));
 
-        //Compare rolls until someone loses
-        for(int i=0; i< attackRolls.length; i++){
-            int attackVal = attackersQueue.peek();
-            int defendVal = defenderQueue.peek();
-            if((!attackersQueue.isEmpty() && !defenderQueue.isEmpty())
-                    && (attackingArmy >0 && defendingArmy>0)) {
-                if(attackVal > defendVal ){
+            //The Dice rolls comparisons
+            while (!defenderQueue.isEmpty() && !attackersQueue.isEmpty() && attackingArmy> 0 && defendingArmy>0) {
+                int attack = attackersQueue.remove();
+                int defence = defenderQueue.remove();
+                if (attack > defence) {
                     defendingArmy--;
-                }
-                else{
+                } else {
                     attackingArmy--;
                 }
-                defenderQueue.remove();
-                attackersQueue.remove();
+                //Add the dice rolls to the list to send to the view
+                rollsAttackerMade.add(attack);
+                rollsDefenderMade.add(defence);
             }
         }
 
-
-        //System.out.println(attackingArmy + " " +defendingArmy);
-
         //Send dice rolls
-        actionContext.setDiceRolls(new Integer[][]{attackRolls, defenderRolls});
+        actionContext.setDiceRolls(new Integer[][]{rollsAttackerMade.toArray(new Integer[rollsAttackerMade.size()]), rollsDefenderMade.toArray(new Integer[rollsDefenderMade.size()])});
 
-
-        this.actionContext.setSrcArmyDead(unitsToAttack-attackingArmy);
+        this.actionContext.setSrcArmyDead(unitsToAttack - attackingArmy);
         this.actionContext.setDstArmy(defendingCountry.getArmy());
         this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
 
+
         //Attacker wins
-        if(defendingArmy == 0){
+        if(defendingArmy <= 0){
+            defendingCountry.removeArmy(defendingCountry.getArmy());
+            attackingCountry.removeArmy(unitsToAttack-attackingArmy);
+
+            defendingCountry.getOwner().removeCountry(defendingCountry);
+            attackingCountry.getOwner().addCountry(defendingCountry);
+            defendingCountry.setOwner(attackingCountry.getOwner());
             this.actionContext.setAttackerVictory(true);
         }
         //Attacker loses
-        if(attackingArmy == 0){
+        if(attackingArmy <= 0){
+            attackingCountry.removeArmy(unitsToAttack);
+            defendingCountry.removeArmy(defendingCountry.getArmy() - defendingArmy);
             this.actionContext.setAttackerVictory(false);
         }
-        attackingCountry.removeArmy(unitsToAttack);
-        defendingCountry.removeArmy(defendingCountry.getArmy() - defendingArmy);
+
 
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
             if(gameIsOver()){
