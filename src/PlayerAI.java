@@ -19,58 +19,82 @@ public class PlayerAI extends Player{
     }
 
     public ActionContext getMove(ActionContext actionContext) {
-        this.actions = new ArrayList<>();
-        this.utilities = new ArrayList<>();
-        this.maxUtilityIndex = 0;
-        int maxUtility=0;
+        this.actions=new ArrayList<>();
+        this.utilities=new ArrayList<>();
+        this.maxUtilityIndex=0;
+        int maxUtility;
 
-        for (int i = 0; i < this.countries.size(); i++) {
-            Country country = this.countries.get(i);
+        switch (actionContext.getPhase()) {
+            case DEPLOY_DST:
+            case DEPLOY_ARMY:
+            case DEPLOY_CONFIRM:
+                maxUtility=Integer.MIN_VALUE;
 
-            switch (actionContext.getPhase()) {
-                case DEPLOY_DST:
-                case DEPLOY_ARMY:
-                case DEPLOY_CONFIRM:
-                    deployUtility(actionContext, country);
-                    break;
-                case ATTACK_SRC:
-                case ATTACK_DST:
-                case ATTACK_ARMY:
-                case ATTACK_CONFIRM:
-                    attackUtility(actionContext, country);
-                    break;
-                case RETREAT_ARMY:
-                case RETREAT_CONFIRM:
-                    retreatUtility(actionContext, country);
-                    break;
-                case FORTIFY_SRC:
-                case FORTIFY_DST:
-                case FORTIFY_ARMY:
-                case FORTIFY_CONFIRM:
-                    fortifyUtility(actionContext, country);
-                    break;
-                case NEW_GAME:
-                case GAME_OVER:
-                default:
-                    return null;
-            }
+                for(int i=0;i<countries.size();i++){
+                    Country[] dstCountries=countries.get(i).getAdjacentOwnedCountries(this);
+                    for(int j=0;j<dstCountries.length;j++){
+                        deployUtility(countries.get(i), dstCountries[j]);
 
-            if (utilities.get(i)>maxUtility) {
-                maxUtility=utilities.get(i);
-                maxUtilityIndex=i;
-            }
+                        if(utilities.get(utilities.size()-1)>maxUtility){
+                            this.maxUtilityIndex=utilities.size()-1;
+                        }
+                    }
+                }
+                return actions.get(maxUtilityIndex);
+            case ATTACK_SRC:
+            case ATTACK_DST:
+            case ATTACK_ARMY:
+            case ATTACK_CONFIRM:
+                maxUtility=Integer.MIN_VALUE;
+
+                for(int i=0;i<countries.size();i++){
+                    Country[] dstCountries=countries.get(i).getAdjacentUnownedCountries(this);
+                    for(int j=0;j<dstCountries.length;j++){
+                        attackUtility(countries.get(i), dstCountries[j]);
+
+                        if(utilities.get(utilities.size()-1)>maxUtility){
+                            this.maxUtilityIndex=utilities.size()-1;
+                        }
+                    }
+                }
+                return actions.get(maxUtilityIndex);
+            case RETREAT_ARMY:
+            case RETREAT_CONFIRM:
+                //TODO This
+                break;
+            case FORTIFY_SRC:
+            case FORTIFY_DST:
+            case FORTIFY_ARMY:
+            case FORTIFY_CONFIRM:
+                maxUtility=Integer.MIN_VALUE;
+
+                for(int i=0;i<countries.size();i++){
+                    ArrayList<Country> dstCountries=countries;
+                    for(int j=0;j<dstCountries.size();j++){
+                        //TODO Check if the countries are connected
+                        fortifyUtility(countries.get(i), dstCountries.get(j));
+
+                        if(utilities.get(utilities.size()-1)>maxUtility){
+                            this.maxUtilityIndex=utilities.size()-1;
+                        }
+                    }
+                }
+                return actions.get(maxUtilityIndex);
+            case NEW_GAME:
+            case GAME_OVER:
+            default:
+                return null;
         }
+
         return actions.get(maxUtilityIndex);
     }
 
-    private void deployUtility(ActionContext actionContext, Country country){
+    private void deployUtility(Country srcCountry, Country dstCountry){
         int utility;
+        ActionContext actionContext=new ActionContext(Phase.DEPLOY_CONFIRM, this);
 
         switch (this.difficulty){
             case BABY:
-                utility=country.getArmy();
-                utility+=country.getAdjacentOwnedCountries(actionContext.getPlayer()).length;
-                this.utilities.add(utility);
                 break;
             case EASY:
                 break;
@@ -80,7 +104,7 @@ public class PlayerAI extends Player{
                 break;
         }
     }
-    private void attackUtility(ActionContext actionContext, Country country){
+    private void attackUtility(Country srcCountry, Country dstCountry){
         switch (this.difficulty){
             case BABY:
                 break;
@@ -92,7 +116,7 @@ public class PlayerAI extends Player{
                 break;
         }
     }
-    private void retreatUtility(ActionContext actionContext, Country country){
+    private void retreatUtility(Country srcCountry, Country dstCountry){
         switch (this.difficulty){
             case BABY:
                 break;
@@ -104,7 +128,7 @@ public class PlayerAI extends Player{
                 break;
         }
     }
-    private void fortifyUtility(ActionContext actionContext, Country country){
+    private void fortifyUtility(Country srcCountry, Country dstCountry){
         switch (this.difficulty){
             case BABY:
                 break;

@@ -135,7 +135,8 @@ public class RiskModelTest extends TestCase {
      * Test that after selecting a source country that clicking invalid country will change phase back to looking for
      * source country.
      */
-    public void testClickingBackOutOfDstCountry() {
+    public void
+    testClickingBackOutOfDstCountry() {
         RiskModel test = new RiskModel(twoPlayers);
         Country sourceCountryToTest = null;
         ArrayList<Country> playerOwnedCountries = test.players[0].getCountries();

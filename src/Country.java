@@ -250,6 +250,20 @@ public class Country {
         return adjacentOwnedCountries;
     }
     /**
+     * @return A list of adjacent countries not owned by player
+     */
+    public Country[] getAdjacentUnownedCountries(Player player) {
+        ArrayList<Country> adjacentOwnedCountriesList=new ArrayList<>();
+        for(Country country: adjacentCountries){
+            if(country.getOwner()==player){
+                adjacentOwnedCountriesList.add(country);
+            }
+        }
+        Country[] adjacentOwnedCountries=new Country[adjacentOwnedCountriesList.size()];
+        adjacentOwnedCountries=adjacentOwnedCountriesList.toArray(adjacentOwnedCountries);
+        return adjacentOwnedCountries;
+    }
+    /**
      * @return A list of adjacent country IDs
      */
     public int[] getAdjacentCountryIDs() {
