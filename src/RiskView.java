@@ -31,6 +31,18 @@ public class RiskView extends JFrame implements ActionListener {
     private JLayeredPane mapLayeredPane;
     /** Layout for OptionPane that permits swapping views **/
     private CardLayout cardLayout;
+
+
+    private JPanel menuPanel;
+    private JLabel menuPrompt;
+    private JTextField menuText;
+    private JSlider menuSlider;
+    private JButton menuConfirm;
+    private JButton menuBack;
+    private JButton menuSkip;
+
+    private int mapHeight;
+
     private JPanel newGamePanel;
     private JSlider newGameNumPlayers;
     /** Card Layout subpanel for ATTACK_SRC phase **/
@@ -57,7 +69,7 @@ public class RiskView extends JFrame implements ActionListener {
     private JTextArea attackConfirmText;
     /** JTextPane for attackConfirmPanel **/
     private JTextArea dicePanelText;
-    /** Array of all Country objects in the map **/ //TODO use this for updating labels
+    /** Array of all Country objects in the map **/
     private final Country[] countryArray;
     /** JTextArea that gets updated as the game goes on **/
     private JTextArea infoArea;
@@ -100,6 +112,9 @@ public class RiskView extends JFrame implements ActionListener {
         gbc.gridx = 1;
         gbc.gridy = 0;
         add(sidePanel(mapContainer.getHeight()), gbc);
+
+        this.mapHeight=mapContainer.getHeight();
+        menuInit();
 
         pack();
         this.setVisible(true);
@@ -190,6 +205,24 @@ public class RiskView extends JFrame implements ActionListener {
         infoPanel.add(JP);
         return infoPanel;
     }
+
+    private void menuInit(){
+        GridBagLayout layout=new GridBagLayout();
+
+        menuPanel=new JPanel(layout);
+        menuPanel.setSize(300, mapHeight - 40);
+
+        menuPrompt=new JLabel("<html>Player:<br>Phase:<br></html>");
+        menuPrompt.setLayout(layout);
+        menuText=new JTextField("menu menu");
+        menuText.setLayout(layout);
+
+        //menuPanel.add(menuPrompt);
+        menuPanel.add(menuText);
+
+        this.add(menuPanel);
+    }
+
     /**
      * Creates the optionPanel, adjusted for a given height
      * @param height total height of the image
@@ -199,7 +232,6 @@ public class RiskView extends JFrame implements ActionListener {
         // cardLayout with other panels that change based on the current phase
         optionPanel = new JPanel();
         cardLayout = new CardLayout();
-
         optionPanel.setLayout(cardLayout);
         optionPanel.setSize(300, height - 40);
 
@@ -210,7 +242,7 @@ public class RiskView extends JFrame implements ActionListener {
         attackSrcText.setFocusable(false);
         attackSrcText.setLineWrap(true);
         attackSrcText.setWrapStyleWord(true);
-        attackSrcText.setOpaque(false);
+        //attackSrcText.setOpaque(false);
         attackSrcText.setSize(optionPanel.getSize());
         attackSrcPanel.add(attackSrcText);
         optionPanel.add(attackSrcPanel, Phase.ATTACK_SRC.toString());
@@ -222,7 +254,7 @@ public class RiskView extends JFrame implements ActionListener {
         attackDstText.setFocusable(false);
         attackDstText.setLineWrap(true);
         attackDstText.setWrapStyleWord(true);
-        attackDstText.setOpaque(false);
+        //attackDstText.setOpaque(false);
         attackDstText.setSize(optionPanel.getSize());
         attackDstPanel.add(attackDstText);
         optionPanel.add(attackDstPanel, Phase.ATTACK_DST.toString());
@@ -234,7 +266,7 @@ public class RiskView extends JFrame implements ActionListener {
         attackConfirmText.setWrapStyleWord(true);
         attackConfirmText.setText("Confirm attack on <dst> using <src>");
         attackConfirmText.setFocusable(false);
-        attackConfirmText.setOpaque(false);
+        //attackConfirmText.setOpaque(false);
         attackConfirmText.setSize(optionPanel.getSize());
         attackConfirmPanel.add(attackConfirmText);
         optionPanel.add(attackConfirmPanel, Phase.ATTACK_ARMY.toString());
@@ -258,7 +290,7 @@ public class RiskView extends JFrame implements ActionListener {
         dicePanelText.setFocusable(false);
         dicePanelText.setLineWrap(true);
         dicePanelText.setWrapStyleWord(true);
-        dicePanelText.setOpaque(false);
+        //dicePanelText.setOpaque(false);
         attackConfirmText.setSize(optionPanel.getSize());
         dicePanel.add(dicePanelText);
         optionPanel.add(dicePanel, Phase.RETREAT_ARMY.toString());
