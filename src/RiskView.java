@@ -327,9 +327,10 @@ public class RiskView extends JFrame implements ActionListener {
 
                 labelCountries(countryArray,true);
                 ((MapContainer) (mapContainer)).setActive(true);
+
                 try {
                     attackSrcPanelEdit(actionContext.getPlayer());
-                }catch(Exception e){
+                } catch (BadLocationException e) {
                     e.printStackTrace();
                 }
                 cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
@@ -361,10 +362,36 @@ public class RiskView extends JFrame implements ActionListener {
                 cardLayout.show(optionPanel, Phase.ATTACK_ARMY.toString());
                 confirmPhase.setEnabled(false);
 
-                int attackingTroops = numberSelectPanel(actionContext,"Select number of troops: ");
+                int attackingTroops = numberSelectPanel(actionContext,"Select the number of dice to attack with: ");
                 if (attackingTroops>0){
                     confirmPhase.setText("Attack with "+attackingTroops+" troops");
                     confirmPhase.setActionCommand(""+attackingTroops);
+                }else{
+                    confirmPhase.setText("select countries again");
+                    confirmPhase.setActionCommand("back");
+                }
+                confirmPhase.setEnabled(true);
+                confirmPhase.setVisible(true);
+                break;
+            case ATTACK_CONFIRM:
+                ((MapContainer) (mapContainer)).setActive(false);
+
+
+                cardLayout.show(optionPanel, Phase.ATTACK_ARMY.toString());
+                confirmPhase.setEnabled(false);
+                skipButton.setEnabled(false);
+                forfeitButton.setEnabled(false);
+
+                try {
+                    defendSrcPanelEdit(actionContext.getDstCountry().getOwner());
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+                cardLayout.show(optionPanel, Phase.ATTACK_SRC.toString());
+                int defendingTroops = numberSelectPanel(actionContext,"Select the number of dice to defend with: ");
+                if (defendingTroops>0){
+                    confirmPhase.setText("Defend with "+defendingTroops+" troops");
+                    confirmPhase.setActionCommand(""+defendingTroops);
                 }else{
                     confirmPhase.setText("select countries again");
                     confirmPhase.setActionCommand("back");
@@ -438,7 +465,12 @@ public class RiskView extends JFrame implements ActionListener {
     private void attackSrcPanelEdit(Player player) throws BadLocationException {
         attackSrcText.getHighlighter().removeAllHighlights();
         attackSrcText.setText(player.getName() + ", select attacking country from map");
-        attackSrcText.getHighlighter().addHighlight(0,player.getName().length(), new DefaultHighlighter.DefaultHighlightPainter(player.getColor()));
+        attackSrcText.getHighlighter().addHighlight(0, player.getName().length(), new DefaultHighlighter.DefaultHighlightPainter(player.getColor()));
+    }
+    private void defendSrcPanelEdit(Player player) throws BadLocationException {
+        attackSrcText.getHighlighter().removeAllHighlights();
+        attackSrcText.setText(player.getName() + ", select units to defend");
+        attackSrcText.getHighlighter().addHighlight(0, player.getName().length(), new DefaultHighlighter.DefaultHighlightPainter(player.getColor()));
     }
     /**
      * edits the text in attackSrcPanel based on the country attacking
@@ -457,7 +489,13 @@ public class RiskView extends JFrame implements ActionListener {
      */
     private void attackConfirmPanelEdit(Country dstCountry, Country srcCountry) {
         if(!isNull(dstCountry)) {
-            attackConfirmText.setText("Confirm attack on " + dstCountry.getName() + " using " + srcCountry.getName());
+            attackConfirmText.getHighlighter().removeAllHighlights();
+            attackConfirmText.setText(srcCountry.getOwner().getName()+" Confirm attack on " + dstCountry.getName() + " using " + srcCountry.getName());
+            try {
+                attackConfirmText.getHighlighter().addHighlight(0,srcCountry.getOwner().getName().length(), new DefaultHighlighter.DefaultHighlightPainter(srcCountry.getOwner().getColor()));
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
         }
     }
     /**
@@ -555,7 +593,7 @@ public class RiskView extends JFrame implements ActionListener {
         switch (actionContext.getPhase()) {
             case ATTACK_ARMY:
                 if (actionContext.getSrcCountry().getArmy() >= 3) {
-                    slider.setMaximum(actionContext.getSrcCountry().getArmy() - 1);
+                    slider.setMaximum(actionContext.getSrcCountry().getArmy()>3? 3: actionContext.getSrcCountry().getArmy()-1);
                     slider.setMinimum(1);
                     JDialog dialog = numberPane.createDialog(troopSelectPanel, "Select attacking troops");
                     dialog.setVisible(true);
@@ -572,6 +610,24 @@ public class RiskView extends JFrame implements ActionListener {
                     } else { //no troops to attack
                         return -1;
                     }
+                } else {
+                    JOptionPane.showMessageDialog(f, "No troops to use");
+                    return -1;
+                }
+            case ATTACK_CONFIRM:
+                if (actionContext.getDstCountry().getArmy() > 1) {
+                    slider.setMaximum(actionContext.getDstCountry().getArmy()>=2? 2: 1);
+                    slider.setMinimum(1);
+                    JDialog dialog = numberPane.createDialog(troopSelectPanel, "Select Defending troops");
+                    dialog.setVisible(true);
+
+                    if (!isNull(numberPane.getValue()) && (Integer) numberPane.getValue() == JOptionPane.OK_OPTION) {
+                        return (sliderUsed.get()) ? Integer.parseInt((numberPane.getInputValue().toString())) : 0;
+                    }else if (actionContext.getDstCountry().getArmy() == 1) { // 1 troop to attack
+                        JOptionPane.showMessageDialog(f, "Defending with 1 troop?");
+                        return 1;
+                        }
+
                 } else {
                     JOptionPane.showMessageDialog(f, "No troops to use");
                     return -1;

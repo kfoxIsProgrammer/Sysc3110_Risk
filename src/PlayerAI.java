@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 public class PlayerAI extends Player{
     private enum Difficulty{
@@ -12,6 +14,8 @@ public class PlayerAI extends Player{
     private ArrayList<ActionContext> actions;
     private ArrayList<Integer> utilities;
     private int maxUtilityIndex;
+    private ArrayList<ActionContext> lowerPriority = new ArrayList<>();
+    private ArrayList<ActionContext> higherPriority = new ArrayList<>();
 
     public PlayerAI(String name, Color color, int armiesToAllocate) {
         super(name,color,true);
@@ -99,6 +103,22 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
+                ActionContext priorityContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
+                //If you are in a potential losing state
+                if(srcCountry.getArmy() < dstCountry.getArmy()) {
+                    if (dstCountry.getArmy() - srcCountry.getArmy() >= this.getArmiesToAllocate()) {
+                        priorityContext.setSrcArmy(dstCountry.getArmy() - srcCountry.getArmy() + 1);
+                        priorityContext.setDstCountry(dstCountry);
+                        this.higherPriority.add(priorityContext);
+                    }
+                }
+                    else
+                    //You are in a slightly less potential of a losing state
+                        if(dstCountry.getArmy() - srcCountry.getArmy() >= this.getArmiesToAllocate()){
+                            priorityContext.setSrcArmy(dstCountry.getArmy()-srcCountry.getArmy()+1);
+                            priorityContext.setDstCountry(dstCountry);
+                            this.lowerPriority.add(priorityContext);
+                }
                 break;
             case HARD:
                 break;
@@ -111,6 +131,21 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
+                ActionContext priorityContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
+                        //Advantage state add to high priority
+                        if(srcCountry.getArmy() > dstCountry.getArmy()){
+                            priorityContext.setSrcCountry(srcCountry);
+                            priorityContext.setSrcArmy(srcCountry.getArmy()>2? 3 : srcCountry.getArmy());
+                            priorityContext.setDstCountry(dstCountry);
+                            higherPriority.add(priorityContext);
+                        }
+                        else
+                        {
+                            priorityContext.setSrcCountry(srcCountry);
+                            priorityContext.setSrcArmy(srcCountry.getArmy()>2? 3 : srcCountry.getArmy());
+                            priorityContext.setDstCountry(dstCountry);
+                            lowerPriority.add(priorityContext);
+                        }
                 break;
             case HARD:
                 break;
