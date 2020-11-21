@@ -101,6 +101,20 @@ public class PlayerAI extends Player{
             case MEDIUM:
                 break;
             case HARD:
+                for(Country ownedCountry:this.getCountries()){
+                    for(Country adjacentCountry: ownedCountry.getAdjacentUnownedCountries(this)){
+                        actionContext.setDstCountry(ownedCountry);
+                        int troopsDiff=adjacentCountry.getArmy()-ownedCountry.getArmy()+adjacentCountry.getAdjacentOwnedCountries(this).length-1;
+                        if(troopsDiff<armiesToAllocate) {
+                            actionContext.setSrcArmy(troopsDiff);
+                            utility = troopsDiff;
+                            utilities.add(utility);
+                            actions.add(actionContext);
+                        }else{
+                            actionContext.setPhase(Phase.ATTACK_SRC);
+                        }
+                    }
+                }
                 break;
         }
     }
