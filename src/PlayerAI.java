@@ -140,18 +140,5 @@ public class PlayerAI extends Player{
                 break;
         }
     }
-    private void allocateBonusTroops(Player user){
-        boolean willTroopsBeAssigned;
-        for (Continent cont: continents){
-            willTroopsBeAssigned = true;
-            for(Country count: cont.countryList){
-                if (!user.countries.contains(count)){ willTroopsBeAssigned = false;}
 
-            }
-            if(willTroopsBeAssigned){
-                user.addArmyToAllocate(cont.bonusArmyValue);
-            }
-        }
-
-    }
 }
