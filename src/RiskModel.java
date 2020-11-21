@@ -614,7 +614,7 @@ public class RiskModel {
 
             }
             if(willTroopsBeAssigned){
-                user.addArmyToAllocate(this.map.getContinents()[i].getBonusArmyValue());
+                user.addArmyToAllocate(cont.getBonusArmyValue());
             }
         }
 
