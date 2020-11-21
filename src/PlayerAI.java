@@ -163,8 +163,13 @@ public class PlayerAI extends Player {
             case MEDIUM:
                 break;
             case HARD:
-                if (srcCountry.getAdjacentOwnedCountries(this).length == srcCountry.getAdjacentCountries().length&&srcCountry.getArmy()>3){
-                    utility
+                if (srcCountry.getAdjacentOwnedCountries(this).length == srcCountry.getAdjacentCountries().length && dstCountry.getAdjacentCountries().length!=dstCountry.getAdjacentOwnedCountries(this).length &&srcCountry.getArmy()>3){
+                    utility = srcCountry.getArmy()-dstCountry.getArmy()-3;
+                    actionContext.setSrcCountry(srcCountry);
+                    actionContext.setDstCountry(dstCountry);
+                    actionContext.setSrcArmy(utility);
+                    utilities.add(utility);
+                    actions.add(actionContext);
                 }
                 break;
         }
