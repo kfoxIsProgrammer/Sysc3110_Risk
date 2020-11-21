@@ -605,16 +605,16 @@ public class RiskModel {
         }
         return toTest;
     }
-    private void allocateBonusTroops(Player user, ArrayList<Continent> continents){
-        boolean willTroopsBeAssigned;
-        for (Continent cont: continents){
+    public void allocateBonusTroops(Player user){
+        boolean willTroopsBeAssigned = true;
+        for (Continent cont : this.map.getContinents()){
             willTroopsBeAssigned = true;
-            for(Country count: cont.countryList){
+            for(Country count: cont.getCountryList()){
                 if (!user.countries.contains(count)){ willTroopsBeAssigned = false;}
 
             }
             if(willTroopsBeAssigned){
-                user.addArmyToAllocate(cont.bonusArmyValue);
+                user.addArmyToAllocate(this.map.getContinents()[i].getBonusArmyValue());
             }
         }
 

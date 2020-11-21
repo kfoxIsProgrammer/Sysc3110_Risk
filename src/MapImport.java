@@ -118,6 +118,7 @@ public class MapImport {
             country.setCenterCoordinates(new Point(avgX,avgY));
         }
 
+
         System.out.printf("Map data loaded\n");
         return true;
     }

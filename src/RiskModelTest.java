@@ -362,4 +362,29 @@ public class RiskModelTest extends TestCase {
         assertEquals(0, toTest.size());
 
     }
-}
+    public void testAllocateBonusUnits() {
+        RiskModel test = new RiskModel(twoPlayers);
+        Stack <Country> toTest = new Stack();
+        test.players[0].getCountries().clear();
+        test.players[1].getCountries().clear();
+        assertEquals(0, test.players[0].getArmiesToAllocate());
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
+        for( int i  = 0; i < 8; i++){
+            test.players[0].addCountry(test.map.getCountries()[i]);//add Western australia
+            test.map.getCountries()[i].setOwner(test.players[0]);
+
+        }
+        assertEquals(9, test.map.getContinents()[0].getCountryList().length);
+        test.allocateBonusTroops(test.players[0]);
+        assertEquals(10,test.map.getContinents()[0].getBonusArmyValue());
+        assertEquals(5,test.players[0].armiesToAllocate);
+
+
+
+
+    }
+
+
+    }
