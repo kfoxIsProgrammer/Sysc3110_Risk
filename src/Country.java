@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**Describing a country on the map in a game of RISK
  *
@@ -280,5 +281,18 @@ public class Country {
      */
     public int getArmy() {
         return army;
+    }
+
+    public boolean isConnected(Country country) {
+        return getConnectedCountries(this,this,new Stack<Country>()).contains(country);
+    }
+    public Stack<Country> getConnectedCountries(Country sourceCountry,Country root, Stack<Country> toTest){
+        for(Country count: sourceCountry.getAdjacentCountries()){
+            if(toTest.contains(count) && count != root){
+                toTest.add(count);
+                return(getConnectedCountries(count,root,toTest));
+            }
+        }
+        return toTest;
     }
 }
