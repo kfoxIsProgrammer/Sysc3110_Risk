@@ -605,7 +605,7 @@ public class RiskModel {
         }
         return toTest;
     }
-    public void allocateBonusTroops(Player user){
+    /*public void allocateBonusTroops(Player user){
         boolean willTroopsBeAssigned;
         for (Continent cont : this.map.getContinents()){
             willTroopsBeAssigned = true;
@@ -619,7 +619,7 @@ public class RiskModel {
             }
         }
 
-    }
+    }*/
 
 
     public static void main(String[] args) {

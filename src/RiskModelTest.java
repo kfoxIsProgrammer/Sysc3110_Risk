@@ -362,7 +362,7 @@ public class RiskModelTest extends TestCase {
         assertEquals(0, toTest.size());
 
     }
-    public void testAllocateBonusUnits() {
+    /*public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
         test.players[0].getCountries().clear();
         test.players[1].getCountries().clear();
@@ -387,7 +387,7 @@ public class RiskModelTest extends TestCase {
 
 
 
-    }
+    }*/
 
 
     }
