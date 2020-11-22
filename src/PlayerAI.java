@@ -16,8 +16,9 @@ public class PlayerAI extends Player {
     private int continentIndexToFocus;
     private Continent[] continents;
 
-    public PlayerAI(String name, Color color, int armiesToAllocate) {
+    public PlayerAI(String name, Color color, int armiesToAllocate, Continent[] continents) {
         super(name, color, true);
+        this.continents = continents;
         this.armiesToAllocate = armiesToAllocate;
     }
     public boolean isItOptimalContinent(Country focalCountry){
