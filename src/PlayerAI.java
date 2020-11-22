@@ -72,7 +72,6 @@ public class PlayerAI extends Player {
                 for (int i = 0; i < countries.size(); i++) {
                     ArrayList<Country> dstCountries = countries;
                     for (int j = 0; j < dstCountries.size(); j++) {
-                        //TODO Check if the countries are connected
                         if((countries.get(i).getOwner().equals(dstCountries.get(j).getOwner())) && (countries.get(i).isConnected(dstCountries.get(j)))){
                             fortifyUtility(countries.get(i), dstCountries.get(j));
                         }
