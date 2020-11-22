@@ -8,6 +8,8 @@
 public enum Phase {
     /** New Game**/
     NEW_GAME,
+    NUM_PLAYERS,
+    PLAYER_NAME,
     /** Game over **/
     GAME_OVER,
     /** Deploy phase selecting a source country **/

@@ -16,8 +16,12 @@ public class RiskModel {
     ActionContext actionContext;
     /** The current risk view**/
     RiskView riskView;
+    tempView view;
     /** The current RiskController**/
     RiskController riskController;
+    int numPlayers;
+    String textBuffer;
+    int numBuffer;
 
     /**
      * 1 param constructor for testing purposes
@@ -29,7 +33,7 @@ public class RiskModel {
 
         this.riskController=new RiskController(this);
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.map.getCountries());
-        newGameStart(names);
+        newGame(names);
         this.riskView.boardUpdate(this.actionContext);
     }
 
@@ -42,18 +46,73 @@ public class RiskModel {
         this.riskView=new RiskView(this.riskController,map.getMapImage(),this.map.getCountries());
         this.riskView.boardUpdate(this.actionContext);
     }
+    public void newGameTemp(){
+    }
+    private boolean newPlayer(String name){
+        Color[] playerColors={
+                new Color(200, 150, 0),
+                new Color(125, 125, 125),
+                new Color(255, 0  , 0),
+                new Color(0  , 255, 0),
+                new Color(255, 0  , 255),
+                new Color(0  , 255, 255)
+        };
+
+        int startingArmySize=
+                numPlayers==2?
+                        50:
+                        50-5*numPlayers;
+
+        players=new Player[numPlayers];
+        for(int i = 0; i < numPlayers; i++){
+            if(players[i]==null){
+                players[i]=new PlayerHuman(name,playerColors[i],startingArmySize);
+                return false;
+            }
+        }
+        //Only gets here if all players are made
+        allocateCountries();
+        return true;
+    }
+    private void allocateCountries(){
+        Random rand = new Random(System.currentTimeMillis());
+
+        //make randomized list of the countries
+        ArrayList<Country> ran = new ArrayList<>();
+        Collections.addAll(ran,this.map.getCountries());
+        Collections.shuffle(ran, rand);
+
+        Stack<Country> addStack = new Stack<>();
+        addStack.addAll(ran);
+        //Splits up the countries amongst players
+        while(!addStack.empty()){
+            for(Player play: players){
+                if(!addStack.empty()){
+                    play.addCountry(addStack.peek());
+                    addStack.peek().setArmy(1);
+                    play.removeArmy(1);
+                    addStack.pop().setOwner(play);
+                }
+            }
+        }
+        for(Player player: players){
+            while (player.getArmiesToAllocate() > 0){
+                ArrayList<Country> temp = player.getCountries();
+                Collections.shuffle(temp,rand);
+                for(Country count: temp){
+                    if (player.getArmiesToAllocate() >0) {
+                        count.addArmy(1);
+                        player.removeArmy(1);
+                    }
+                }
+            }
+        }
+        this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
+    }
 
     /** Very important method... can't remove **/
     public void newGame(String[] playerNames){
-        newGameStart(playerNames);
-    }
-
-    /**
-     * This is the method that starts the game
-     * @param namesToProcess the string array of player names
-     */
-    public void newGameStart(String[] namesToProcess){
-        newGamePlayerCreator(namesToProcess);
+        newGamePlayerCreator(playerNames);
         this.riskView.boardUpdate(this.actionContext);
     }
     /**
@@ -65,6 +124,7 @@ public class RiskModel {
         newGamePlayerCreator(playerNames);
         this.riskView.boardUpdate(this.actionContext);
     }
+
     /**
      * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
      *
@@ -83,10 +143,10 @@ public class RiskModel {
         };
 
         //Determines starting army size which depends on amount of players
-        if (playerNames.length == 2) {
+        if (numPlayers == 2) {
             startingArmySize = 50;
         } else {
-            startingArmySize = (50) - 5 * playerNames.length;
+            startingArmySize = (50) - 5 * numPlayers;
         }
 
         players=new Player[playerNames.length];
@@ -123,9 +183,6 @@ public class RiskModel {
                 }
             }
         }
-        //Country[] countriesArray=new Country[ran.size()];
-        //countriesArray = ran.toArray(countriesArray);
-        //this.countries=countriesArray;
         this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
     }
 
@@ -289,6 +346,12 @@ public class RiskModel {
         }
         this.riskView.boardUpdate(this.actionContext);
     }
+    public void textEntered(String text){
+        textBuffer=text;
+    }
+    public void sliderMoved(int num){
+        numBuffer=num;
+    }
     /**
      * Method used to deal with when the user clicks the skip button
      */
@@ -325,6 +388,16 @@ public class RiskModel {
     public void menuConfirm(){
         //TODO error checking
         switch (this.actionContext.getPhase()) {
+            case NUM_PLAYERS:
+                this.numPlayers=numBuffer;
+                this.actionContext=new ActionContext(Phase.PLAYER_NAME,null);
+                System.out.printf("ass %d\n",numBuffer);
+                break;
+            case PLAYER_NAME:
+                if(newPlayer(textBuffer)){
+                    this.actionContext=new ActionContext(Phase.DEPLOY_DST,players[0]);
+                }
+                break;
             case DEPLOY_CONFIRM:
                 if(deploy(this.actionContext.getPlayer(),
                         this.actionContext.getDstCountry(),
@@ -423,6 +496,9 @@ public class RiskModel {
         }
     }
 
+
+
+
     /**
      * Method that performs the Deploy action. The player is able to deploy troops they have to any owned country.
      * @param  player the Player object that is doing the action
@@ -460,8 +536,8 @@ public class RiskModel {
         ArrayList<Integer> rollsDefenderMade = new ArrayList<>();
 
         while(attackingArmy > 0 && defendingArmy > 0) {
-            Integer[] defenderRolls = new Integer[defendingArmy < 2? defendingArmy: 2];
-            Integer[] attackRolls = new Integer[attackingArmy < 3? attackingArmy: 3];
+            Integer[] defenderRolls = new Integer[Math.min(defendingArmy, 2)];
+            Integer[] attackRolls = new Integer[Math.min(attackingArmy, 3)];
 
             Random random = new Random();
 

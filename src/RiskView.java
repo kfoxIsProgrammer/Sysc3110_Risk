@@ -34,7 +34,7 @@ public class RiskView extends JFrame implements ActionListener {
 
 
     private JPanel menuPanel;
-    private JLabel menuPrompt;
+    private JTextArea menuPrompt;
     private JTextField menuText;
     private JSlider menuSlider;
     private JButton menuConfirm;
@@ -88,7 +88,6 @@ public class RiskView extends JFrame implements ActionListener {
      * @param countries Array of all countries on the map
      */
     public RiskView(RiskController controller, BufferedImage modelMapImage, Country[] countries){
-        //TODO info update , use country.getCentercoords
         mapImage = modelMapImage;
         riskController = controller;
         countryArray = countries;
@@ -114,7 +113,6 @@ public class RiskView extends JFrame implements ActionListener {
         add(sidePanel(mapContainer.getHeight()), gbc);
 
         this.mapHeight=mapContainer.getHeight();
-        menuInit();
 
         pack();
         this.setVisible(true);
@@ -185,7 +183,7 @@ public class RiskView extends JFrame implements ActionListener {
 
         sidePanel.add(buttonPanel,BorderLayout.SOUTH);
 
-        sidePanel.setSize(new Dimension(300, height));
+        sidePanel.setSize(500, height);
 
         return sidePanel;
     }
@@ -205,24 +203,6 @@ public class RiskView extends JFrame implements ActionListener {
         infoPanel.add(JP);
         return infoPanel;
     }
-
-    private void menuInit(){
-        GridBagLayout layout=new GridBagLayout();
-
-        menuPanel=new JPanel(layout);
-        menuPanel.setSize(300, mapHeight - 40);
-
-        menuPrompt=new JLabel("<html>Player:<br>Phase:<br></html>");
-        menuPrompt.setLayout(layout);
-        menuText=new JTextField("menu menu");
-        menuText.setLayout(layout);
-
-        //menuPanel.add(menuPrompt);
-        menuPanel.add(menuText);
-
-        this.add(menuPanel);
-    }
-
     /**
      * Creates the optionPanel, adjusted for a given height
      * @param height total height of the image

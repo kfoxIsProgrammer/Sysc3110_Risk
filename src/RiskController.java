@@ -1,3 +1,6 @@
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,13 +11,16 @@ import java.awt.event.MouseEvent;
  * @author Kevin Fox
  * @version 11.09.2020
  */
-public class RiskController implements ActionListener{
+public class RiskController implements ActionListener, ChangeListener {
     /** The model to send commands to **/
     private final RiskModel riskModel;
 
     /** Constructor for RiskController **/
     public RiskController(RiskModel model){
         this.riskModel = model;
+    }
+    public RiskController(){
+        this.riskModel=new RiskModel(new String[]{"Volvo", "BMW", "Ford", "Mazda"});
     }
     /** Handles the new game event **/
 
@@ -51,6 +57,17 @@ public class RiskController implements ActionListener{
         }
         else if(isInt(e.getActionCommand())){
             riskModel.menuNumTroops(Integer.parseInt(e.getActionCommand()));
+        }
+        else if(e.getActionCommand().equals(Phase.NUM_PLAYERS.name())){
+            riskModel.menuConfirm();
+        }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        JSlider source = (JSlider) e.getSource();
+        if (!source.getValueIsAdjusting()) {
+            riskModel.sliderMoved(source.getValue());
         }
     }
 }
