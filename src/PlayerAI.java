@@ -14,12 +14,13 @@ public class PlayerAI extends Player {
     private ArrayList<Integer> utilities;
     private int maxUtilityIndex;
     private int continentIndexToFocus;
+    private Continent[] continents;
 
     public PlayerAI(String name, Color color, int armiesToAllocate) {
         super(name, color, true);
         this.armiesToAllocate = armiesToAllocate;
     }
-    public boolean isItOptimalContinent(Continent[] continents,  Country sourceCountry){
+    public boolean isItOptimalContinent(Country focalCountry){
         int[] continentValue = new int[continents.length];
         int maxContinentIndex = 0;
         for(int value: continentValue){
@@ -28,12 +29,15 @@ public class PlayerAI extends Player {
         for(Country count: this.countries){
             continentValue[count.getContinentId()] ++;
         }
+
         for(int i = 0; i < continentValue.length; i++){
-            if(continentValue[i] > continentValue[maxContinentIndex]){
+            if(continentValue[i] > continentValue[maxContinentIndex] && continentValue[i] != continents[i].getCountryList().length ){
                 maxContinentIndex = i;
             }
+
         }
-        if (sourceCountry.getContinentId() == maxContinentIndex){
+
+        if (focalCountry.getContinentId() == maxContinentIndex){
             return true;
         }
         else {return false;}
@@ -118,6 +122,15 @@ public class PlayerAI extends Player {
             case EASY:
                 break;
             case MEDIUM:
+                utility = 0;
+                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+                for(Country count: dstCountry.getAdjacentCountries()){
+                    if(count.getOwner() != this){utility += 1; }
+                }
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setDstCountry(dstCountry);
+                utilities.add(utility);
+                actions.add(actionContext);
                 break;
             case HARD:
                 actionContext.setDstCountry(srcCountry);
@@ -141,6 +154,20 @@ public class PlayerAI extends Player {
             case EASY:
                 break;
             case MEDIUM:
+                utility = 0;
+                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+                for(Country count: srcCountry.getAdjacentCountries()){
+                    if(count.getOwner() == this){utility += 1; }
+                }
+                for(Country count: dstCountry.getAdjacentCountries()){
+                    if(count.getOwner() == this){utility += 1; }
+                }
+                if((srcCountry.getArmy() - dstCountry.getArmy()) > 1){utility+=5;}
+                utility+= srcCountry.getArmy();
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setDstCountry(dstCountry);
+                utilities.add(utility);
+                actions.add(actionContext);
                 break;
             case HARD:
                 if(srcCountry.getArmy()>=dstCountry.getArmy() && srcCountry.getArmy()!=1){
@@ -180,6 +207,20 @@ public class PlayerAI extends Player {
             case EASY:
                 break;
             case MEDIUM:
+                utility = 0;
+                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+                for(Country count: srcCountry.getAdjacentCountries()){
+                    if(count.getOwner() == this){utility += 1; }
+                }
+                for(Country count: dstCountry.getAdjacentCountries()){
+                    if(count.getOwner() != this){utility += 1; }
+                }
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setDstCountry(dstCountry);
+                utilities.add(utility);
+                actions.add(actionContext);
+
+
                 break;
             case HARD:
                 if (srcCountry.getAdjacentOwnedCountries(this).length == srcCountry.getAdjacentCountries().length && dstCountry.getAdjacentCountries().length!=dstCountry.getAdjacentOwnedCountries(this).length &&srcCountry.getArmy()>3){
