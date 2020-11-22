@@ -13,12 +13,31 @@ public class PlayerAI extends Player {
     private ArrayList<ActionContext> actions;
     private ArrayList<Integer> utilities;
     private int maxUtilityIndex;
+    private int continentIndexToFocus;
 
     public PlayerAI(String name, Color color, int armiesToAllocate) {
         super(name, color, true);
         this.armiesToAllocate = armiesToAllocate;
     }
-
+    public boolean isItOptimalContinent(Continent[] continents,  Country sourceCountry){
+        int[] continentValue = new int[continents.length];
+        int maxContinentIndex = 0;
+        for(int value: continentValue){
+            value = 0;
+        }
+        for(Country count: this.countries){
+            continentValue[count.getContinentId()] ++;
+        }
+        for(int i = 0; i < continentValue.length; i++){
+            if(continentValue[i] > continentValue[maxContinentIndex]){
+                maxContinentIndex = i;
+            }
+        }
+        if (sourceCountry.getContinentId() == maxContinentIndex){
+            return true;
+        }
+        else {return false;}
+    }
     public ActionContext getMove(ActionContext actionContext) {
         this.actions = new ArrayList<>();
         this.utilities = new ArrayList<>();
