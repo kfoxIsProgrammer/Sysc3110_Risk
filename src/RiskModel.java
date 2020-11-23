@@ -605,7 +605,12 @@ public class RiskModel {
         }
         return toTest;
     }
-    /*public void allocateBonusTroops(Player user){
+
+    /**
+     * Method that checks whether a player owns an entire continent and if they do they get bonus troops to deploy
+     * @param user the player that is gaining the countries
+     */
+    public void allocateBonusTroops(Player user){
         boolean willTroopsBeAssigned;
         for (Continent cont : this.map.getContinents()){
             willTroopsBeAssigned = true;
@@ -613,11 +618,9 @@ public class RiskModel {
                 if (!user.countries.contains(this.map.getCountries()[count])){ willTroopsBeAssigned = false; }
 
             }
-        }else {
-            actionContext.setPhase(Phase.FORFEIT_CLICKED);
         }
         this.riskView.boardUpdate(this.actionContext);
-    }*/
+    }
 
     public static void main(String[] args) {
         new RiskModel();
