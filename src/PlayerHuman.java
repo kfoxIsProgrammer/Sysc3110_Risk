@@ -1,8 +1,8 @@
 import java.awt.*;
 
 public class PlayerHuman extends Player{
-    protected PlayerHuman(String name, Color color, int armiesToAllocate) {
-        super(name, color, false);
+    protected PlayerHuman(String name, Color color, int armiesToAllocate, int playerId) {
+        super(name, color, false,playerId);
         this.armiesToAllocate=armiesToAllocate;
     }
 }

@@ -16,7 +16,6 @@ public class RiskModel {
     ActionContext actionContext;
     /** The current risk view**/
     RiskView riskView;
-    tempView view;
     /** The current RiskController**/
     RiskController riskController;
     int numPlayers;
@@ -32,30 +31,31 @@ public class RiskModel {
         this.actionContext=new ActionContext(Phase.NEW_GAME,null);
 
         this.riskController=new RiskController(this);
-        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.map.getCountries());
+        this.riskView=new RiskView(this.riskController,map);
         newGame(names);
-        this.riskView.boardUpdate(this.actionContext);
+        this.riskView.update(this.actionContext);
     }
 
     /** Constructor of Risk Model*/
     private RiskModel(){
         this.map=new MapImport("maps/demo.zip").getMap();
-        this.actionContext=new ActionContext(Phase.NEW_GAME,null);
+        this.actionContext=new ActionContext(Phase.NUM_PLAYERS,null);
 
         this.riskController=new RiskController(this);
-        this.riskView=new RiskView(this.riskController,map.getMapImage(),this.map.getCountries());
-        this.riskView.boardUpdate(this.actionContext);
+        this.riskView=new RiskView(this.riskController,map);
+        this.riskView.update(this.actionContext);
     }
     public void newGameTemp(){
+        
     }
     private boolean newPlayer(String name){
         Color[] playerColors={
-                new Color(200, 150, 0),
-                new Color(125, 125, 125),
+                new Color(255, 102, 0),
+                new Color(81, 119, 241),
                 new Color(255, 0  , 0),
                 new Color(0  , 255, 0),
-                new Color(255, 0  , 255),
-                new Color(0  , 255, 255)
+                new Color(255, 0, 255),
+                new Color(0, 255, 255)
         };
 
         int startingArmySize=
@@ -63,16 +63,18 @@ public class RiskModel {
                         50:
                         50-5*numPlayers;
 
-        players=new Player[numPlayers];
-        for(int i = 0; i < numPlayers; i++){
-            if(players[i]==null){
-                players[i]=new PlayerHuman(name,playerColors[i],startingArmySize);
-                return false;
-            }
+        int i=actionContext.getPlayerId();
+        players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i);
+
+        //All players added
+        if(i==numPlayers-1){
+            allocateCountries();
+            return true;
         }
-        //Only gets here if all players are made
-        allocateCountries();
-        return true;
+        //More players need to be added
+        else{
+            return false;
+        }
     }
     private void allocateCountries(){
         Random rand = new Random(System.currentTimeMillis());
@@ -95,6 +97,11 @@ public class RiskModel {
                 }
             }
         }
+        this.actionContext=new ActionContext(Phase.DEPLOY_DST, this.players[0]);
+    }
+    private void allocateArmies(){
+        Random rand = new Random(System.currentTimeMillis());
+
         for(Player player: players){
             while (player.getArmiesToAllocate() > 0){
                 ArrayList<Country> temp = player.getCountries();
@@ -107,13 +114,12 @@ public class RiskModel {
                 }
             }
         }
-        this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
     }
 
     /** Very important method... can't remove **/
     public void newGame(String[] playerNames){
         newGamePlayerCreator(playerNames);
-        this.riskView.boardUpdate(this.actionContext);
+        riskView.update(this.actionContext);
     }
     /**
      * Method to process the names sent from the view
@@ -122,7 +128,7 @@ public class RiskModel {
      */
     public void newGameNameProcessor(String[] playerNames){
         newGamePlayerCreator(playerNames);
-        this.riskView.boardUpdate(this.actionContext);
+        riskView.update(this.actionContext);
     }
 
     /**
@@ -151,7 +157,7 @@ public class RiskModel {
 
         players=new Player[playerNames.length];
         for(int i = 0; i < playerNames.length; i++){
-            players[i]=new PlayerHuman(playerNames[i], colorsToAllocate[i], startingArmySize);
+            players[i]=new PlayerHuman(playerNames[i], colorsToAllocate[i], startingArmySize,i);
         }
 
         //make randomized list of the countries
@@ -270,7 +276,7 @@ public class RiskModel {
             //Error no more players call game is over
             if(this.players[nextIndex].equals(player)){
                 gameIsOver();
-                this.riskView.boardUpdate(this.actionContext);
+                riskView.update(this.actionContext);
                 return null;
             }
         }
@@ -297,10 +303,9 @@ public class RiskModel {
         System.out.printf("(%d,%d):\t",point.x,point.y);
         if(clickedCountry==null){
             System.out.printf("No Country\n");
-            //menuBack();
+            menuBack();
             return;
         }
-        //TODO error checking
         System.out.printf("%s\n",clickedCountry.getName());
         switch(this.actionContext.getPhase()){
             case DEPLOY_DST:
@@ -344,10 +349,11 @@ public class RiskModel {
                 this.actionContext.setDstCountry(clickedCountry);
                 break;
         }
-        this.riskView.boardUpdate(this.actionContext);
+        riskView.update(this.actionContext);
     }
     public void textEntered(String text){
         textBuffer=text;
+        menuConfirm();
     }
     public void sliderMoved(int num){
         numBuffer=num;
@@ -380,22 +386,24 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.getPlayer()));
                 break;
         }
-        this.riskView.boardUpdate(this.actionContext);
+        riskView.update(this.actionContext);
     }
     /**
      * Method to deal with when the user clicks a confirm button
      */
     public void menuConfirm(){
-        //TODO error checking
         switch (this.actionContext.getPhase()) {
             case NUM_PLAYERS:
                 this.numPlayers=numBuffer;
                 this.actionContext=new ActionContext(Phase.PLAYER_NAME,null);
-                System.out.printf("ass %d\n",numBuffer);
+                players=new Player[numPlayers];
+                System.out.printf("Num Players: %d\n",numBuffer);
                 break;
             case PLAYER_NAME:
                 if(newPlayer(textBuffer)){
                     this.actionContext=new ActionContext(Phase.DEPLOY_DST,players[0]);
+                }else{
+                    this.actionContext.setPlayerId(actionContext.getPlayerId()+1);
                 }
                 break;
             case DEPLOY_CONFIRM:
@@ -435,7 +443,7 @@ public class RiskModel {
                 }
                 break;
         }
-        this.riskView.boardUpdate(this.actionContext);
+        riskView.update(this.actionContext);
     }
     /**
      * Methods to deal with when the user clicks a back button
@@ -467,7 +475,7 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.getPlayer());
                 break;
         }
-        this.riskView.boardUpdate(this.actionContext);
+        riskView.update(this.actionContext);
     }
     /**
      * Method to deal with numbers sent from the view
@@ -495,9 +503,6 @@ public class RiskModel {
 
         }
     }
-
-
-
 
     /**
      * Method that performs the Deploy action. The player is able to deploy troops they have to any owned country.
@@ -606,7 +611,7 @@ public class RiskModel {
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
             if(gameIsOver()){
                 //Force game over here
-                this.riskView.boardUpdate(this.actionContext);
+                riskView.update(this.actionContext);
             }
         }
 
@@ -681,7 +686,6 @@ public class RiskModel {
         }
         return toTest;
     }
-
 
     public static void main(String[] args) {
         new RiskModel();

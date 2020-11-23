@@ -13,8 +13,8 @@ public class PlayerAI extends Player{
     private ArrayList<Integer> utilities;
     private int maxUtilityIndex;
 
-    public PlayerAI(String name, Color color, int armiesToAllocate) {
-        super(name,color,true);
+    public PlayerAI(String name, Color color, int armiesToAllocate,int playerId) {
+        super(name,color,true,playerId);
         this.armiesToAllocate=armiesToAllocate;
     }
 
