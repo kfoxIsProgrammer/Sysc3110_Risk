@@ -227,7 +227,7 @@ public class RiskModel {
             }
         }
         */
-
+ 
     }
 
     /**
@@ -314,7 +314,7 @@ public class RiskModel {
             case FORTIFY_DST:
             case FORTIFY_ARMY:
             case FORTIFY_CONFIRM:
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.getPlayer()));
+                this.actionContext=new ActionContext(Phase.DEPLOY_DST,nextPlayer(this.actionContext.getPlayer()));
                 break;
         }
         this.riskView.boardUpdate(this.actionContext);
@@ -399,7 +399,7 @@ public class RiskModel {
     /**
      * Method to deal with numbers sent from the view
      * @param numTroops the number of troops to handle
-     */
+     z**/
     public void menuNumTroops(int numTroops){
         switch (this.actionContext.getPhase()) {
             case NEW_GAME:
@@ -613,14 +613,11 @@ public class RiskModel {
                 if (!user.countries.contains(this.map.getCountries()[count])){ willTroopsBeAssigned = false; }
 
             }
-            if(willTroopsBeAssigned){
-                user.addArmyToAllocate(cont.getBonusArmyValue());
-
-            }
+        }else {
+            actionContext.setPhase(Phase.FORFEIT_CLICKED);
         }
-
+        this.riskView.boardUpdate(this.actionContext);
     }*/
-
 
     public static void main(String[] args) {
         new RiskModel();
