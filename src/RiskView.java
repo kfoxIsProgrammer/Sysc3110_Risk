@@ -112,7 +112,7 @@ public class RiskView extends JFrame{
             case DEPLOY_ARMY:
                 updatePrompt(ac.getPlayer(),"how many troops will you send to "+ac.getDstCountry().getName());
                 updateSlider(1,ac.getPlayer().getArmiesToAllocate());
-                updateMenuVisible(true, false, true,false,true,false);
+                updateMenuVisible(true, false, true,true,true,false);
                 updateMap();
                 break;
             case DEPLOY_CONFIRM:
@@ -134,7 +134,7 @@ public class RiskView extends JFrame{
             case ATTACK_ARMY:
                 updatePrompt(ac.getPlayer(),"how many troops will you attack "+ac.getDstCountry().getName()+" with");
                 updateSlider(1,ac.getPlayer().getArmiesToAllocate());
-                updateMenuVisible(true, false, true,false,true,true);
+                updateMenuVisible(true, false, true,true,true,true);
                 updateMap();
                 break;
             case ATTACK_CONFIRM:
@@ -145,7 +145,7 @@ public class RiskView extends JFrame{
             case RETREAT_ARMY:
                 updatePrompt(ac.getPlayer(),"how many troops will you send back to "+ac.getSrcCountry().getName());
                 updateSlider(0,ac.getSrcArmy()-ac.getSrcArmyDead());
-                updateMenuVisible(true, false, true,false,true,true);
+                updateMenuVisible(true, false, true,true,true,true);
                 updateMap();
                 break;
             case RETREAT_CONFIRM:
@@ -166,7 +166,7 @@ public class RiskView extends JFrame{
             case FORTIFY_ARMY:
                 updatePrompt(ac.getPlayer(),"how many troops will you send from "+ac.getSrcCountry()+" to "+ac.getDstCountry().getName());
                 updateSlider(0,ac.getSrcArmy()-ac.getSrcArmyDead());
-                updateMenuVisible(true, false, true,false,true,true);
+                updateMenuVisible(true, false, true,true,true,true);
                 updateMap();
                 break;
             case FORTIFY_CONFIRM:
