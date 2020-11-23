@@ -11,6 +11,8 @@ public class ActionContext {
     private Phase phase;
     /** The current player **/
     private Player player;
+    /** The index of the current player **/
+    private int playerId;
     /** The countries on the map that should be highlighted **/
     private Country[] highlightedCountries;
     /** Source country **/
@@ -52,6 +54,10 @@ public class ActionContext {
      */
     public void setPlayer(Player player) {
         this.player = player;
+    }
+    /** Setter for current Player **/
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
     /**
      * Setter for countries for the view to highlight
@@ -123,6 +129,9 @@ public class ActionContext {
     }
     public Player getPlayer() {
         return player;
+    }
+    public int getPlayerId() {
+        return playerId;
     }
     public Country[] getHighlightedCountries() {
         return highlightedCountries;

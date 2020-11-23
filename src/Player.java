@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public abstract class Player {
     /** Boolean describing if this player is an ai **/
     protected final Boolean isAI;
+    /** Index of this player **/
+    protected final int playerId;
     /** Name of this player **/
     protected final String name;
     /** The color the player is **/
@@ -22,8 +24,9 @@ public abstract class Player {
     /** This is used for lose condition **/
     protected boolean hasLost = false;
 
-    protected Player(String name, Color color, boolean isAI){
+    protected Player(String name, Color color, boolean isAI, int playerId){
         this.isAI = isAI;
+        this.playerId=playerId;
         this.name = name;
         this.playerColor = color;
         this.countries=new ArrayList<>();
