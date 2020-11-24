@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class PlayerAI extends Player {
     private enum Difficulty {
@@ -9,16 +8,41 @@ public class PlayerAI extends Player {
         MEDIUM,
         HARD
     }
+
     private Difficulty difficulty;
     private ArrayList<ActionContext> actions;
     private ArrayList<Integer> utilities;
     private int maxUtilityIndex;
+    private int continentIndexToFocus;
+    private Continent[] continents;
 
-    public PlayerAI(String name, Color color, int armiesToAllocate,int playerId) {
-        super(name,color,true,playerId);
-        this.armiesToAllocate=armiesToAllocate;
+    public PlayerAI(String name, Color color, int armiesToAllocate, int playerId, Continent[] continents) {
+        super(name, color, true, playerId);
+        this.continents = continents;
+        this.armiesToAllocate = armiesToAllocate;
     }
+    public boolean isItOptimalContinent(Country focalCountry){
+        int[] continentValue = new int[continents.length];
+        int maxContinentIndex = 0;
+        for(int value: continentValue){
+            value = 0;
+        }
+        for(Country count: this.countries){
+            continentValue[count.getContinentId()] ++;
+        }
 
+        for(int i = 0; i < continentValue.length; i++){
+            if(continentValue[i] > continentValue[maxContinentIndex] && continentValue[i] != continents[i].getCountryList().length ){
+                maxContinentIndex = i;
+            }
+
+        }
+
+        if (focalCountry.getContinentId() == maxContinentIndex){
+            return true;
+        }
+        else {return false;}
+    }
     public ActionContext getMove(ActionContext actionContext) {
         this.actions = new ArrayList<>();
         this.utilities = new ArrayList<>();
@@ -97,6 +121,15 @@ public class PlayerAI extends Player {
             case BABY:
                 break;
             case EASY:
+                utility = 0;
+                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+                for(Country count: dstCountry.getAdjacentCountries()){
+                    if(count.getOwner() != this){utility += 1; }
+                }
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setDstCountry(dstCountry);
+                utilities.add(utility);
+                actions.add(actionContext);
                 break;
             case MEDIUM:
                 ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
@@ -137,6 +170,20 @@ public class PlayerAI extends Player {
             case BABY:
                 break;
             case EASY:
+                utility = 0;
+                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+                for(Country count: srcCountry.getAdjacentCountries()){
+                    if(count.getOwner() == this){utility += 1; }
+                }
+                for(Country count: dstCountry.getAdjacentCountries()){
+                    if(count.getOwner() == this){utility += 1; }
+                }
+                if((srcCountry.getArmy() - dstCountry.getArmy()) > 1){utility+=5;}
+                utility+= srcCountry.getArmy();
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setDstCountry(dstCountry);
+                utilities.add(utility);
+                actions.add(actionContext);
                 break;
             case MEDIUM:
                 ActionContext attackContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
@@ -193,11 +240,23 @@ public class PlayerAI extends Player {
 
     private void fortifyUtility(Country srcCountry, Country dstCountry) {
         int utility;
-        ActionContext fortifyContext = new ActionContext(Phase.FORTIFY_CONFIRM, this);
+        ActionContext actionContext = new ActionContext(Phase.FORTIFY_CONFIRM, this);
         switch (this.difficulty) {
             case BABY:
                 break;
             case EASY:
+                utility = 0;
+                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+                for(Country count: srcCountry.getAdjacentCountries()){
+                    if(count.getOwner() == this){utility += 1; }
+                }
+                for(Country count: dstCountry.getAdjacentCountries()){
+                    if(count.getOwner() != this){utility += 1; }
+                }
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setDstCountry(dstCountry);
+                utilities.add(utility);
+                actions.add(actionContext);
                 break;
             case MEDIUM:
                 fortifyContext.setDstCountry(dstCountry);
@@ -224,14 +283,13 @@ public class PlayerAI extends Player {
             case HARD:
                 if (srcCountry.getAdjacentOwnedCountries(this).length == srcCountry.getAdjacentCountries().length && dstCountry.getAdjacentCountries().length!=dstCountry.getAdjacentOwnedCountries(this).length &&srcCountry.getArmy()>3){
                     utility = srcCountry.getArmy()-dstCountry.getArmy()-3;
-                   fortifyContext.setSrcCountry(srcCountry);
-                   fortifyContext.setDstCountry(dstCountry);
-                   fortifyContext.setSrcArmy(utility);
+                    actionContext.setSrcCountry(srcCountry);
+                    actionContext.setDstCountry(dstCountry);
+                    actionContext.setSrcArmy(utility);
                     utilities.add(utility);
-                    actions.add(fortifyContext);
+                    actions.add(actionContext);
                 }
                 break;
         }
     }
-
 }

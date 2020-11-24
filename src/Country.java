@@ -24,6 +24,7 @@ public class Country {
     private Player owner;
     /** Army currently occupying this country **/
     private int army;
+    private int continentId;
 
     /**
      * Constructor for Country
@@ -139,6 +140,8 @@ public class Country {
         }
     }
 
+
+
     /**
      * Setter for adjacent countries to this country
      * @param adjacentCountries the adjacent countries in an array
@@ -182,6 +185,10 @@ public class Country {
         this.centerCoordinates = centerCoordinates;
     }
 
+    /**
+     * @return Continent ID
+     */
+    public int getContinentId(){return continentId;}
     /**
      * @return The Name of the country
      */
