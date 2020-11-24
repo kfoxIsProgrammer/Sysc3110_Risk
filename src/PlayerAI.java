@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PlayerAI extends Player {
     private enum Difficulty {
@@ -91,14 +92,13 @@ public class PlayerAI extends Player {
 
     private void deployUtility(Country srcCountry, Country dstCountry) {
         int utility;
-        ActionContext actionContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
+        ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
         switch (this.difficulty) {
             case BABY:
                 break;
             case EASY:
                 break;
             case MEDIUM:
-                ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
                 deployContext.setDstCountry(srcCountry);
 
                 int srcCountryAdjacentValue = 0;
@@ -117,13 +117,13 @@ public class PlayerAI extends Player {
                 }
                 break;
             case HARD:
-                actionContext.setDstCountry(srcCountry);
+                deployContext.setDstCountry(srcCountry);
                 int troopsDiff = dstCountry.getArmy() - srcCountry.getArmy();
                 if (troopsDiff < armiesToAllocate && troopsDiff>0) {
-                    actionContext.setSrcArmy(troopsDiff);
+                    deployContext.setSrcArmy(troopsDiff);
                     utility = troopsDiff+ dstCountry.getAdjacentOwnedCountries(this).length - 1;
                     utilities.add(utility);
-                    actions.add(actionContext);
+                    actions.add(deployContext);
                 }
                 break;
         }
@@ -192,17 +192,16 @@ public class PlayerAI extends Player {
 
     private void fortifyUtility(Country srcCountry, Country dstCountry) {
         int utility;
-        ActionContext actionContext = new ActionContext(Phase.FORTIFY_CONFIRM, this);
+        ActionContext fortifyContext = new ActionContext(Phase.FORTIFY_CONFIRM, this);
         switch (this.difficulty) {
             case BABY:
                 break;
             case EASY:
                 break;
             case MEDIUM:
-                ActionContext fortityContext = new ActionContext(Phase.FORTIFY_CONFIRM,this);
-                fortityContext.setDstCountry(dstCountry);
-                fortityContext.setSrcCountry(srcCountry);
-                fortityContext.setSrcArmy(srcCountry.getArmy()-1);
+                fortifyContext.setDstCountry(dstCountry);
+                fortifyContext.setSrcCountry(srcCountry);
+                fortifyContext.setSrcArmy(srcCountry.getArmy()-1);
                 int dstAdjacentValue= 0;
                 int srcAdjacentValue=0;
 
@@ -219,17 +218,16 @@ public class PlayerAI extends Player {
                 int differential = dstAdjacentValue-srcAdjacentValue;
 
                 utilities.add(differential);
-                actions.add(fortityContext);
-                break;
+                actions.add(fortifyContext);
                 break;
             case HARD:
                 if (srcCountry.getAdjacentOwnedCountries(this).length == srcCountry.getAdjacentCountries().length && dstCountry.getAdjacentCountries().length!=dstCountry.getAdjacentOwnedCountries(this).length &&srcCountry.getArmy()>3){
                     utility = srcCountry.getArmy()-dstCountry.getArmy()-3;
-                    actionContext.setSrcCountry(srcCountry);
-                    actionContext.setDstCountry(dstCountry);
-                    actionContext.setSrcArmy(utility);
+                   fortifyContext.setSrcCountry(srcCountry);
+                   fortifyContext.setDstCountry(dstCountry);
+                   fortifyContext.setSrcArmy(utility);
                     utilities.add(utility);
-                    actions.add(actionContext);
+                    actions.add(fortifyContext);
                 }
                 break;
         }
