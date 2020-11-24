@@ -533,16 +533,16 @@ public class RiskModel {
             return false;
         }
 
-        int defendingArmy = defendingCountry.getArmy();
+        int defendingArmy = unitsToDefend;
         int attackingArmy = unitsToAttack;
 
 
         ArrayList<Integer> rollsAttackerMade = new ArrayList<>();
         ArrayList<Integer> rollsDefenderMade = new ArrayList<>();
 
-        while(attackingArmy > 0 && defendingArmy > 0) {
-            Integer[] defenderRolls = new Integer[Math.min(defendingArmy, 2)];
-            Integer[] attackRolls = new Integer[Math.min(attackingArmy, 3)];
+
+            Integer[] defenderRolls = new Integer[defendingArmy < 2? defendingArmy: 2];
+            Integer[] attackRolls = new Integer[attackingArmy < 3? attackingArmy: 3];
 
             Random random = new Random();
 
@@ -580,28 +580,36 @@ public class RiskModel {
                 rollsAttackerMade.add(attack);
                 rollsDefenderMade.add(defence);
             }
+            while(!attackersQueue.isEmpty()){
+                rollsAttackerMade.add(attackersQueue.remove());
+            }
+        while(!defenderQueue.isEmpty()){
+            rollsDefenderMade.add(defenderQueue.remove());
         }
+
 
         //Send dice rolls
         actionContext.setDiceRolls(new Integer[][]{rollsAttackerMade.toArray(new Integer[rollsAttackerMade.size()]), rollsDefenderMade.toArray(new Integer[rollsDefenderMade.size()])});
 
         this.actionContext.setSrcArmyDead(unitsToAttack - attackingArmy);
-        this.actionContext.setDstArmy(defendingCountry.getArmy());
-        this.actionContext.setDstArmyDead(defendingCountry.getArmy()-defendingArmy);
+        this.actionContext.setDstArmy(unitsToDefend);
+        this.actionContext.setDstArmyDead(unitsToDefend - defendingArmy);
 
 
         //Attacker wins
         if(defendingArmy <= 0){
-            defendingCountry.removeArmy(defendingCountry.getArmy());
+            defendingCountry.removeArmy(unitsToDefend);
             attackingCountry.removeArmy(unitsToAttack-attackingArmy);
-
-            defendingCountry.getOwner().removeCountry(defendingCountry);
-            attackingCountry.getOwner().addCountry(defendingCountry);
-            defendingCountry.setOwner(attackingCountry.getOwner());
+            if(defendingCountry.getArmy()-defendingArmy ==0) {
+                defendingCountry.getOwner().removeCountry(defendingCountry);
+                attackingCountry.getOwner().addCountry(defendingCountry);
+                defendingCountry.setOwner(attackingCountry.getOwner());
+                defendingCountry.setArmy(attackingArmy);
+            }
             this.actionContext.setAttackerVictory(true);
         }
-        //Attacker loses
-        if(attackingArmy <= 0){
+        //Attacker lost
+        else{
             attackingCountry.removeArmy(unitsToAttack);
             defendingCountry.removeArmy(defendingCountry.getArmy() - defendingArmy);
             this.actionContext.setAttackerVictory(false);
@@ -611,7 +619,7 @@ public class RiskModel {
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
             if(gameIsOver()){
                 //Force game over here
-                riskView.update(this.actionContext);
+                this.riskView.boardUpdate(this.actionContext);
             }
         }
 
