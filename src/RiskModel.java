@@ -418,7 +418,8 @@ public class RiskModel {
                 if(attack(this.actionContext.getPlayer(),
                         this.actionContext.getSrcCountry(),
                         this.actionContext.getDstCountry(),
-                        this.actionContext.getSrcArmy()))
+                        this.actionContext.getSrcArmy(),
+                        this.actionContext.getDstArmy()))
                     this.actionContext.setPhase(Phase.RETREAT_ARMY);
                 else
                     System.out.println("Attack failed");
@@ -619,7 +620,7 @@ public class RiskModel {
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
             if(gameIsOver()){
                 //Force game over here
-                this.riskView.boardUpdate(this.actionContext);
+                this.riskView.update(this.actionContext);
             }
         }
 
@@ -708,7 +709,7 @@ public class RiskModel {
 
             }
         }
-        this.riskView.boardUpdate(this.actionContext);
+        this.riskView.update(this.actionContext);
     }
 
     public static void main(String[] args) {

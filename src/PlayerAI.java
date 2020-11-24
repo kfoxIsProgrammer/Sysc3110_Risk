@@ -92,13 +92,14 @@ public class PlayerAI extends Player {
 
     private void deployUtility(Country srcCountry, Country dstCountry) {
         int utility;
-        ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
+        ActionContext actionContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
         switch (this.difficulty) {
             case BABY:
                 break;
             case EASY:
                 break;
             case MEDIUM:
+                ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
                 deployContext.setDstCountry(srcCountry);
 
                 int srcCountryAdjacentValue = 0;
@@ -117,13 +118,13 @@ public class PlayerAI extends Player {
                 }
                 break;
             case HARD:
-                deployContext.setDstCountry(srcCountry);
+                actionContext.setDstCountry(srcCountry);
                 int troopsDiff = dstCountry.getArmy() - srcCountry.getArmy();
                 if (troopsDiff < armiesToAllocate && troopsDiff>0) {
-                    deployContext.setSrcArmy(troopsDiff);
+                    actionContext.setSrcArmy(troopsDiff);
                     utility = troopsDiff+ dstCountry.getAdjacentOwnedCountries(this).length - 1;
                     utilities.add(utility);
-                    actions.add(deployContext);
+                    actions.add(actionContext);
                 }
                 break;
         }
@@ -218,6 +219,9 @@ public class PlayerAI extends Player {
                 int differential = dstAdjacentValue-srcAdjacentValue;
 
                 utilities.add(differential);
+                actions.add(fortityContext);
+                break;
+
                 actions.add(fortifyContext);
                 break;
             case HARD:
