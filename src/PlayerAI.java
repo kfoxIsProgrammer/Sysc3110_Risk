@@ -99,6 +99,23 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
+                ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
+                deployContext.setDstCountry(srcCountry);
+
+                int srcCountryAdjacentValue = 0;
+                for(Country c: srcCountry.getAdjacentCountries()){
+                    if(!c.getOwner().equals(srcCountry.getOwner())){
+                        srcCountryAdjacentValue+= c.getArmy();
+                    }
+                }
+                if(this.getArmiesToAllocate()>0){
+                    Random rng = new Random();
+
+                    deployContext.setSrcArmy(rng.nextInt(this.getArmiesToAllocate())-1);
+                    utility = srcCountryAdjacentValue - srcCountry.getAdjacentOwnedCountries(this).length-1;
+                    utilities.add(utility);
+                    actions.add(deployContext);
+                }
                 break;
             case HARD:
                 break;
@@ -111,6 +128,28 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
+                ActionContext attackContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
+                attackContext.setSrcCountry(srcCountry);
+                attackContext.setDstCountry(dstCountry);
+                //Will only attack high priority
+
+                if(srcCountry.getArmy()-1 > dstCountry.getArmy()) {
+                    int srcCountryAdjacentValue = 0;
+                    int dstCountryAdjacentValue=0;
+                    for(Country c: srcCountry.getAdjacentCountries()){
+                        if(!c.getOwner().equals(srcCountry.getOwner())){
+                            srcCountryAdjacentValue+= c.getArmy();
+                        }
+                    }
+                    for(Country c: dstCountry.getAdjacentCountries()){
+                        if(!c.getOwner().equals(srcCountry.getOwner()) && !c.equals(srcCountry)){
+                            dstCountryAdjacentValue+=c.getArmy();
+                        }
+                    }
+                    attackContext.setSrcArmy(srcCountry.getArmy()-1);
+                    utilities.add(srcCountryAdjacentValue+dstCountryAdjacentValue/2);
+                    actions.add(attackContext);
+                }
                 break;
             case HARD:
                 break;
@@ -135,6 +174,28 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
+                ActionContext fortityContext = new ActionContext(Phase.FORTIFY_CONFIRM,this);
+                fortityContext.setDstCountry(dstCountry);
+                fortityContext.setSrcCountry(srcCountry);
+                fortityContext.setSrcArmy(srcCountry.getArmy()-1);
+                int dstAdjacentValue= 0;
+                int srcAdjacentValue=0;
+
+                for(Country c: srcCountry.getAdjacentCountries()){
+                    if(!c.getOwner().equals(srcCountry.getOwner())){
+                        srcAdjacentValue+=c.getArmy();
+                    }
+                }
+                for(Country c: dstCountry.getAdjacentCountries()){
+                    if(!c.getOwner().equals(dstCountry.getOwner())){
+                        dstAdjacentValue+=c.getArmy();
+                    }
+                }
+                int differential = dstAdjacentValue-srcAdjacentValue;
+
+                utilities.add(differential);
+                actions.add(fortityContext);
+                break;
                 break;
             case HARD:
                 break;
