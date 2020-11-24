@@ -532,6 +532,7 @@ public class RiskModel {
                 defendingCountry.getOwner().removeCountry(defendingCountry);
                 attackingCountry.getOwner().addCountry(defendingCountry);
                 defendingCountry.setOwner(attackingCountry.getOwner());
+                defendingCountry.setArmy(attackingArmy);
             }
             this.actionContext.setAttackerVictory(true);
         }
