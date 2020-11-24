@@ -122,13 +122,11 @@ public class RiskView extends JFrame{
                 break;
             case ATTACK_SRC:
                 updatePrompt(ac.getPlayer(),"select a country to attack from");
-                updateSlider(1,ac.getPlayer().getArmiesToAllocate());
                 updateMenuVisible(true, false, false,false,false,true);
                 updateMap();
                 break;
             case ATTACK_DST:
                 updatePrompt(ac.getPlayer(),"select a country to attack from "+ac.getSrcCountry().getName());
-                updateSlider(1,ac.getPlayer().getArmiesToAllocate());
                 updateMenuVisible(true, false, false,false,true,true);
                 updateMap(ac.getSrcCountry(),ac.getSrcCountry().getAdjacentUnownedCountries(ac.getPlayer()));
                 break;
@@ -143,7 +141,7 @@ public class RiskView extends JFrame{
                 break;
             case ATTACK_DST_ARMY:
                 updatePrompt(ac.getDstCountry().getOwner(),"how many troops will you defend with "+ac.getDstCountry().getName()+" with");
-                updateSlider(1,Math.min(ac.getSrcArmy(),2));
+                updateSlider(1,Math.min(ac.getDstCountry().getArmy(), 2));
                 updateMenuVisible(true, false, true,true,false,false);
                 break;
             case ATTACK_DST_CONFIRM:
@@ -207,7 +205,7 @@ public class RiskView extends JFrame{
         diceStr+="]\nDefender rolls: [";
         for(int i=0;i<ac.getDiceRolls()[1].length;i++){
             diceStr+=ac.getDiceRolls()[1][i];
-            if(i<ac.getDiceRolls()[0].length-1){
+            if(i<ac.getDiceRolls()[1].length-1){
                 diceStr+=", ";
             }
         }

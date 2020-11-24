@@ -77,6 +77,7 @@ public class RiskModel {
         //All players added
         if(i==numPlayers-1){
             allocateCountries();
+            allocateArmies();
             return true;
         }
         //More players need to be added
@@ -336,7 +337,7 @@ public class RiskModel {
                 break;
             case PLAYER_NAME:
                 if(newPlayer(textBuffer)){
-                    this.actionContext=new ActionContext(Phase.DEPLOY_DST,players[0]);
+                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,players[0]);
                 }else{
                     this.actionContext.setPlayerId(actionContext.getPlayerId()+1);
                 }
@@ -365,9 +366,8 @@ public class RiskModel {
                 if(attack(this.actionContext.getPlayer(),
                         this.actionContext.getSrcCountry(),
                         this.actionContext.getDstCountry(),
-                        this.actionContext.getSrcArmy())) {
                         this.actionContext.getSrcArmy(),
-                        this.actionContext.getDstArmy()))
+                        this.actionContext.getDstArmy())){
                     this.actionContext.setPhase(Phase.RETREAT_ARMY);
                     this.actionContext.setPlayer(actionContext.getSrcCountry().getOwner());
                 }
@@ -537,7 +537,7 @@ public class RiskModel {
         if(defendingArmy <= 0){
             defendingCountry.removeArmy(unitsToDefend);
             attackingCountry.removeArmy(unitsToAttack-attackingArmy);
-            if(defendingCountry.getArmy()-defendingArmy ==0) {
+            if(defendingCountry.getArmy()-actionContext.getDstArmyDead()==0) {
                 defendingCountry.getOwner().removeCountry(defendingCountry);
                 attackingCountry.getOwner().addCountry(defendingCountry);
                 defendingCountry.setOwner(attackingCountry.getOwner());
@@ -547,8 +547,8 @@ public class RiskModel {
         }
         //Attacker lost
         else{
-            attackingCountry.removeArmy(unitsToAttack);
-            defendingCountry.removeArmy(defendingCountry.getArmy() - defendingArmy);
+            attackingCountry.removeArmy(actionContext.getSrcArmyDead());
+            defendingCountry.removeArmy(actionContext.getDstArmyDead());
             this.actionContext.setAttackerVictory(false);
         }
 
@@ -638,10 +638,10 @@ public class RiskModel {
      */
     public void allocateBonusTroops(Player user){
         boolean willTroopsBeAssigned;
-        for (Continent cont : this.map.getContinents()){
+        for (Continent continent : this.map.getContinents()){
             willTroopsBeAssigned = true;
-            for(int count: cont.getCountryList()){
-                if (!user.countries.contains(this.map.getCountries()[count])){ willTroopsBeAssigned = false; }
+            for(Country country: continent.getCountryList()){
+                if (!user.countries.contains(this.map.getCountries()[Arrays.asList(this.map.getContinents()).indexOf(country)])){ willTroopsBeAssigned = false; }
 
             }
         }

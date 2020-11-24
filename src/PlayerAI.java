@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PlayerAI extends Player {
     private enum Difficulty {
@@ -71,8 +72,8 @@ public class PlayerAI extends Player {
             case ATTACK_SRC_ARMY:
             case ATTACK_SRC_CONFIRM:
                 maxUtility=Integer.MIN_VALUE;
-            case ATTACK_ARMY:
-            case ATTACK_CONFIRM:
+            case ATTACK_DST_ARMY:
+            case ATTACK_DST_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
 
                 for (int i = 0; i < countries.size(); i++) {
@@ -168,7 +169,7 @@ public class PlayerAI extends Player {
 
     private void attackUtility(Country srcCountry, Country dstCountry) {
         int utility;
-        ActionContext actionContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
+        ActionContext actionContext = new ActionContext(Phase.ATTACK_SRC_CONFIRM, this);
         switch (this.difficulty) {
             case BABY:
                 break;
@@ -189,7 +190,7 @@ public class PlayerAI extends Player {
                 actions.add(actionContext);
                 break;
             case MEDIUM:
-                ActionContext attackContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
+                ActionContext attackContext = new ActionContext(Phase.ATTACK_SRC_CONFIRM, this);
                 attackContext.setSrcCountry(srcCountry);
                 attackContext.setDstCountry(dstCountry);
                 //Will only attack high priority
@@ -262,9 +263,9 @@ public class PlayerAI extends Player {
                 actions.add(actionContext);
                 break;
             case MEDIUM:
-                fortifyContext.setDstCountry(dstCountry);
-                fortifyContext.setSrcCountry(srcCountry);
-                fortifyContext.setSrcArmy(srcCountry.getArmy()-1);
+                actionContext.setDstCountry(dstCountry);
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setSrcArmy(srcCountry.getArmy()-1);
                 int dstAdjacentValue= 0;
                 int srcAdjacentValue=0;
 
@@ -281,7 +282,7 @@ public class PlayerAI extends Player {
                 int differential = dstAdjacentValue-srcAdjacentValue;
 
                 utilities.add(differential);
-                actions.add(fortifyContext);
+                actions.add(actionContext);
                 break;
             case HARD:
                 if (srcCountry.getAdjacentOwnedCountries(this).length == srcCountry.getAdjacentCountries().length && dstCountry.getAdjacentCountries().length!=dstCountry.getAdjacentOwnedCountries(this).length &&srcCountry.getArmy()>3){
