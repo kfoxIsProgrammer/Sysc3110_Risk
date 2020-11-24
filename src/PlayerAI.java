@@ -21,6 +21,7 @@ public class PlayerAI extends Player {
         super(name, color, true, playerId);
         this.continents = continents;
         this.armiesToAllocate = armiesToAllocate;
+        this.difficulty=Difficulty.EASY;
     }
     public boolean isItOptimalContinent(Country focalCountry){
         int[] continentValue = new int[continents.length];
@@ -100,10 +101,8 @@ public class PlayerAI extends Player {
                 for (int i = 0; i < countries.size(); i++) {
                     ArrayList<Country> dstCountries = countries;
                     for (int j = 0; j < dstCountries.size(); j++) {
-                        if((countries.get(i).getOwner().equals(dstCountries.get(j).getOwner())) && (countries.get(i).isConnected(dstCountries.get(j)))){
-                            fortifyUtility(countries.get(i), dstCountries.get(j));
-                        }
-                        if (utilities.get(utilities.size() - 1) > maxUtility) {
+                        fortifyUtility(countries.get(i), dstCountries.get(j));
+                        if (utilities.get(utilities.size()) > maxUtility){
                             this.maxUtilityIndex = utilities.size() - 1;
                         }
                     }
@@ -116,6 +115,26 @@ public class PlayerAI extends Player {
         }
 
         return actions.get(maxUtilityIndex);
+    }
+
+    public boolean canDeploy(){
+        return this.armiesToAllocate>0;
+    }
+    public boolean canAttack(){
+        for(Country country: countries){
+            if(country.getArmy()>1){
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean canFortify(){
+        for(Country country: countries){
+            if(country.getArmy()>1){
+                return false;
+            }
+        }
+        return false;
     }
 
     private void deployUtility(Country srcCountry, Country dstCountry) {
@@ -186,6 +205,7 @@ public class PlayerAI extends Player {
                 utility+= srcCountry.getArmy();
                 actionContext.setSrcCountry(srcCountry);
                 actionContext.setDstCountry(dstCountry);
+                actionContext.setSrcArmy(actionContext.getSrcCountry().getArmy()-1);
                 utilities.add(utility);
                 actions.add(actionContext);
                 break;
@@ -211,6 +231,8 @@ public class PlayerAI extends Player {
                     attackContext.setSrcArmy(srcCountry.getArmy()-1);
                     utilities.add(srcCountryAdjacentValue+dstCountryAdjacentValue/2);
                     actions.add(attackContext);
+                }else{
+                    utilities.add(Integer.MIN_VALUE);
                 }
                 break;
             case HARD:

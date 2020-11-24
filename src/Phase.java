@@ -9,6 +9,7 @@ public enum Phase {
     /** New Game**/
     NEW_GAME,
     NUM_PLAYERS,
+    NUM_AI,
     PLAYER_NAME,
     /** Game over **/
     GAME_OVER,

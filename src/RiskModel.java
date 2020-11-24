@@ -19,6 +19,8 @@ public class RiskModel {
     /** The current RiskController**/
     public RiskController riskController;
     public int numPlayers;
+    public int numHumans;
+    public int numAI;
     public String textBuffer;
     public int numBuffer;
 
@@ -72,7 +74,12 @@ public class RiskModel {
                         50-5*numPlayers;
 
         int i=actionContext.getPlayerId();
-        players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i);
+
+        if(i<numHumans){
+            players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i);
+        }else{
+            players[i]=new PlayerAI(name, playerColors[i],startingArmySize,i,map.getContinents());
+        }
 
         //All players added
         if(i==numPlayers-1){
@@ -204,7 +211,14 @@ public class RiskModel {
 
         for(int nextIndex = (indexOfCurrentPlayer+1)%modValue;; nextIndex = (nextIndex+1)%modValue){
             if(!this.players[nextIndex].getHasLost()){
-                return this.players[nextIndex];
+                if(players[nextIndex].isAI){
+                    actionContext=new ActionContext(Phase.DEPLOY_CONFIRM,players[nextIndex]);
+                    AIMoves();
+                    return nextPlayer(players[nextIndex]);
+                }
+                else{
+                    return this.players[nextIndex];
+                }
             }
             //Error no more players call game is over
             if(this.players[nextIndex].equals(player)){
@@ -224,6 +238,40 @@ public class RiskModel {
         }
         */
 
+    }
+
+    private void AIMoves(){
+        PlayerAI AI=(PlayerAI) actionContext.getPlayer();
+        ActionContext AIAction;
+
+        actionContext.setPhase(Phase.DEPLOY_CONFIRM);
+        for(int i=0;i<5 && AI.canDeploy();i++){
+            AIAction=AI.getMove(actionContext);
+            deploy(AIAction.getPlayer(),
+                    AIAction.getDstCountry(),
+                    AIAction.getDstArmy());
+            System.out.printf("AI Deploy: Dst: %s, Army: %d\n",AIAction.getDstCountry().getName(),AIAction.getDstArmy());
+        }
+
+        actionContext.setPhase(Phase.ATTACK_SRC_CONFIRM);
+        for(int i=0;i<5 && AI.canAttack();i++){
+            AIAction=AI.getMove(actionContext);
+            attack(AIAction.getPlayer(),
+                    AIAction.getSrcCountry(),
+                    AIAction.getDstCountry(),
+                    AIAction.getSrcArmy(),
+                    AIAction.getDstArmy());
+            System.out.printf("AI Attack: Src: %s, Dst: %s Src Army: %d, Dst Army: %d\n",AIAction.getSrcCountry().getName(),AIAction.getDstCountry().getName(),AIAction.getSrcArmy(),Math.min(AIAction.getDstCountry().getArmy(),2));
+        }
+
+        actionContext.setPhase(Phase.FORTIFY_CONFIRM);
+        if(AI.canFortify()){
+            AIAction=AI.getMove(actionContext);
+            fortify(AIAction.getPlayer(),
+                    AIAction.getSrcCountry(),
+                    AIAction.getDstCountry(),
+                    AIAction.getSrcArmy());
+        }
     }
 
     /**
@@ -321,7 +369,13 @@ public class RiskModel {
             case FORTIFY_DST:
             case FORTIFY_ARMY:
             case FORTIFY_CONFIRM:
-                this.actionContext=new ActionContext(Phase.DEPLOY_DST,nextPlayer(this.actionContext.getPlayer()));
+                actionContext.setPlayer(nextPlayer(this.actionContext.getPlayer()));
+                allocateBonusTroops(actionContext.getPlayer());
+                if(actionContext.getPlayer().getArmiesToAllocate()>0){
+                    this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.getPlayer());
+                }else{
+                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
+                }
                 break;
         }
         riskView.update(this.actionContext);
@@ -332,8 +386,14 @@ public class RiskModel {
     public void menuConfirm(){
         switch (this.actionContext.getPhase()) {
             case NUM_PLAYERS:
+                this.actionContext=new ActionContext(Phase.NUM_AI,null);
+                numHumans=numBuffer;
+                actionContext.setPlayerId(numHumans);
+                break;
+            case NUM_AI:
                 this.actionContext=new ActionContext(Phase.PLAYER_NAME,null);
-                setNumPlayers(numBuffer);
+                numAI=numBuffer;
+                setNumPlayers(numHumans+numAI);
                 break;
             case PLAYER_NAME:
                 if(newPlayer(textBuffer)){
@@ -399,8 +459,15 @@ public class RiskModel {
                 if(fortify(this.actionContext.getPlayer(),
                         this.actionContext.getSrcCountry(),
                         this.actionContext.getDstCountry(),
-                        this.actionContext.getSrcArmy()))
-                    this.actionContext=new ActionContext(Phase.ATTACK_SRC,nextPlayer(this.actionContext.getPlayer()));
+                        this.actionContext.getSrcArmy())) {
+                    actionContext.setPlayer(nextPlayer(this.actionContext.getPlayer()));
+                    allocateBonusTroops(actionContext.getPlayer());
+                    if(actionContext.getPlayer().getArmiesToAllocate()>0){
+                        this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.getPlayer());
+                    }else{
+                        this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
+                    }
+                }
                 else{
                     System.out.println("Fortify failed");
                 }
@@ -524,7 +591,6 @@ public class RiskModel {
             rollsDefenderMade.add(defenderQueue.remove());
         }
 
-
         //Send dice rolls
         actionContext.setDiceRolls(new Integer[][]{rollsAttackerMade.toArray(new Integer[rollsAttackerMade.size()]), rollsDefenderMade.toArray(new Integer[rollsDefenderMade.size()])});
 
@@ -634,18 +700,19 @@ public class RiskModel {
 
     /**
      * Method that checks whether a player owns an entire continent and if they do they get bonus troops to deploy
-     * @param user the player that is gaining the countries
+     * @param player the player that is gaining the countries
      */
-    public void allocateBonusTroops(Player user){
-        boolean willTroopsBeAssigned;
-        for (Continent continent : this.map.getContinents()){
-            willTroopsBeAssigned = true;
-            for(Country country: continent.getCountryList()){
-                if (!user.countries.contains(this.map.getCountries()[Arrays.asList(this.map.getContinents()).indexOf(country)])){ willTroopsBeAssigned = false; }
-
-            }
-        }
-        this.riskView.update(this.actionContext);
+    public void allocateBonusTroops(Player player){
+//        boolean willTroopsBeAssigned;
+//        for (Continent continent : this.map.getContinents()){
+//            willTroopsBeAssigned = true;
+//            for(Country country: continent.getCountryList()){
+//                if (!player.countries.contains(this.map.getCountries()[Arrays.asList(this.map.getContinents()).indexOf(country)])){
+//                    willTroopsBeAssigned = false;
+//                }
+//            }
+//        }
+        //player.armiesToAllocate=Math.max(3,player.countries.size()/3);
     }
 
     public static void main(String[] args) {

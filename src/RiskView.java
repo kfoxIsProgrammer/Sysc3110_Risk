@@ -102,6 +102,11 @@ public class RiskView extends JFrame{
                 updateSlider(2,6);
                 updateMenuVisible(true, false, true,true,false,false);
                 break;
+            case NUM_AI:
+                updatePrompt("Enter the number of AI");
+                updateSlider(0,6-ac.getPlayerId());
+                updateMenuVisible(true, false, true,true,false,false);
+                break;
             case PLAYER_NAME:
                 updatePrompt("Player "+(ac.getPlayerId()+1)+", enter you name");
                 updateMenuVisible(true, true, false,false,false,false);
@@ -162,12 +167,12 @@ public class RiskView extends JFrame{
                 updateMenuVisible(true, false, false,true,true,true);
                 break;
             case FORTIFY_SRC:
-                updatePrompt(ac.getPlayer(),"select a country with 2+ troops to transfer from");
+                updatePrompt(ac.getPlayer(),"select a country with 2+ troops to fortify from");
                 updateMenuVisible(true, false, false,false,false,true);
                 updateMap();
                 break;
             case FORTIFY_DST:
-                updatePrompt(ac.getPlayer(),"select a country to transfer troops to");
+                updatePrompt(ac.getPlayer(),"select a country to fortify");
                 updateMenuVisible(true, false, false,false,true,true);
                 updateMap(ac.getSrcCountry(),ac.getSrcCountry().getConnectedOwnedCountries(ac.getPlayer()));
                 break;
