@@ -1,7 +1,5 @@
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.PriorityQueue;
 
 public class PlayerAI extends Player{
     private enum Difficulty{
@@ -14,8 +12,6 @@ public class PlayerAI extends Player{
     private ArrayList<ActionContext> actions;
     private ArrayList<Integer> utilities;
     private int maxUtilityIndex;
-    private ArrayList<ActionContext> lowerPriority = new ArrayList<>();
-    private ArrayList<ActionContext> higherPriority = new ArrayList<>();
 
     public PlayerAI(String name, Color color, int armiesToAllocate) {
         super(name,color,true);
@@ -103,21 +99,22 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
-                ActionContext priorityContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
-                //If you are in a potential losing state
-                if(srcCountry.getArmy() < dstCountry.getArmy()) {
-                    if (dstCountry.getArmy() - srcCountry.getArmy() >= this.getArmiesToAllocate()) {
-                        priorityContext.setSrcArmy(dstCountry.getArmy() - srcCountry.getArmy() + 1);
-                        priorityContext.setDstCountry(dstCountry);
-                        this.higherPriority.add(priorityContext);
+                ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
+                deployContext.setDstCountry(srcCountry);
+
+                int srcCountryAdjacentValue = 0;
+                for(Country c: srcCountry.getAdjacentCountries()){
+                    if(!c.getOwner().equals(srcCountry.getOwner())){
+                        srcCountryAdjacentValue+= c.getArmy();
                     }
                 }
-                    else
-                    //You are in a slightly less potential of a losing state
-                        if(dstCountry.getArmy() - srcCountry.getArmy() >= this.getArmiesToAllocate()){
-                            priorityContext.setSrcArmy(dstCountry.getArmy()-srcCountry.getArmy()+1);
-                            priorityContext.setDstCountry(dstCountry);
-                            this.lowerPriority.add(priorityContext);
+                if(this.getArmiesToAllocate()>0){
+                    Random rng = new Random();
+
+                    deployContext.setSrcArmy(rng.nextInt(this.getArmiesToAllocate())-1);
+                    utility = srcCountryAdjacentValue - srcCountry.getAdjacentOwnedCountries(this).length-1;
+                    utilities.add(utility);
+                    actions.add(deployContext);
                 }
                 break;
             case HARD:
@@ -131,21 +128,28 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
-                ActionContext priorityContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
-                        //Advantage state add to high priority
-                        if(srcCountry.getArmy() > dstCountry.getArmy()){
-                            priorityContext.setSrcCountry(srcCountry);
-                            priorityContext.setSrcArmy(srcCountry.getArmy()>2? 3 : srcCountry.getArmy());
-                            priorityContext.setDstCountry(dstCountry);
-                            higherPriority.add(priorityContext);
+                ActionContext attackContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
+                attackContext.setSrcCountry(srcCountry);
+                attackContext.setDstCountry(dstCountry);
+                //Will only attack high priority
+
+                if(srcCountry.getArmy()-1 > dstCountry.getArmy()) {
+                    int srcCountryAdjacentValue = 0;
+                    int dstCountryAdjacentValue=0;
+                    for(Country c: srcCountry.getAdjacentCountries()){
+                        if(!c.getOwner().equals(srcCountry.getOwner())){
+                            srcCountryAdjacentValue+= c.getArmy();
                         }
-                        else
-                        {
-                            priorityContext.setSrcCountry(srcCountry);
-                            priorityContext.setSrcArmy(srcCountry.getArmy()>2? 3 : srcCountry.getArmy());
-                            priorityContext.setDstCountry(dstCountry);
-                            lowerPriority.add(priorityContext);
+                    }
+                    for(Country c: dstCountry.getAdjacentCountries()){
+                        if(!c.getOwner().equals(srcCountry.getOwner()) && !c.equals(srcCountry)){
+                            dstCountryAdjacentValue+=c.getArmy();
                         }
+                    }
+                    attackContext.setSrcArmy(srcCountry.getArmy()-1);
+                    utilities.add(srcCountryAdjacentValue+dstCountryAdjacentValue/2);
+                    actions.add(attackContext);
+                }
                 break;
             case HARD:
                 break;
@@ -170,6 +174,28 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
+                ActionContext fortityContext = new ActionContext(Phase.FORTIFY_CONFIRM,this);
+                fortityContext.setDstCountry(dstCountry);
+                fortityContext.setSrcCountry(srcCountry);
+                fortityContext.setSrcArmy(srcCountry.getArmy()-1);
+                int dstAdjacentValue= 0;
+                int srcAdjacentValue=0;
+
+                for(Country c: srcCountry.getAdjacentCountries()){
+                    if(!c.getOwner().equals(srcCountry.getOwner())){
+                        srcAdjacentValue+=c.getArmy();
+                    }
+                }
+                for(Country c: dstCountry.getAdjacentCountries()){
+                    if(!c.getOwner().equals(dstCountry.getOwner())){
+                        dstAdjacentValue+=c.getArmy();
+                    }
+                }
+                int differential = dstAdjacentValue-srcAdjacentValue;
+
+                utilities.add(differential);
+                actions.add(fortityContext);
+
                 break;
             case HARD:
                 break;
