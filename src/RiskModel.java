@@ -528,7 +528,7 @@ public class RiskModel {
      * @param unitsToAttack number of attackers from the attacking country
      * @return Boolean true = no error, false = units to attack error
      */
-    private boolean attack(Player player, Country attackingCountry, Country defendingCountry, int unitsToAttack){
+    private boolean attack(Player player, Country attackingCountry, Country defendingCountry, int unitsToAttack, int unitsToDefend){
         if(attackingCountry.getArmy()-unitsToAttack<=0) {
             return false;
         }
