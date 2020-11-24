@@ -501,12 +501,13 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
             case RETREAT_ARMY:
-                /*
-                retreat(this.actionContext.getPlayer(),
+                /*retreat(this.actionContext.getPlayer(),
                         this.actionContext.getSrcCountry(),
                         this.actionContext.getDstCountry(),
                         0);*/
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
+
+
                 break;
             case FORTIFY_SRC:
             case FORTIFY_DST:
@@ -613,12 +614,14 @@ public class RiskModel {
         //Attacker wins
         if(defendingArmy <= 0){
             defendingCountry.removeArmy(unitsToDefend);
-            attackingCountry.removeArmy(unitsToAttack-attackingArmy);
-            if(defendingCountry.getArmy()-actionContext.getDstArmyDead()==0) {
+            attackingCountry.removeArmy(actionContext.getSrcArmyDead());
+            if(defendingCountry.getArmy()==0) {
                 defendingCountry.getOwner().removeCountry(defendingCountry);
                 attackingCountry.getOwner().addCountry(defendingCountry);
                 defendingCountry.setOwner(attackingCountry.getOwner());
+                attackingCountry.removeArmy(attackingArmy);
                 defendingCountry.setArmy(attackingArmy);
+
             }
             this.actionContext.setAttackerVictory(true);
         }
@@ -648,8 +651,8 @@ public class RiskModel {
      * @return boolean True: success, False: fail
      */
     private boolean retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
-        defendingCountry.setArmy((this.actionContext.getSrcArmy()-this.actionContext.getSrcArmyDead())-unitsToRetreat);
-        attackingCountry.removeArmy((this.actionContext.getSrcArmy()-this.actionContext.getSrcArmyDead())-unitsToRetreat);
+        defendingCountry.setArmy((this.actionContext.getSrcArmy())-unitsToRetreat);
+        attackingCountry.removeArmy(-unitsToRetreat);
         defendingCountry.getOwner().removeCountry(defendingCountry);
         defendingCountry.setOwner(attackingCountry.getOwner());
         attackingCountry.getOwner().addCountry(defendingCountry);
