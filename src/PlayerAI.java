@@ -219,9 +219,6 @@ public class PlayerAI extends Player {
                 int differential = dstAdjacentValue-srcAdjacentValue;
 
                 utilities.add(differential);
-                actions.add(fortityContext);
-                break;
-
                 actions.add(fortifyContext);
                 break;
             case HARD:
