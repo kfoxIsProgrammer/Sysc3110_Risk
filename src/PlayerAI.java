@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PlayerAI extends Player{
     private enum Difficulty{
@@ -162,6 +163,7 @@ public class PlayerAI extends Player{
             case EASY:
                 break;
             case MEDIUM:
+
                 break;
             case HARD:
                 break;
@@ -196,7 +198,7 @@ public class PlayerAI extends Player{
                 utilities.add(differential);
                 actions.add(fortityContext);
                 break;
-                break;
+
             case HARD:
                 break;
         }
