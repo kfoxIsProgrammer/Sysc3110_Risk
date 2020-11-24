@@ -162,7 +162,7 @@ public class RiskModelTest extends TestCase {
 
         Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
         test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
-        assertEquals(Phase.ATTACK_ARMY, test.actionContext.getPhase());//confirms phase proceeded to choosing army
+        assertEquals(Phase.ATTACK_SRC_ARMY, test.actionContext.getPhase());//confirms phase proceeded to choosing army
     }
 
     /***
@@ -205,7 +205,6 @@ public class RiskModelTest extends TestCase {
         Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
         test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
 
-        test.menuNumTroops(1); //Clicks number of troops}
         assertEquals(Phase.RETREAT_ARMY, test.actionContext.getPhase());//confirms phase went back to choosing src country
     }
 

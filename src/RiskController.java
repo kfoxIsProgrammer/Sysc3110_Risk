@@ -19,11 +19,6 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     public RiskController(){
         this.riskModel=new RiskModel(new String[]{"Volvo", "BMW", "Ford", "Mazda"});
     }
-    /** Handles the new game event **/
-
-    public void newGame(String[] playerNames){
-        this.riskModel.newGame(playerNames);
-    }
     /** Checks if a given string can be parsed into an integer **/
     private boolean isInt(String text){
         for (char c: text.toCharArray()) {
@@ -48,9 +43,6 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
         }
         else if(e.getActionCommand().equals("Back")){
             riskModel.menuBack();
-        }
-        else if(isInt(e.getActionCommand())){
-            riskModel.menuNumTroops(Integer.parseInt(e.getActionCommand()));
         }
         else if(e.getActionCommand().equals(Phase.NUM_PLAYERS.name())){
             riskModel.menuConfirm();
