@@ -178,7 +178,7 @@ public class RiskView extends JFrame{
                 break;
             case FORTIFY_ARMY:
                 updatePrompt(ac.getPlayer(),"how many troops will you send from "+ac.getSrcCountry().getName()+" to "+ac.getDstCountry().getName());
-                updateSlider(1,ac.getSrcArmy()-1);
+                updateSlider(1,ac.getSrcCountry().getArmy()-1);
                 updateMenuVisible(true, false, true,true,true,true);
                 break;
             case FORTIFY_CONFIRM:

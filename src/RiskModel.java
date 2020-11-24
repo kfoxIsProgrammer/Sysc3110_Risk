@@ -400,7 +400,8 @@ public class RiskModel {
                 }
                 break;
             case FORTIFY_SRC:
-                if(clickedCountry.getArmy()<2){
+
+                if(clickedCountry.getArmy()<2 || !clickedCountry.getOwner().equals(this.actionContext.getPlayer())){
                     break;
                 }
                 this.actionContext.setPhase(Phase.FORTIFY_DST);
@@ -531,7 +532,8 @@ public class RiskModel {
                 else
                     System.out.println("Retreat failed");
                 break;
-            case FORTIFY_CONFIRM:
+            case FORTIFY_ARMY:
+                actionContext.setSrcArmy(numBuffer);
                 if(fortify(this.actionContext.getPlayer(),
                         this.actionContext.getSrcCountry(),
                         this.actionContext.getDstCountry(),
