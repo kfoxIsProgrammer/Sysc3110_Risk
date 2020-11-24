@@ -121,8 +121,6 @@ public class PlayerAI extends Player {
             case BABY:
                 break;
             case EASY:
-                break;
-            case MEDIUM:
                 utility = 0;
                 if(isItOptimalContinent(dstCountry)){utility+= 10;}
                 for(Country count: dstCountry.getAdjacentCountries()){
@@ -132,6 +130,8 @@ public class PlayerAI extends Player {
                 actionContext.setDstCountry(dstCountry);
                 utilities.add(utility);
                 actions.add(actionContext);
+                break;
+            case MEDIUM:
                 break;
             case HARD:
                 actionContext.setDstCountry(srcCountry);
@@ -153,8 +153,6 @@ public class PlayerAI extends Player {
             case BABY:
                 break;
             case EASY:
-                break;
-            case MEDIUM:
                 utility = 0;
                 if(isItOptimalContinent(dstCountry)){utility+= 10;}
                 for(Country count: srcCountry.getAdjacentCountries()){
@@ -169,6 +167,8 @@ public class PlayerAI extends Player {
                 actionContext.setDstCountry(dstCountry);
                 utilities.add(utility);
                 actions.add(actionContext);
+                break;
+            case MEDIUM:
                 break;
             case HARD:
                 if(srcCountry.getArmy()>=dstCountry.getArmy() && srcCountry.getArmy()!=1){
@@ -206,8 +206,6 @@ public class PlayerAI extends Player {
             case BABY:
                 break;
             case EASY:
-                break;
-            case MEDIUM:
                 utility = 0;
                 if(isItOptimalContinent(dstCountry)){utility+= 10;}
                 for(Country count: srcCountry.getAdjacentCountries()){
@@ -220,8 +218,8 @@ public class PlayerAI extends Player {
                 actionContext.setDstCountry(dstCountry);
                 utilities.add(utility);
                 actions.add(actionContext);
-
-
+                break;
+            case MEDIUM:
                 break;
             case HARD:
                 if (srcCountry.getAdjacentOwnedCountries(this).length == srcCountry.getAdjacentCountries().length && dstCountry.getAdjacentCountries().length!=dstCountry.getAdjacentOwnedCountries(this).length &&srcCountry.getArmy()>3){
