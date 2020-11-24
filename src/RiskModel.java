@@ -712,7 +712,7 @@ public class RiskModel {
 //                }
 //            }
 //        }
-        //player.armiesToAllocate=Math.max(3,player.countries.size()/3);
+        player.armiesToAllocate=Math.max(3,player.countries.size()/3);
     }
 
     public static void main(String[] args) {
