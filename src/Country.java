@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**Describing a country on the map in a game of RISK
  *
@@ -253,15 +254,29 @@ public class Country {
      * @return A list of adjacent countries not owned by player
      */
     public Country[] getAdjacentUnownedCountries(Player player) {
-        ArrayList<Country> adjacentOwnedCountriesList=new ArrayList<>();
+        ArrayList<Country> adjacentUnownedCountriesList=new ArrayList<>();
         for(Country country: adjacentCountries){
-            if(country.getOwner()==player){
-                adjacentOwnedCountriesList.add(country);
+            if(country.getOwner()!=player){
+                adjacentUnownedCountriesList.add(country);
             }
         }
-        Country[] adjacentOwnedCountries=new Country[adjacentOwnedCountriesList.size()];
-        adjacentOwnedCountries=adjacentOwnedCountriesList.toArray(adjacentOwnedCountries);
-        return adjacentOwnedCountries;
+        Country[] adjacentUnownedCountries=new Country[adjacentUnownedCountriesList.size()];
+        adjacentUnownedCountries=adjacentUnownedCountriesList.toArray(adjacentUnownedCountries);
+        return adjacentUnownedCountries;
+    }
+    public Country[] getConnectedOwnedCountries(Player player){
+        return getConnectedOwnedCountries(this,this,player,new Stack<Country>());
+    }
+    private Country[] getConnectedOwnedCountries(Country sourceCountry, Country root, Player player, Stack<Country> toTest){
+        for(Country count: sourceCountry.getAdjacentCountries()){
+            if(count.getOwner() == player && !toTest.contains(count) && count != root){
+                toTest.add(count);
+                return(getConnectedOwnedCountries(count,root, player, toTest));
+            }
+        }
+        Country[] tmp=new Country[toTest.size()];
+        tmp=toTest.toArray(tmp);
+        return tmp;
     }
     /**
      * @return A list of adjacent country IDs

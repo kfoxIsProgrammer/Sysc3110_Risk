@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class RiskView extends JFrame{
     private RiskController riskController;
@@ -10,7 +11,6 @@ public class RiskView extends JFrame{
 
     private JLayeredPane mapPane;
     private JLabel mapImage;
-    private JLabel[] countryLabels;
 
     private JScrollPane eventLogPane;
     private JTextArea eventLogText;
@@ -45,7 +45,7 @@ public class RiskView extends JFrame{
         this.add(mapPane,constraintMaker(0,0,1,2));
 
         //Initialize event log
-        eventLogText=new JTextArea("Game Started\n");
+        eventLogText=new JTextArea("Game Started\n\n");
         eventLogText.setEditable(false);
         eventLogText.setLineWrap(true);
 
@@ -58,6 +58,8 @@ public class RiskView extends JFrame{
         //Initialize menu
         menuPrompt=new JTextArea();
         menuPrompt.setEditable(false);
+        menuPrompt.setLineWrap(true);
+        menuPrompt.setWrapStyleWord(true);
         menuPrompt.setPreferredSize(new Dimension(mapWidth/3,mapHeight*3/12));
 
         menuText=new JTextField();
@@ -93,7 +95,7 @@ public class RiskView extends JFrame{
     }
 
     public void update(ActionContext ac){
-        System.out.printf("%s\n",ac.getPhase().name());
+        System.out.printf("View: %s\n",ac.getPhase().name());
         switch(ac.getPhase()){
             case NUM_PLAYERS:
                 updatePrompt("Enter the number of players");
@@ -105,85 +107,138 @@ public class RiskView extends JFrame{
                 updateMenuVisible(true, true, false,false,false,false);
                 break;
             case DEPLOY_DST:
-                updateMap();
                 updatePrompt(ac.getPlayer(),"choose a country to deploy troops to");
                 updateMenuVisible(true, false, false,false,false,false);
+                updateMap();
                 break;
             case DEPLOY_ARMY:
                 updatePrompt(ac.getPlayer(),"how many troops will you send to "+ac.getDstCountry().getName());
                 updateSlider(1,ac.getPlayer().getArmiesToAllocate());
                 updateMenuVisible(true, false, true,true,true,false);
-                updateMap();
                 break;
             case DEPLOY_CONFIRM:
                 updatePrompt(ac.getPlayer(),"are you sure you want to send "+ac.getDstArmy()+" troops to "+ac.getDstCountry().getName());
                 updateMenuVisible(true, false, false,true,true,false);
-                updateMap();
+                break;
             case ATTACK_SRC:
                 updatePrompt(ac.getPlayer(),"select a country to attack from");
                 updateSlider(1,ac.getPlayer().getArmiesToAllocate());
-                updateMenuVisible(true, false, false,false,true,true);
+                updateMenuVisible(true, false, false,false,false,true);
                 updateMap();
                 break;
             case ATTACK_DST:
                 updatePrompt(ac.getPlayer(),"select a country to attack from "+ac.getSrcCountry().getName());
                 updateSlider(1,ac.getPlayer().getArmiesToAllocate());
                 updateMenuVisible(true, false, false,false,true,true);
-                updateMap();
+                updateMap(ac.getSrcCountry(),ac.getSrcCountry().getAdjacentUnownedCountries(ac.getPlayer()));
                 break;
-            case ATTACK_ARMY:
+            case ATTACK_SRC_ARMY:
                 updatePrompt(ac.getPlayer(),"how many troops will you attack "+ac.getDstCountry().getName()+" with");
-                updateSlider(1,ac.getPlayer().getArmiesToAllocate());
+                updateSlider(1,Math.min(ac.getSrcArmy()-1,3));
                 updateMenuVisible(true, false, true,true,true,true);
-                updateMap();
                 break;
-            case ATTACK_CONFIRM:
+            case ATTACK_SRC_CONFIRM:
                 updatePrompt(ac.getPlayer(),"are you sure you want to attack "+ac.getDstCountry().getName()+" with "+ac.getSrcArmy()+" troops from "+ac.getSrcCountry().getName());
                 updateMenuVisible(true, false, false,true,true,true);
-                updateMap();
+                break;
+            case ATTACK_DST_ARMY:
+                updatePrompt(ac.getDstCountry().getOwner(),"how many troops will you defend with "+ac.getDstCountry().getName()+" with");
+                updateSlider(1,Math.min(ac.getSrcArmy(),2));
+                updateMenuVisible(true, false, true,true,false,false);
+                break;
+            case ATTACK_DST_CONFIRM:
+                updatePrompt(ac.getPlayer(),"are you sure you want to defend "+ac.getDstCountry().getName()+" from "+ac.getSrcCountry().getName()+" with "+ac.getDstArmy()+" troops");
+                updateMenuVisible(true, false, false,true,false,false);
                 break;
             case RETREAT_ARMY:
-                updatePrompt(ac.getPlayer(),"how many troops will you send back to "+ac.getSrcCountry().getName());
-                updateSlider(0,ac.getSrcArmy()-ac.getSrcArmyDead());
-                updateMenuVisible(true, false, true,true,true,true);
-                updateMap();
+                displayRolls(ac);
+                if (!ac.isAttackerVictory()||ac.getSrcArmy()-ac.getSrcArmyDead()<2) {
+                    updateMenuVisible(true, false, false,false,true,true);
+                } else {
+                    updateSlider(0,ac.getSrcArmy()-ac.getSrcArmyDead()-1);
+                    updateMenuVisible(true, false, true,true,false,true);
+                }
                 break;
             case RETREAT_CONFIRM:
-                updatePrompt(ac.getPlayer(),"are you sure you want to send"+ac.getDstArmy()+" troops back to "+ac.getSrcCountry().getName());
+                updatePrompt(ac.getPlayer(),"are you sure you want to send "+ac.getDstArmy()+" troops back to "+ac.getSrcCountry().getName());
                 updateMenuVisible(true, false, false,true,true,true);
-                updateMap();
                 break;
             case FORTIFY_SRC:
-                updatePrompt(ac.getPlayer(),"select a country to transfer troops from");
-                updateMenuVisible(true, false, false,false,true,true);
+                updatePrompt(ac.getPlayer(),"select a country with 2+ troops to transfer from");
+                updateMenuVisible(true, false, false,false,false,true);
                 updateMap();
                 break;
             case FORTIFY_DST:
                 updatePrompt(ac.getPlayer(),"select a country to transfer troops to");
                 updateMenuVisible(true, false, false,false,true,true);
-                updateMap();
+                updateMap(ac.getSrcCountry(),ac.getSrcCountry().getConnectedOwnedCountries(ac.getPlayer()));
                 break;
             case FORTIFY_ARMY:
-                updatePrompt(ac.getPlayer(),"how many troops will you send from "+ac.getSrcCountry()+" to "+ac.getDstCountry().getName());
-                updateSlider(0,ac.getSrcArmy()-ac.getSrcArmyDead());
+                updatePrompt(ac.getPlayer(),"how many troops will you send from "+ac.getSrcCountry().getName()+" to "+ac.getDstCountry().getName());
+                updateSlider(1,ac.getSrcArmy()-1);
                 updateMenuVisible(true, false, true,true,true,true);
-                updateMap();
                 break;
             case FORTIFY_CONFIRM:
                 updatePrompt(ac.getPlayer(),"are you sure you want to transfer "+ac.getSrcArmy()+" troops from "+ac.getSrcCountry().getName()+" to "+ac.getDstCountry().getName());
                 updateMenuVisible(true, false, false,true,true,true);
-                updateMap();
                 break;
         }
         menuConfirm.setActionCommand(ac.getPhase().name());
     }
 
+    private void displayRolls(ActionContext ac){
+        if(ac.isAttackerVictory()){
+            eventLogText.append(ac.getPlayer().name+" won the battle\n\t"+
+                    "Attacker lost "+ac.getSrcArmyDead()+" troops\n\t"+
+                    "Defender lost "+ac.getDstArmyDead()+" troops\n");
+        }else {
+            eventLogText.append(ac.getPlayer().name+" lost the battle\n\t"+
+                    "Attacker lost "+ac.getSrcArmyDead()+" troops\n\t"+
+                    "Defender lost "+ac.getDstArmyDead()+" troops\n");
+        }
+
+        String diceStr="Attacker rolls: [";
+        for(int i=0;i<ac.getDiceRolls()[0].length;i++){
+            diceStr+=ac.getDiceRolls()[0][i];
+            if(i<ac.getDiceRolls()[0].length-1){
+                diceStr+=", ";
+            }
+        }
+        diceStr+="]\nDefender rolls: [";
+        for(int i=0;i<ac.getDiceRolls()[1].length;i++){
+            diceStr+=ac.getDiceRolls()[1][i];
+            if(i<ac.getDiceRolls()[0].length-1){
+                diceStr+=", ";
+            }
+        }
+        diceStr+="]\n\n";
+
+        if(ac.isAttackerVictory()&&ac.getSrcArmy()-ac.getSrcArmyDead()>1){
+            updatePrompt(diceStr+ac.getPlayer().name+", how many troops will you send back to "+ac.getSrcCountry().getName());
+        }
+        else{
+            updatePrompt(diceStr);
+        }
+    }
+
     private void updateMap(){
+        updateMap(map.getCountries());
+    }
+    private void updateMap(Country country, Country[] countries){
+        Country[] tmp=new Country[countries.length+1];
+        for(int i=0;i<countries.length;i++){
+            tmp[i]=countries[i];
+        }
+        tmp[countries.length]=country;
+
+        updateMap(tmp);
+    }
+    private void updateMap(Country[] countries){
         mapPane.removeAll();
         mapPane.add(mapImage);
 
-        for(int i=0;i<map.getCountries().length;i++){
-            Country country=map.getCountries()[i];
+        for(int i=0;i<countries.length;i++){
+            Country country=countries[i];
 
             int width=18;
             int height=18;
@@ -248,5 +303,10 @@ public class RiskView extends JFrame{
         constraints.gridwidth=w;
         constraints.gridheight=h;
         return constraints;
+    }
+    private Country[] listToArray(ArrayList<Country> countriesList){
+        Country[] countriesArray=new Country[countriesList.size()];
+        countriesArray=countriesList.toArray(countriesArray);
+        return  countriesArray;
     }
 }

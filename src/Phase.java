@@ -23,9 +23,13 @@ public enum Phase {
     /** Attack phase selecting a destination country **/
     ATTACK_DST,
     /** Attack phase selecting number of troops to send **/
-    ATTACK_ARMY,
+    ATTACK_SRC_ARMY,
     /** Attack phase confirmation **/
-    ATTACK_CONFIRM,
+    ATTACK_SRC_CONFIRM,
+    /** Attack phase selecting number of troops to defend with **/
+    ATTACK_DST_ARMY,
+    /** Attack phase defender confirm **/
+    ATTACK_DST_CONFIRM,
     /** Attack phase results, retreat phase selecting troops to send back **/
     RETREAT_ARMY,
     /** Retreat phase confirmation **/

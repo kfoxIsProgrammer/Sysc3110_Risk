@@ -43,8 +43,8 @@ public class PlayerAI extends Player{
                 return actions.get(maxUtilityIndex);
             case ATTACK_SRC:
             case ATTACK_DST:
-            case ATTACK_ARMY:
-            case ATTACK_CONFIRM:
+            case ATTACK_SRC_ARMY:
+            case ATTACK_SRC_CONFIRM:
                 maxUtility=Integer.MIN_VALUE;
 
                 for(int i=0;i<countries.size();i++){
