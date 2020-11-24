@@ -125,6 +125,82 @@ public class RiskModel {
         }
     }
 
+    /** Very important method... can't remove **/
+    public void newGame(String[] playerNames){
+        newGamePlayerCreator(playerNames);
+        riskView.update(this.actionContext);
+    }
+    /**
+     * Method to process the names sent from the view
+     *
+     * @param playerNames The names of the players
+     */
+    public void newGameNameProcessor(String[] playerNames){
+        newGamePlayerCreator(playerNames);
+        riskView.update(this.actionContext);
+    }
+
+    /**
+     * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
+     *
+     */
+    private void newGamePlayerCreator(String[] playerNames){
+        int startingArmySize;
+        Random rand = new Random(System.currentTimeMillis());
+
+        Color[] colorsToAllocate={
+                new Color(200, 150, 0),
+                new Color(125, 125, 125),
+                new Color(255, 0  , 0),
+                new Color(0  , 255, 0),
+                new Color(255, 0  , 255),
+                new Color(0  , 255, 255)
+        };
+
+        //Determines starting army size which depends on amount of players
+        if (numPlayers == 2) {
+            startingArmySize = 50;
+        } else {
+            startingArmySize = (50) - 5 * numPlayers;
+        }
+
+        players=new Player[playerNames.length];
+        for(int i = 0; i < playerNames.length; i++){
+            players[i]=new PlayerHuman(playerNames[i], colorsToAllocate[i], startingArmySize,i);
+        }
+
+        //make randomized list of the countries
+        ArrayList<Country> ran = new ArrayList<>();
+        Collections.addAll(ran,this.map.getCountries());
+        Collections.shuffle(ran, rand);
+        Stack<Country> addStack = new Stack<>();
+        addStack.addAll(ran);
+        //Splits up the countries amongst players
+        while(!addStack.empty()){
+            for(Player play: players){
+                if(!addStack.empty()){
+                    play.addCountry(addStack.peek());
+                    addStack.peek().setArmy(1);
+                    play.removeArmy(1);
+                    addStack.pop().setOwner(play);
+                }
+            }
+        }
+        for(Player player: players){
+            while (player.getArmiesToAllocate() > 0){
+                ArrayList<Country> temp = player.getCountries();
+                Collections.shuffle(temp,rand);
+                for(Country count: temp){
+                    if (player.getArmiesToAllocate() >0) {
+                        count.addArmy(1);
+                        player.removeArmy(1);
+                    }
+                }
+            }
+        }
+        this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
+    }
+
     /**
      * Helper method to determine if the game is over based on 2 win conditions
      * 1. All players have lost because they cannot make an attack
@@ -425,10 +501,11 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
             case RETREAT_ARMY:
+                /*
                 retreat(this.actionContext.getPlayer(),
                         this.actionContext.getSrcCountry(),
                         this.actionContext.getDstCountry(),
-                        0);
+                        0);*/
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
             case FORTIFY_SRC:
