@@ -20,7 +20,7 @@ public class PlayerAI extends Player {
     public PlayerAI(String name, Color color, int armiesToAllocate, int playerId, Continent[] continents) {
         super(name, color, true, playerId);
         this.continents = continents;
-        this.armiesToAllocate = armiesToAllocate;
+        this.troopsToDeploy = armiesToAllocate;
         this.difficulty=Difficulty.EASY;
     }
     public boolean isItOptimalContinent(Country focalCountry){
@@ -34,7 +34,7 @@ public class PlayerAI extends Player {
         }
 
         for(int i = 0; i < continentValue.length; i++){
-            if(continentValue[i] > continentValue[maxContinentIndex] && continentValue[i] != continents[i].getCountryList().length ){
+            if(continentValue[i] > continentValue[maxContinentIndex] && continentValue[i] != continents[i].getCountries().length ){
                 maxContinentIndex = i;
             }
 
@@ -118,7 +118,7 @@ public class PlayerAI extends Player {
     }
 
     public boolean canDeploy(){
-        return this.armiesToAllocate>0;
+        return this.troopsToDeploy >0;
     }
     public boolean canAttack(){
         for(Country country: countries){
@@ -164,10 +164,10 @@ public class PlayerAI extends Player {
                         srcCountryAdjacentValue+= c.getArmy();
                     }
                 }
-                if(this.getArmiesToAllocate()>0){
+                if(this.getTroopsToDeploy()>0){
                     Random rng = new Random();
 
-                    deployContext.setSrcArmy(rng.nextInt(this.getArmiesToAllocate())-1);
+                    deployContext.setSrcArmy(rng.nextInt(this.getTroopsToDeploy())-1);
                     utility = srcCountryAdjacentValue - srcCountry.getAdjacentOwnedCountries(this).length-1;
                     utilities.add(utility);
                     actions.add(deployContext);
@@ -176,7 +176,7 @@ public class PlayerAI extends Player {
             case HARD:
                 actionContext.setDstCountry(srcCountry);
                 int troopsDiff = dstCountry.getArmy() - srcCountry.getArmy();
-                if (troopsDiff < armiesToAllocate && troopsDiff>0) {
+                if (troopsDiff < troopsToDeploy && troopsDiff>0) {
                     actionContext.setSrcArmy(troopsDiff);
                     utility = troopsDiff+ dstCountry.getAdjacentOwnedCountries(this).length - 1;
                     utilities.add(utility);

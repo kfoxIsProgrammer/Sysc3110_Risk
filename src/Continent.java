@@ -3,38 +3,47 @@
  * @version  10 / 22 / 2020
  */
 public class Continent {
-    /**Name of the continent*/
-    public final String name;
-    /**List of countries within the continent*/
-    public final Country[] countryList;
-    /**Number of troops received as bonus for full ownership*/
-    public final int bonusArmyValue;
+    /** Name of the continent **/
+    private String name;
+    /** List of countries within the continent **/
+    private Country[] countries;
+    /** List of countries within the continent **/
+    private int[] countryIDs;
+    /** Number of troops received as bonus for full ownership **/
+    private int bonusTroops;
 
-    /**
-     *3 param Constructor for Continent
-     * @param name name of the continent
-     * @param countryList list of contained countries
-     * @param bonusArmyValue troop bonus
-     */
-    public Continent(String name, Country[] countryList,int bonusArmyValue){
-        this.name=name;
-        this.countryList=countryList;
-        this.bonusArmyValue=bonusArmyValue;
+    public void IDsToCountries(Country[] allCountries){
+        countries=new Country[countryIDs.length];
+
+        for(int i=0;i<countryIDs.length;i++){
+            countries[i]=allCountries[countryIDs[i]];
+        }
     }
 
-    /**Getter for name
-     * @return name of the continent*/
+    public boolean isOwnedBy(Player player){
+        for(Country country: countries){
+            if(country.getOwner()!=player){
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * @return The continent name
+     */
     public String getName() {
         return name;
     }
-    /**Getter for bonusArmyValue
-     * @return number of bonus troops*/
-    public int getBonusArmyValue() {
-        return bonusArmyValue;
+    /**
+     * @return The array of contained countries
+     */
+    public Country[] getCountries() {
+        return countries;
     }
-    /**Getter for countryList
-     * @return list of countries contained within the continent*/
-    public Country[] getCountryList() {
-        return countryList;
+    /**
+     * @return The bonus army value
+     */
+    public int getBonusTroops() {
+        return bonusTroops;
     }
 }

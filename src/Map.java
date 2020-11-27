@@ -7,27 +7,18 @@ import java.awt.image.BufferedImage;
  */
 public class Map {
     /** List of the countries in the game **/
-    private final Country[] countries;
+    private Country[] countries;
     /** List of all the continents in the game **/
-    private final Continent[] continents;
+    private Continent[] continents;
     /** The map image **/
     private transient BufferedImage mapImage;
 
-    /**
-     * Constructor of a Map
-     * @param countries array of countries on the map
-     * @param continents array of continents on the map
-     */
-    public Map(Country[] countries, Continent[] continents){
-        this.countries=countries;
-        this.continents=continents;
-    }
+    public static Map Import(String filename){
+        MapImport mapFileParser=new MapImport(filename);
+        Map tmpMap=mapFileParser.getMapData();
+        tmpMap.mapImage=mapFileParser.getMapImage();
 
-    /**
-     * @param mapImage The map image
-     */
-    public void setMapImage(BufferedImage mapImage) {
-        this.mapImage = mapImage;
+        return tmpMap;
     }
 
     /**
@@ -53,21 +44,18 @@ public class Map {
      * Displays the country information
      */
     public void printCountries(){
-        for(int i=0;i<countries.length;i++){
-            System.out.printf("%s\n", countries[i].getName());
-            for(int j = 0; j< countries[i].getAdjacentCountries().length; j++){
-                System.out.printf("\t%s\n", countries[i].getAdjacentCountries()[j].getName());
-            }
+        for (Country country : countries) {
+            System.out.printf("%s\n", country.getName());
         }
     }
     /**
      * Displays the continent information
      */
     public void printContinents(){
-        for(int i=0;i<continents.length;i++){
-            System.out.printf("%s\n", continents[i].getName());
-            for(int j = 0; j< continents[i].getCountryList().length; j++){
-                System.out.printf("\t%s\n", continents[i].getCountryList()[j].getName());
+        for (Continent continent : continents) {
+            System.out.printf("%s\n", continent.getName());
+            for (Country country: continent.getCountries()) {
+                System.out.printf("\t%s\n", country.getName());
             }
         }
     }

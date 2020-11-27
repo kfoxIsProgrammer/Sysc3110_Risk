@@ -95,7 +95,7 @@ public class RiskView extends JFrame{
     }
 
     public void update(ActionContext ac){
-        System.out.printf("View: %s\n",ac.getPhase().name());
+        System.out.printf("View Phase: %s\n",ac.getPhase().name());
         switch(ac.getPhase()){
             case NUM_PLAYERS:
                 updatePrompt("Enter the number of players");
@@ -118,7 +118,7 @@ public class RiskView extends JFrame{
                 break;
             case DEPLOY_ARMY:
                 updatePrompt(ac.getPlayer(),"how many troops will you send to "+ac.getDstCountry().getName());
-                updateSlider(1,ac.getPlayer().getArmiesToAllocate());
+                updateSlider(1,ac.getPlayer().getTroopsToDeploy());
                 updateMenuVisible(true, false, true,true,true,false);
                 break;
             case DEPLOY_CONFIRM:

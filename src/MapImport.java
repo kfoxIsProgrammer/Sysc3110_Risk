@@ -20,10 +20,6 @@ public class MapImport {
     private Map map;
     /** The loaded image **/
     private BufferedImage mapImage;
-    /** List of the countries in the game **/
-    private Country[] countries;
-    /** List of all the continents in the game **/
-    private Continent[] continents;
 
     /** Reads the file data into countries and continents **/
     public MapImport(String filepath){
@@ -38,6 +34,9 @@ public class MapImport {
 
                 if(entry.getName().toLowerCase().split("\\.")[1].equals("png")){
                     imageLoaded=parseMapImage(zipFile, entry);
+                    if(imageLoaded){
+                        System.out.printf("Map set: %s\n",entry.getName());
+                    }
                 }
                 else if(entry.getName().toLowerCase().split("\\.")[1].equals("json")){
                     InputStream inputStream=zipFile.getInputStream(entry);
@@ -46,11 +45,14 @@ public class MapImport {
                     String result = s.hasNext() ? s.next() : "";
 
                     dataLoaded=parseJSONData(result);
+
+                    if(dataLoaded){
+                        System.out.printf("Data set: %s\n",entry.getName());
+                    }
                 }
             }
-            if(dataLoaded && imageLoaded){
-                this.map.setMapImage(this.mapImage);
-                System.out.printf("Map set\n");
+            if (!dataLoaded || !imageLoaded) {
+                System.out.printf("Unable to load %s\n",filepath);
             }
         }
         catch(IOException e){
@@ -62,10 +64,9 @@ public class MapImport {
     private boolean parseMapImage(ZipFile zipFile, ZipEntry entry){
         try {
             this.mapImage=ImageIO.read(zipFile.getInputStream(entry));
-            System.out.printf("Map image loaded\n");
             return true;
         } catch (IOException e) {
-            System.out.printf("Unable to load map image\n");
+            System.out.printf("Unable to load map image: %s\n",entry.getName());
             return false;
         }
     }
@@ -118,84 +119,20 @@ public class MapImport {
             country.setCenterCoordinates(new Point(avgX,avgY));
         }
 
+        for(Continent continent:map.getContinents()){
+            continent.IDsToCountries(map.getCountries());
+        }
 
-        System.out.printf("Map data loaded\n");
         return true;
     }
 
-    /**
-     * Helper function to read JSON from a file
-     * @param filepath the JSON file to read
-     */
-    private void readJSONFile(String filepath){
-        Gson gson = new Gson();
-
-        try (Reader reader = new FileReader(filepath)) {
-
-            // Convert JSON File to Java Object
-            Map map = gson.fromJson(reader, Map.class);
-
-            System.out.printf("%s\n",gson.toJson(map));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Helper function to read data from a map image
-     * @param filepath the file path to the map
-     */
-    private void readMapImage(String filepath){
-        try {
-            this.mapImage=ImageIO.read(new File(filepath));
-        }catch(IOException e){
-            System.out.printf("Unable to load %s, file not found\n",filepath);
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * @return The contents of the countries ArrayList
-     */
-    public Country[] getCountries() {
-        return countries;
-    }
-    /**
-     * @return The contents of the continents ArrayList
-     */
-    public Continent[] getContinents() {
-        return continents;
-    }
     public Map getMap(){
         return map;
     }
-
-    /**
-     * Displays the country information for debug purposes
-     */
-    public void printCountries(){
-        for(int i=0;i<countries.length;i++){
-            System.out.printf("%s\n", countries[i].getName());
-            for(int j = 0; j< countries[i].getAdjacentCountries().length; j++){
-                System.out.printf("\t%s\n", countries[i].getAdjacentCountries()[j].getName());
-            }
-        }
+    public Map getMapData(){
+        return map;
     }
-    /**
-     * Displays the continent information for debug purposes
-     */
-    public void printContinents(){
-        for(int i=0;i<continents.length;i++){
-            System.out.printf("%s\n", continents[i].getName());
-            for(int j = 0; j< continents[i].getCountryList().length; j++){
-                System.out.printf("\t%s\n", continents[i].getCountryList()[j].getName());
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        MapImport parser=new MapImport("maps/test.zip");
-
+    public BufferedImage getMapImage(){
+        return mapImage;
     }
 }

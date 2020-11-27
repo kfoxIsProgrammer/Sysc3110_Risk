@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Player class used to represent a player or AI, playing the game of risk
@@ -16,11 +17,9 @@ public abstract class Player {
     /** The color the player is **/
     protected final Color playerColor;
     /** Number of armies that can be allocated to a country **/
-    protected int armiesToAllocate;
+    protected int troopsToDeploy;
     /** Hashmap of owned Countries **/
     protected ArrayList<Country> countries;
-    /** Hashmap of Owned Continents **/
-    protected ArrayList<Continent> continents;
     /** This is used for lose condition **/
     protected boolean hasLost = false;
 
@@ -30,25 +29,16 @@ public abstract class Player {
         this.name = name;
         this.playerColor = color;
         this.countries=new ArrayList<>();
-        this.continents=new ArrayList<>();
-    }
-
-    /**
-     * Add more army to allocate for army allocation phase
-     * @param newArmy the new army to add
-     */
-    public void addArmyToAllocate(int newArmy){
-        this.armiesToAllocate += newArmy;
     }
     /**
      * Used to decrement armiesToAllocate
-     * @param removeArmy the number of army to remove
+     * @param troops the number of troops to remove
      */
-    public void removeArmy(int removeArmy){
-        if(this.armiesToAllocate - removeArmy < 0)
-            this.armiesToAllocate = 0;
+    public void removeTroops(int troops){
+        if(this.troopsToDeploy - troops < 0)
+            this.troopsToDeploy = 0;
         else
-            this.armiesToAllocate -= removeArmy;
+            this.troopsToDeploy -= troops;
     }
     /**
      * Add an owned country to this player
@@ -64,20 +54,6 @@ public abstract class Player {
     public void removeCountry(Country countryToRemove){
         this.countries.remove(countryToRemove);
     }
-    /**
-     * Add an owned continent to this player
-     * @param continentToAdd the owned continent to add
-     */
-    public void addContinent(Continent continentToAdd){
-        this.continents.add(continentToAdd);
-    }
-    /**
-     * Remove an owned continent to this player
-     * @param continentToRemove the owned continent to remove
-     */
-    public void removeContinent(Continent continentToRemove){
-        this.continents.remove(continentToRemove);
-    }
 
     /**
      * Player has lost and boolean is set to true
@@ -85,21 +61,21 @@ public abstract class Player {
     public void setHasLost(){
      this.hasLost = true;
     }
-
-    public Boolean getAI() {
-        return isAI;
+    public void setCountries(Country[] countries){
+        Collections.addAll(this.countries,countries);
     }
+
     public String getName() {
         return name;
     }
-    public int getArmiesToAllocate() {
-        return armiesToAllocate;
+    public int getTroopsToDeploy() {
+        return troopsToDeploy;
     }
-    public ArrayList<Country> getCountries() {
-        return countries;
-    }
-    public ArrayList<Continent> getContinents() {
-        return continents;
+    public Country[] getCountries() {
+        Country[] tmpCountries=new Country[countries.size()];
+        tmpCountries=countries.toArray(tmpCountries);
+
+        return tmpCountries;
     }
     public boolean getHasLost() {
         return hasLost;
@@ -107,4 +83,5 @@ public abstract class Player {
     public Color getColor() {
         return playerColor;
     }
+
 }

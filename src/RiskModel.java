@@ -15,9 +15,9 @@ public class RiskModel {
     /** The current action context **/
     public ActionContext actionContext;
     /** The current risk view**/
-    public RiskView riskView;
+    public RiskView view;
     /** The current RiskController**/
-    public RiskController riskController;
+    public RiskController controller;
     public int numPlayers;
     public int numHumans;
     public int numAI;
@@ -30,11 +30,11 @@ public class RiskModel {
      * @param names the names of players
      */
     public RiskModel(String[] names){
-        this.map=new MapImport("maps/demo.zip").getMap();
+        this.map=Map.Import("maps/demo.zip");
         this.actionContext=new ActionContext(Phase.NEW_GAME,null);
 
-        this.riskController=new RiskController(this);
-        this.riskView=new RiskView(this.riskController,map);
+        this.controller =new RiskController(this);
+        this.view =new RiskView(controller,map);
         setNumPlayers(names.length);
         for(int i=0;i<numPlayers;i++){
             actionContext.setPlayerId(i);
@@ -42,17 +42,17 @@ public class RiskModel {
         }
         allocateCountries();
         allocateArmies();
-        this.riskView.update(this.actionContext);
+        this.view.update(actionContext);
     }
 
     /** Constructor of Risk Model*/
     public RiskModel(){
-        this.map=new MapImport("maps/demo.zip").getMap();
+        this.map=Map.Import("maps/demo.zip");
         this.actionContext=new ActionContext(Phase.NUM_PLAYERS,null);
 
-        this.riskController=new RiskController(this);
-        this.riskView=new RiskView(this.riskController,map);
-        this.riskView.update(this.actionContext);
+        this.controller =new RiskController(this);
+        this.view =new RiskView(this.controller,map);
+        this.view.update(this.actionContext);
     }
     public void setNumPlayers(int numPlayers){
         this.numPlayers=numPlayers;
@@ -108,7 +108,7 @@ public class RiskModel {
                 if(!addStack.empty()){
                     player.addCountry(addStack.peek());
                     addStack.peek().setArmy(1);
-                    player.removeArmy(1);
+                    player.removeTroops(1);
                     addStack.pop().setOwner(player);
                 }
             }
@@ -119,93 +119,18 @@ public class RiskModel {
         Random rand = new Random(System.currentTimeMillis());
 
         for(Player player: players){
-            while (player.getArmiesToAllocate() > 0){
-                ArrayList<Country> temp = player.getCountries();
+            while (player.getTroopsToDeploy() > 0){
+                ArrayList<Country> temp = new ArrayList<>();
+                Collections.addAll(temp,player.getCountries());
                 Collections.shuffle(temp,rand);
                 for(Country count: temp){
-                    if (player.getArmiesToAllocate() >0) {
+                    if (player.getTroopsToDeploy() >0) {
                         count.addArmy(1);
-                        player.removeArmy(1);
+                        player.removeTroops(1);
                     }
                 }
             }
         }
-    }
-
-    /** Very important method... can't remove **/
-    public void newGame(String[] playerNames){
-        newGamePlayerCreator(playerNames);
-        riskView.update(this.actionContext);
-    }
-    /**
-     * Method to process the names sent from the view
-     *
-     * @param playerNames The names of the players
-     */
-    public void newGameNameProcessor(String[] playerNames){
-        newGamePlayerCreator(playerNames);
-        riskView.update(this.actionContext);
-    }
-
-    /**
-     * Queries the user for the necessary information from players to start the game. This includes player count and player names. It then proceeds to initialize the player objects
-     *
-     */
-    private void newGamePlayerCreator(String[] playerNames){
-        int startingArmySize;
-        Random rand = new Random(System.currentTimeMillis());
-
-        Color[] colorsToAllocate={
-                new Color(200, 150, 0),
-                new Color(125, 125, 125),
-                new Color(255, 0  , 0),
-                new Color(0  , 255, 0),
-                new Color(255, 0  , 255),
-                new Color(0  , 255, 255)
-        };
-
-        //Determines starting army size which depends on amount of players
-        if (numPlayers == 2) {
-            startingArmySize = 50;
-        } else {
-            startingArmySize = (50) - 5 * numPlayers;
-        }
-
-        players=new Player[playerNames.length];
-        for(int i = 0; i < playerNames.length; i++){
-            players[i]=new PlayerHuman(playerNames[i], colorsToAllocate[i], startingArmySize,i);
-        }
-
-        //make randomized list of the countries
-        ArrayList<Country> ran = new ArrayList<>();
-        Collections.addAll(ran,this.map.getCountries());
-        Collections.shuffle(ran, rand);
-        Stack<Country> addStack = new Stack<>();
-        addStack.addAll(ran);
-        //Splits up the countries amongst players
-        while(!addStack.empty()){
-            for(Player play: players){
-                if(!addStack.empty()){
-                    play.addCountry(addStack.peek());
-                    addStack.peek().setArmy(1);
-                    play.removeArmy(1);
-                    addStack.pop().setOwner(play);
-                }
-            }
-        }
-        for(Player player: players){
-            while (player.getArmiesToAllocate() > 0){
-                ArrayList<Country> temp = player.getCountries();
-                Collections.shuffle(temp,rand);
-                for(Country count: temp){
-                    if (player.getArmiesToAllocate() >0) {
-                        count.addArmy(1);
-                        player.removeArmy(1);
-                    }
-                }
-            }
-        }
-        this.actionContext=new ActionContext(Phase.ATTACK_SRC, this.players[0]);
     }
 
     /**
@@ -242,7 +167,7 @@ public class RiskModel {
 
         for(Player player : playersToCheck){
             //If they do not own anymore countries they lose
-            if(player.getCountries().isEmpty()){
+            if(player.getCountries().length==0){
                 player.setHasLost();
                 return true;
             }
@@ -253,7 +178,7 @@ public class RiskModel {
             for(Country country: player.getCountries()){
                 sumOfUnits += country.getArmy();
             }
-            if(sumOfUnits == player.getCountries().size()){
+            if(sumOfUnits == player.getCountries().length){
                 player.setHasLost();
                 return true;
             }
@@ -299,7 +224,7 @@ public class RiskModel {
             //Error no more players call game is over
             if(this.players[nextIndex].equals(player)){
                 gameIsOver();
-                riskView.update(this.actionContext);
+                view.update(this.actionContext);
                 return null;
             }
         }
@@ -412,7 +337,7 @@ public class RiskModel {
                 this.actionContext.setDstCountry(clickedCountry);
                 break;
         }
-        riskView.update(this.actionContext);
+        view.update(this.actionContext);
     }
     public void textEntered(String text){
         textBuffer=text;
@@ -448,14 +373,14 @@ public class RiskModel {
             case FORTIFY_CONFIRM:
                 actionContext.setPlayer(nextPlayer(this.actionContext.getPlayer()));
                 allocateBonusTroops(actionContext.getPlayer());
-                if(actionContext.getPlayer().getArmiesToAllocate()>0){
+                if(actionContext.getPlayer().getTroopsToDeploy()>0){
                     this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.getPlayer());
                 }else{
                     this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 }
                 break;
         }
-        riskView.update(this.actionContext);
+        view.update(this.actionContext);
     }
     /**
      * Method to deal with when the user clicks a confirm button
@@ -487,7 +412,7 @@ public class RiskModel {
                 if(deploy(this.actionContext.getPlayer(),
                         this.actionContext.getDstCountry(),
                         this.actionContext.getDstArmy())) {
-                    if(actionContext.getPlayer().getArmiesToAllocate()==0){
+                    if(actionContext.getPlayer().getTroopsToDeploy()==0){
                         this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                     }else{
                         this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.getPlayer());
@@ -540,7 +465,7 @@ public class RiskModel {
                         this.actionContext.getSrcArmy())) {
                     actionContext.setPlayer(nextPlayer(this.actionContext.getPlayer()));
                     allocateBonusTroops(actionContext.getPlayer());
-                    if(actionContext.getPlayer().getArmiesToAllocate()>0){
+                    if(actionContext.getPlayer().getTroopsToDeploy()>0){
                         this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.getPlayer());
                     }else{
                         this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
@@ -551,7 +476,7 @@ public class RiskModel {
                 }
                 break;
         }
-        riskView.update(this.actionContext);
+        view.update(this.actionContext);
     }
     /**
      * Methods to deal with when the user clicks a back button
@@ -569,15 +494,6 @@ public class RiskModel {
             case ATTACK_SRC_CONFIRM:
                 this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
-            case RETREAT_ARMY:
-                /*retreat(this.actionContext.getPlayer(),
-                        this.actionContext.getSrcCountry(),
-                        this.actionContext.getDstCountry(),
-                        0);*/
-                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
-
-
-                break;
             case FORTIFY_SRC:
             case FORTIFY_DST:
             case FORTIFY_ARMY:
@@ -585,7 +501,7 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.FORTIFY_SRC,this.actionContext.getPlayer());
                 break;
         }
-        riskView.update(this.actionContext);
+        view.update(this.actionContext);
     }
 
     /**
@@ -596,11 +512,11 @@ public class RiskModel {
      * @return boolean fortify that returns a true if the function was successful.
      */
     private boolean deploy(Player player, Country destinationCountry, int troopsToDeploy){
-        if(troopsToDeploy>player.getArmiesToAllocate() || destinationCountry.getOwner()!=player){
+        if(troopsToDeploy>player.getTroopsToDeploy() || destinationCountry.getOwner()!=player){
             return false;
         }
         else{
-            player.removeArmy(troopsToDeploy);
+            player.removeTroops(troopsToDeploy);
             destinationCountry.addArmy(troopsToDeploy);
             return true;
         }
@@ -704,7 +620,7 @@ public class RiskModel {
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
             if(gameIsOver()){
                 //Force game over here
-                this.riskView.update(this.actionContext);
+                this.view.update(this.actionContext);
             }
         }
 
@@ -785,16 +701,8 @@ public class RiskModel {
      * @param player the player that is gaining the countries
      */
     public void allocateBonusTroops(Player player){
-//        boolean willTroopsBeAssigned;
-//        for (Continent continent : this.map.getContinents()){
-//            willTroopsBeAssigned = true;
-//            for(Country country: continent.getCountryList()){
-//                if (!player.countries.contains(this.map.getCountries()[Arrays.asList(this.map.getContinents()).indexOf(country)])){
-//                    willTroopsBeAssigned = false;
-//                }
-//            }
-//        }
-        player.armiesToAllocate=Math.max(3,player.countries.size()/3);
+
+        player.troopsToDeploy =Math.max(3,player.countries.size()/3);
     }
 
     public static void main(String[] args) {

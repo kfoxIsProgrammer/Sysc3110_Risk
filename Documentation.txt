@@ -77,7 +77,7 @@ Command Parser:
         
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
-   Milestone2
+   Milestone3
    
    To make our code work, we have refactored our arrayLists back to arrays. It was to give some members better support.
    We also have a few design to figure out. We know our classes don't have good cohesion, therefore, we will refine our design in the next iteration. 
