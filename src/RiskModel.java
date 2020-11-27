@@ -489,6 +489,9 @@ public class RiskModel {
                 this.actionContext=new ActionContext(Phase.DEPLOY_DST,this.actionContext.getPlayer());
                 break;
             case ATTACK_SRC:
+            case RETREAT_ARMY:
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
+                break;
             case ATTACK_DST:
             case ATTACK_SRC_ARMY:
             case ATTACK_SRC_CONFIRM:

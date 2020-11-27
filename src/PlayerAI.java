@@ -21,7 +21,7 @@ public class PlayerAI extends Player {
         super(name, color, true, playerId);
         this.continents = continents;
         this.troopsToDeploy = armiesToAllocate;
-        this.difficulty=Difficulty.EASY;
+        this.difficulty=Difficulty.MEDIUM;
     }
     public boolean isItOptimalContinent(Country focalCountry){
         int[] continentValue = new int[continents.length];
@@ -72,7 +72,6 @@ public class PlayerAI extends Player {
             case ATTACK_DST:
             case ATTACK_SRC_ARMY:
             case ATTACK_SRC_CONFIRM:
-                maxUtility=Integer.MIN_VALUE;
             case ATTACK_DST_ARMY:
             case ATTACK_DST_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
@@ -215,7 +214,7 @@ public class PlayerAI extends Player {
                 attackContext.setDstCountry(dstCountry);
                 //Will only attack high priority
 
-                if(srcCountry.getArmy()-1 > dstCountry.getArmy()) {
+               // if(srcCountry.getArmy()-1 > dstCountry.getArmy()) {
                     int srcCountryAdjacentValue = 0;
                     int dstCountryAdjacentValue=0;
                     for(Country c: srcCountry.getAdjacentCountries()){
@@ -230,10 +229,12 @@ public class PlayerAI extends Player {
                     }
                     attackContext.setSrcArmy(srcCountry.getArmy()-1);
                     utilities.add(srcCountryAdjacentValue+dstCountryAdjacentValue/2);
-                    actions.add(attackContext);
-                }else{
-                    utilities.add(Integer.MIN_VALUE);
-                }
+
+
+                  //  utilities.add(Integer.MIN_VALUE);
+
+
+                actions.add(attackContext);
                 break;
             case HARD:
                 if(srcCountry.getArmy()>=dstCountry.getArmy() && srcCountry.getArmy()!=1){
