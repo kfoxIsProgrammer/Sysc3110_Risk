@@ -282,6 +282,7 @@ public class PlayerAI extends Player {
                 }
                 actionContext.setSrcCountry(srcCountry);
                 actionContext.setDstCountry(dstCountry);
+
                 utilities.add(utility);
                 actions.add(actionContext);
                 break;

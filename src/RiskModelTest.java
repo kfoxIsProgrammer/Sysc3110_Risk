@@ -100,7 +100,7 @@ public class RiskModelTest extends TestCase {
         assertEquals(6,test.map.getContinents().length);
         assertNotEquals(null, test.controller);
 
-        assertEquals(Phase.ATTACK_SRC, test.actionContext.getPhase());
+        assertEquals(Phase.DEPLOY_DST, test.actionContext.getPhase());
     }
 
     /**
@@ -115,151 +115,17 @@ public class RiskModelTest extends TestCase {
 
     }
 
-    /***
-     * Tests that clicking on the space designated as alberta will select the correct country and change the phase to
-     * waiting for destination country.
-     */
-    public void testClickingSourceCountry() {
-        RiskModel test = new RiskModel(twoPlayers);
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-        Country sourceCountryToTest = null;
-        //find a country the player owns that has enough soldiers to attack
-        sourceCountryToTest= getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on Alberta
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName()); // confirms country clicked was alberta
-        assertEquals(Phase.ATTACK_DST, test.actionContext.getPhase()); //confirms phase changes to search for dst Country
-
-    }
-
-    /***
-     * Test that after selecting a source country that clicking invalid country will change phase back to looking for
-     * source country.
-     */
-    public void
-    testClickingBackOutOfDstCountry() {
-        RiskModel test = new RiskModel(twoPlayers);
-        Country sourceCountryToTest = null;
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-        sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on source Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName());
-        test.menuBack(); //Clicks Back
-        assertEquals(Phase.ATTACK_SRC, test.actionContext.getPhase());//confirms phase went back to finding src country
-    }
-    /***
-     * Test whether it can correctly proceed to the attack_army phase by clicking on a dst country
-     */
-    public void testClickingDstCountry() {
-        RiskModel test = new RiskModel(twoPlayers);
-        Country sourceCountryToTest;
 
 
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-
-        sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on source Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName());
-
-        Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
-        test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
-        assertEquals(Phase.ATTACK_SRC_ARMY, test.actionContext.getPhase());//confirms phase proceeded to choosing army
-    }
-
-    /***
-     * Tests clicking blank pace after reaching army phase of attack
-     */
-    public void testClickingBackOutOfArmyCountry() {
-        RiskModel test = new RiskModel(twoPlayers);
-        Country sourceCountryToTest;
 
 
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-
-        sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on source Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName());
-
-        Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
-        test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
 
 
-        test.menuBack(); //Clicks Back
-        assertEquals(Phase.ATTACK_SRC, test.actionContext.getPhase());//confirms phase went back to choosing src country
-    }
-
-    /***
-     * Test that the correct phase is reached after selecting units.
-     */
-    public void testSelectingArmySize() {
-
-        RiskModel test = new RiskModel(twoPlayers);
-        Country sourceCountryToTest;
 
 
-        Country[] playerOwnedCountries = test.players[0].getCountries();
 
-        sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on source Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName());
 
-        Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
-        test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
 
-        assertEquals(Phase.RETREAT_ARMY, test.actionContext.getPhase());//confirms phase went back to choosing src country
-    }
-
-    /***
-     * Test the functionality of the skip button
-     */
-    public void testSkipButton(){
-        RiskModel test = new RiskModel(twoPlayers);
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-        test.menuSkip();
-        assertEquals(test.players[1], test.actionContext.getPlayer());
-    }
-
-    /**
-     * skips through whole list of players.
-     */
-    public void testSkipButtonCycle(){
-        RiskModel test = new RiskModel(twoPlayers);
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-        for(int i = 0; i < test.players.length; i++) {
-            test.menuSkip();
-        }
-
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-    }
-
-    /***
-     * Skips through an entire cycle of turns of 6 players
-     */
-    public void testSkipSixButtonCycle(){
-        RiskModel test = new RiskModel(sixPlayers);
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-        for(int i = 0; i < test.players.length; i++) {
-            test.menuSkip();
-        }
-
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-    }
-
-    /***
-     * makes sure skipping works from attack_dst phase
-     */
-    public void testSkipInAttackDstPhase(){
-        RiskModel test = new RiskModel(twoPlayers);
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-        Country sourceCountryToTest = null;
-        //find a country the player owns that has enough soldiers to attack
-        sourceCountryToTest= getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on src Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName()); // confirms country
-        assertEquals(Phase.ATTACK_DST, test.actionContext.getPhase()); //confirms phase changes to search for dst Country
-        test.menuSkip();
-        assertEquals(test.players[1], test.actionContext.getPlayer());
-        assertEquals(Phase.ATTACK_SRC, test.actionContext.getPhase());
-    }
 
     /***
      * Tests that the array of country objects in model is in the right order for the default map
@@ -361,32 +227,12 @@ public class RiskModelTest extends TestCase {
         assertEquals(0, toTest.size());
 
     }
-    /*public void testAllocateBonusUnits() {
+    public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
-        test.players[0].getCountries().clear();
-        test.players[1].getCountries().clear();
-        assertEquals(0, test.players[0].getArmiesToAllocate());
-        for(int i = 0; i < test.map.getCountries().length; i++){
-            test.map.getCountries()[i].setOwner(null);
-        }
-        for( int i  = 0; i < 9; i++){
-            test.players[0].addCountry(test.map.getCountries()[i]);//add Western australia
-            test.map.getCountries()[i].setOwner(test.players[0]);
 
-        }
-        assertEquals(9, test.players[0].getCountries().size());
-        assertEquals(9, test.map.getContinents()[0].getCountryList().length);
-        assertEquals(test.players[0].getCountries().get(0).getName(), test.map.getContinents()[0].getCountryList()[0].getName());
-        System.out.println(test.players[0].countries.contains(test.map.getContinents()[0].getCountryList()[0]));
-
-        test.allocateBonusTroops(test.players[0]);
-        assertEquals(10,test.map.getContinents()[0].getBonusArmyValue());
-        assertEquals(10,test.players[0].armiesToAllocate);
-
-
-
-
-    }*/
 
 
     }
+
+
+}
