@@ -69,6 +69,13 @@ public class RiskModelTest extends TestCase {
         }
         return(ValidSrcCountry);
     }
+    public void setCountriesToPlayer(RiskModel model, int user, int[] countryIndexes){
+        for(int index : countryIndexes){
+            model.players[user].addCountry(model.map.getCountries()[index]);//add Alaska
+            model.map.getCountries()[index].setOwner(model.players[user]);
+
+        }
+    }
 
     /***
      * Checks all the adjacent countries of the passed in Country count and finds one that is not owned by the user.
@@ -115,18 +122,6 @@ public class RiskModelTest extends TestCase {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     /***
      * Tests that the array of country objects in model is in the right order for the default map
      */
@@ -155,29 +150,9 @@ public class RiskModelTest extends TestCase {
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].addCountry(test.map.getCountries()[0]);//add Alaska
-        test.map.getCountries()[0].setOwner(test.players[0]);
+        int[] countries = {0,1,5,6,7,8,3,27};
+        setCountriesToPlayer(test, 0,countries);
 
-        test.players[0].addCountry(test.map.getCountries()[1]);//add alberta
-        test.map.getCountries()[1].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[5]);//add NorthWest Territory
-        test.map.getCountries()[5].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[6]);//add Ontario
-        test.map.getCountries()[6].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[7]);//add Quebec
-        test.map.getCountries()[7].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[8]); // add western United states
-        test.map.getCountries()[8].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[3]); // add Eastern united states
-        test.map.getCountries()[3].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[27]);//add china
-        test.map.getCountries()[27].setOwner(test.players[0]);
         toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
         //should not include china
         assertEquals(6, toTest.size());
@@ -199,29 +174,8 @@ public class RiskModelTest extends TestCase {
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].addCountry(test.map.getCountries()[41]);//add Western australia
-        test.map.getCountries()[41].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[1]);//add alberta
-        test.map.getCountries()[1].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[40]);//add New Guinea
-        test.map.getCountries()[40].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[39]);//add Indonesia
-        test.map.getCountries()[39].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[38]);//add Eastern Australia
-        test.map.getCountries()[38].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[37]); // add western Yakutsk
-        test.map.getCountries()[37].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[36]); // add Ural
-        test.map.getCountries()[36].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[35]);//add siberia
-        test.map.getCountries()[35].setOwner(test.players[0]);
+        int[] countries = {41,1,40,39,39,37,36,35};
+        setCountriesToPlayer(test, 0,countries);
         toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
         //should not include china
         assertEquals(0, toTest.size());
