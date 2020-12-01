@@ -704,8 +704,14 @@ public class RiskModel {
      * @param player the player that is gaining the countries
      */
     public void allocateBonusTroops(Player player){
+        player.troopsToDeploy=0;
+        for(Continent continent: map.getContinents()){
+            if(continent.isOwnedBy(player)){
+                player.troopsToDeploy+=continent.getBonusTroops();
+            }
+        }
 
-        player.troopsToDeploy =Math.max(3,player.countries.size()/3);
+        player.troopsToDeploy+=Math.max(3,player.countries.size()/3);
     }
 
     public static void main(String[] args) {
