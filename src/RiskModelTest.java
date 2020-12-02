@@ -69,6 +69,16 @@ public class RiskModelTest extends TestCase {
         }
         return(ValidSrcCountry);
     }
+    public void setCountriesToPlayer(RiskModel model, int user, int[] countryIndexes){
+        for(int i = 0; i < model.map.getCountries().length; i++){
+            model.map.getCountries()[i].setOwner(null);
+        }
+        for(int index : countryIndexes){
+            model.players[user].addCountry(model.map.getCountries()[index]);//add Alaska
+            model.map.getCountries()[index].setOwner(model.players[user]);
+
+        }
+    }
 
     /***
      * Checks all the adjacent countries of the passed in Country count and finds one that is not owned by the user.
@@ -100,7 +110,7 @@ public class RiskModelTest extends TestCase {
         assertEquals(6,test.map.getContinents().length);
         assertNotEquals(null, test.controller);
 
-        assertEquals(Phase.ATTACK_SRC, test.actionContext.getPhase());
+        assertEquals(Phase.DEPLOY_DST, test.actionContext.getPhase());
     }
 
     /**
@@ -113,152 +123,6 @@ public class RiskModelTest extends TestCase {
             assertTrue(test.map.getCountries()[i].containsPoint(getValidPoint(test.map.getCountries()[i])));
         }
 
-    }
-
-    /***
-     * Tests that clicking on the space designated as alberta will select the correct country and change the phase to
-     * waiting for destination country.
-     */
-    public void testClickingSourceCountry() {
-        RiskModel test = new RiskModel(twoPlayers);
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-        Country sourceCountryToTest = null;
-        //find a country the player owns that has enough soldiers to attack
-        sourceCountryToTest= getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on Alberta
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName()); // confirms country clicked was alberta
-        assertEquals(Phase.ATTACK_DST, test.actionContext.getPhase()); //confirms phase changes to search for dst Country
-
-    }
-
-    /***
-     * Test that after selecting a source country that clicking invalid country will change phase back to looking for
-     * source country.
-     */
-    public void
-    testClickingBackOutOfDstCountry() {
-        RiskModel test = new RiskModel(twoPlayers);
-        Country sourceCountryToTest = null;
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-        sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on source Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName());
-        test.menuBack(); //Clicks Back
-        assertEquals(Phase.ATTACK_SRC, test.actionContext.getPhase());//confirms phase went back to finding src country
-    }
-    /***
-     * Test whether it can correctly proceed to the attack_army phase by clicking on a dst country
-     */
-    public void testClickingDstCountry() {
-        RiskModel test = new RiskModel(twoPlayers);
-        Country sourceCountryToTest;
-
-
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-
-        sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on source Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName());
-
-        Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
-        test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
-        assertEquals(Phase.ATTACK_SRC_ARMY, test.actionContext.getPhase());//confirms phase proceeded to choosing army
-    }
-
-    /***
-     * Tests clicking blank pace after reaching army phase of attack
-     */
-    public void testClickingBackOutOfArmyCountry() {
-        RiskModel test = new RiskModel(twoPlayers);
-        Country sourceCountryToTest;
-
-
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-
-        sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on source Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName());
-
-        Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
-        test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
-
-
-        test.menuBack(); //Clicks Back
-        assertEquals(Phase.ATTACK_SRC, test.actionContext.getPhase());//confirms phase went back to choosing src country
-    }
-
-    /***
-     * Test that the correct phase is reached after selecting units.
-     */
-    public void testSelectingArmySize() {
-
-        RiskModel test = new RiskModel(twoPlayers);
-        Country sourceCountryToTest;
-
-
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-
-        sourceCountryToTest = getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on source Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName());
-
-        Country destinationCountryToTest = getValidDstCountryForAttack(sourceCountryToTest, test.players[0]);
-        test.mapClicked(getValidPoint(destinationCountryToTest)); //Clicks on dstCountry
-
-        assertEquals(Phase.RETREAT_ARMY, test.actionContext.getPhase());//confirms phase went back to choosing src country
-    }
-
-    /***
-     * Test the functionality of the skip button
-     */
-    public void testSkipButton(){
-        RiskModel test = new RiskModel(twoPlayers);
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-        test.menuSkip();
-        assertEquals(test.players[1], test.actionContext.getPlayer());
-    }
-
-    /**
-     * skips through whole list of players.
-     */
-    public void testSkipButtonCycle(){
-        RiskModel test = new RiskModel(twoPlayers);
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-        for(int i = 0; i < test.players.length; i++) {
-            test.menuSkip();
-        }
-
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-    }
-
-    /***
-     * Skips through an entire cycle of turns of 6 players
-     */
-    public void testSkipSixButtonCycle(){
-        RiskModel test = new RiskModel(sixPlayers);
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-        for(int i = 0; i < test.players.length; i++) {
-            test.menuSkip();
-        }
-
-        assertEquals(test.players[0], test.actionContext.getPlayer());
-    }
-
-    /***
-     * makes sure skipping works from attack_dst phase
-     */
-    public void testSkipInAttackDstPhase(){
-        RiskModel test = new RiskModel(twoPlayers);
-        Country[] playerOwnedCountries = test.players[0].getCountries();
-        Country sourceCountryToTest = null;
-        //find a country the player owns that has enough soldiers to attack
-        sourceCountryToTest= getValidSrcCountryforAttack(playerOwnedCountries, test.players[0]);
-        test.mapClicked(getValidPoint(sourceCountryToTest)); //Clicks on src Country
-        assertEquals(sourceCountryToTest.getName(), test.actionContext.getSrcCountry().getName()); // confirms country
-        assertEquals(Phase.ATTACK_DST, test.actionContext.getPhase()); //confirms phase changes to search for dst Country
-        test.menuSkip();
-        assertEquals(test.players[1], test.actionContext.getPlayer());
-        assertEquals(Phase.ATTACK_SRC, test.actionContext.getPhase());
     }
 
     /***
@@ -286,32 +150,9 @@ public class RiskModelTest extends TestCase {
         Stack<Country> toTest = new Stack<>();
         test.players[0].setCountries(new Country[8]);
         test.players[1].setCountries(new Country[0]);
-        for(int i = 0; i < test.map.getCountries().length; i++){
-            test.map.getCountries()[i].setOwner(null);
-        }
-        test.players[0].addCountry(test.map.getCountries()[0]);//add Alaska
-        test.map.getCountries()[0].setOwner(test.players[0]);
+        int[] countries = {0,1,5,6,7,8,3,27};
+        setCountriesToPlayer(test, 0,countries);
 
-        test.players[0].addCountry(test.map.getCountries()[1]);//add alberta
-        test.map.getCountries()[1].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[5]);//add NorthWest Territory
-        test.map.getCountries()[5].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[6]);//add Ontario
-        test.map.getCountries()[6].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[7]);//add Quebec
-        test.map.getCountries()[7].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[8]); // add western United states
-        test.map.getCountries()[8].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[3]); // add Eastern united states
-        test.map.getCountries()[3].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[27]);//add china
-        test.map.getCountries()[27].setOwner(test.players[0]);
         toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
         //should not include china
         assertEquals(6, toTest.size());
@@ -330,63 +171,68 @@ public class RiskModelTest extends TestCase {
         Stack <Country> toTest = new Stack();
         test.players[0].setCountries(new Country[8]);
         test.players[1].setCountries(new Country[0]);
-        for(int i = 0; i < test.map.getCountries().length; i++){
-            test.map.getCountries()[i].setOwner(null);
-        }
-        test.players[0].addCountry(test.map.getCountries()[41]);//add Western australia
-        test.map.getCountries()[41].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[1]);//add alberta
-        test.map.getCountries()[1].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[40]);//add New Guinea
-        test.map.getCountries()[40].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[39]);//add Indonesia
-        test.map.getCountries()[39].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[38]);//add Eastern Australia
-        test.map.getCountries()[38].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[37]); // add western Yakutsk
-        test.map.getCountries()[37].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[36]); // add Ural
-        test.map.getCountries()[36].setOwner(test.players[0]);
-
-        test.players[0].addCountry(test.map.getCountries()[35]);//add siberia
-        test.map.getCountries()[35].setOwner(test.players[0]);
+        int[] countries = {41,1,40,39,39,37,36,35};
+        setCountriesToPlayer(test, 0,countries);
         toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
         //should not include china
         assertEquals(0, toTest.size());
 
     }
-    /*public void testAllocateBonusUnits() {
+    public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
-        test.players[0].getCountries().clear();
-        test.players[1].getCountries().clear();
-        assertEquals(0, test.players[0].getArmiesToAllocate());
-        for(int i = 0; i < test.map.getCountries().length; i++){
-            test.map.getCountries()[i].setOwner(null);
-        }
-        for( int i  = 0; i < 9; i++){
-            test.players[0].addCountry(test.map.getCountries()[i]);//add Western australia
-            test.map.getCountries()[i].setOwner(test.players[0]);
-
-        }
-        assertEquals(9, test.players[0].getCountries().size());
-        assertEquals(9, test.map.getContinents()[0].getCountryList().length);
-        assertEquals(test.players[0].getCountries().get(0).getName(), test.map.getContinents()[0].getCountryList()[0].getName());
-        System.out.println(test.players[0].countries.contains(test.map.getContinents()[0].getCountryList()[0]));
-
+        test.players[0].setCountries(new Country[9]);
+        test.players[1].setCountries(new Country[0]);
+        int[] countries = {0,1,2,3,4,5,6,7,8};
+        setCountriesToPlayer(test,0,countries);
+        test.players[0].removeTroops(test.players[0].troopsToDeploy);
         test.allocateBonusTroops(test.players[0]);
-        assertEquals(10,test.map.getContinents()[0].getBonusArmyValue());
-        assertEquals(10,test.players[0].armiesToAllocate);
-
-
-
-
-    }*/
-
-
+        assertEquals(8,test.players[0].getTroopsToDeploy());
     }
+    public void testAttackMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.players[0].setCountries(new Country[1]);
+        test.players[1].setCountries(new Country[2]);
+        setCountriesToPlayer(test, 0, new int[]{0});
+        setCountriesToPlayer(test, 1, new int[]{5,3});
+        test.getCountries()[0].setArmy(5);
+        test.getCountries()[5].setArmy(1);
+        assertTrue(test.attack(test.players[0], test.getCountries()[0],test.getCountries()[5],1,4));
+    }
+
+    public void testDeployMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.players[0].setCountries(new Country[1]);
+        test.players[1].setCountries(new Country[0]);
+        setCountriesToPlayer(test, 0, new int[]{0});
+        test.players[0].removeTroops(test.players[0].troopsToDeploy);
+        test.players[0].troopsToDeploy =5;
+        test.getCountries()[0].setArmy(0);
+        assertTrue(test.deploy(test.players[0], test.getCountries()[0],test.players[0].troopsToDeploy));
+        assertEquals(5, test.getCountries()[0].getArmy());
+    }
+    public void testFortifyMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.players[0].setCountries(new Country[5]);
+        test.players[1].setCountries(new Country[0]);
+        setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
+        test.getCountries()[0].setArmy(10);
+        test.getCountries()[8].setArmy(0);
+        assertTrue(test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[8],9));
+        assertEquals(9,test.getCountries()[8].getArmy());
+    }
+    public void testFortifyWrongMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.players[0].setCountries(new Country[5]);
+        test.players[1].setCountries(new Country[0]);
+        setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
+        test.getCountries()[0].setArmy(10);
+        test.getCountries()[22].setArmy(0);
+        assertFalse(test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[22],9));
+        assertEquals(0,test.getCountries()[22].getArmy());
+    }
+
+
+
+
+
+}

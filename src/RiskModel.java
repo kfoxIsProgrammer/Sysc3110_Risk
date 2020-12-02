@@ -514,7 +514,7 @@ public class RiskModel {
      * @param troopsToDeploy int that represent the amount of army units to move.
      * @return boolean fortify that returns a true if the function was successful.
      */
-    private boolean deploy(Player player, Country destinationCountry, int troopsToDeploy){
+    public boolean deploy(Player player, Country destinationCountry, int troopsToDeploy){
         if(troopsToDeploy>player.getTroopsToDeploy() || destinationCountry.getOwner()!=player){
             return false;
         }
@@ -531,7 +531,7 @@ public class RiskModel {
      * @param unitsToAttack number of attackers from the attacking country
      * @return Boolean true = no error, false = units to attack error
      */
-    private boolean attack(Player player, Country attackingCountry, Country defendingCountry, int unitsToAttack, int unitsToDefend){
+    public boolean attack(Player player, Country attackingCountry, Country defendingCountry, int unitsToAttack, int unitsToDefend){
         if(attackingCountry.getArmy()-unitsToAttack<=0) {
             return false;
         }
@@ -653,7 +653,7 @@ public class RiskModel {
      * @param unitsToSend int that represent the amount of army units to move.
      * @return boolean  that returns a true if the function was successful.
      */
-    private boolean fortify(Player player, Country sourceCountry, Country destinationCountry, int unitsToSend){
+    public boolean fortify(Player player, Country sourceCountry, Country destinationCountry, int unitsToSend){
         Stack<Country> countriesWithinBorder = new Stack<>();
         boolean valid = false;
         countriesWithinBorder = getConnectedOwnedCountries(sourceCountry, sourceCountry, player, countriesWithinBorder);
