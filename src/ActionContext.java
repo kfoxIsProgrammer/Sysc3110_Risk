@@ -32,6 +32,8 @@ public class ActionContext {
     /** The dice roll information **/
     private Integer[][] diceRolls;
 
+    private String AIText;
+
     /** Constructor for ActionContext **/
     public ActionContext(Phase phase, Player player){
         this.phase=phase;
