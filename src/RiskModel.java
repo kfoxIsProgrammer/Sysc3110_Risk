@@ -242,6 +242,9 @@ public class RiskModel {
     }
 
     private void AIMoves(){
+        
+    }
+    public void AIDeploy(){
         PlayerAI AI=(PlayerAI) actionContext.getPlayer();
         ActionContext AIAction;
 
@@ -253,26 +256,36 @@ public class RiskModel {
                     AIAction.getDstArmy());
             System.out.printf("AI Deploy: Dst: %s, Army: %d\n",AIAction.getDstCountry().getName(),AIAction.getDstArmy());
         }
+    }
+    public void AIAttack(){
+        PlayerAI AI=(PlayerAI) actionContext.getPlayer();
+        ActionContext AIAction;
 
         actionContext.setPhase(Phase.ATTACK_SRC_CONFIRM);
         for(int i=0;i<5 && AI.canAttack();i++){
             AIAction=AI.getMove(actionContext);
-            attack(AIAction.getPlayer(),
-                    AIAction.getSrcCountry(),
-                    AIAction.getDstCountry(),
-                    AIAction.getSrcArmy(),
-                    AIAction.getDstArmy());
+
+            actionContext.setPhase(Phase.ATTACK_DST_ARMY);
+            actionContext.setPlayer(actionContext.getDstCountry().getOwner());
+            view.update(actionContext);
+
             System.out.printf("AI Attack: Src: %s, Dst: %s Src Army: %d, Dst Army: %d\n",AIAction.getSrcCountry().getName(),AIAction.getDstCountry().getName(),AIAction.getSrcArmy(),Math.min(AIAction.getDstCountry().getArmy(),2));
         }
+    }
+    public void AIDefend(){
+        PlayerAI AI=(PlayerAI) actionContext.getPlayer();
+        ActionContext AIAction;
 
-        actionContext.setPhase(Phase.FORTIFY_CONFIRM);
-        if(AI.canFortify()){
-            AIAction=AI.getMove(actionContext);
-            fortify(AIAction.getPlayer(),
-                    AIAction.getSrcCountry(),
-                    AIAction.getDstCountry(),
-                    AIAction.getSrcArmy());
-        }
+    }
+    public void AIRetreat(){
+        PlayerAI AI=(PlayerAI) actionContext.getPlayer();
+        ActionContext AIAction;
+
+    }
+    public void AIFortify(){
+        PlayerAI AI=(PlayerAI) actionContext.getPlayer();
+        ActionContext AIAction;
+
     }
 
     /**

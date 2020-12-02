@@ -21,103 +21,102 @@ public class PlayerAI extends Player {
         super(name, color, true, playerId);
         this.continents = continents;
         this.troopsToDeploy = armiesToAllocate;
-        this.difficulty=Difficulty.MEDIUM;
+        this.difficulty=Difficulty.BABY;
     }
-    public boolean isItOptimalContinent(Country focalCountry){
-        int[] continentValue = new int[continents.length];
-        int maxContinentIndex = 0;
-        for(int value: continentValue){
-            value = 0;
-        }
-        for(Country count: this.countries){
-            continentValue[count.getContinentId()] ++;
-        }
 
-        for(int i = 0; i < continentValue.length; i++){
-            if(continentValue[i] > continentValue[maxContinentIndex] && continentValue[i] != continents[i].getCountries().length ){
-                maxContinentIndex = i;
-            }
+    public ActionContext getMove(ActionContext ac) {
+        utilities=new ArrayList<>();
+        actions=new ArrayList<>();
 
-        }
-
-        if (focalCountry.getContinentId() == maxContinentIndex){
-            return true;
-        }
-        else {return false;}
-    }
-    public ActionContext getMove(ActionContext actionContext) {
-        this.actions = new ArrayList<>();
-        this.utilities = new ArrayList<>();
-        this.maxUtilityIndex = 0;
-        int maxUtility;
-
-        switch (actionContext.getPhase()) {
-            case DEPLOY_DST:
-            case DEPLOY_ARMY:
+        switch (ac.getPhase()){
             case DEPLOY_CONFIRM:
-                maxUtility = Integer.MIN_VALUE;
-
-                for (int i = 0; i < countries.size(); i++) {
-                    Country[] dstCountries = countries.get(i).getAdjacentOwnedCountries(this);
-                    for (int j = 0; j < dstCountries.length; j++) {
-                        deployUtility(countries.get(i), dstCountries[j]);
-
-                        if (utilities.get(utilities.size() - 1) > maxUtility) {
-                            this.maxUtilityIndex = utilities.size() - 1;
-                        }
-                    }
-                }
-                return actions.get(maxUtilityIndex);
-            case ATTACK_SRC:
-            case ATTACK_DST:
-            case ATTACK_SRC_ARMY:
+                return getDeploy(ac);
             case ATTACK_SRC_CONFIRM:
-            case ATTACK_DST_ARMY:
+                return getAttack(ac);
             case ATTACK_DST_CONFIRM:
-                maxUtility = Integer.MIN_VALUE;
-
-                for (int i = 0; i < countries.size(); i++) {
-                    Country[] dstCountries = countries.get(i).getAdjacentUnownedCountries(this);
-                    for (int j = 0; j < dstCountries.length; j++) {
-                        attackUtility(countries.get(i), dstCountries[j]);
-
-                        if (utilities.get(utilities.size() - 1) > maxUtility) {
-                            this.maxUtilityIndex = utilities.size() - 1;
-                        }
-                    }
-                }
-                return actions.get(maxUtilityIndex);
-            case RETREAT_ARMY:
+                return getDefend(ac);
             case RETREAT_CONFIRM:
-                //TODO This
-                break;
-            case FORTIFY_SRC:
-            case FORTIFY_DST:
-            case FORTIFY_ARMY:
+                return getRetreat(ac);
             case FORTIFY_CONFIRM:
-                maxUtility = Integer.MIN_VALUE;
-
-                for (int i = 0; i < countries.size(); i++) {
-                    ArrayList<Country> dstCountries = countries;
-                    for (int j = 0; j < dstCountries.size(); j++) {
-                        fortifyUtility(countries.get(i), dstCountries.get(j));
-                        if (utilities.get(utilities.size()) > maxUtility){
-                            this.maxUtilityIndex = utilities.size() - 1;
-                        }
-                    }
-                }
-                return actions.get(maxUtilityIndex);
-            case NEW_GAME:
-            case GAME_OVER:
+                return getFortify(ac);
             default:
                 return null;
         }
+    }
+    public ActionContext getDeploy(ActionContext ac){
+        for(Country country: this.getCountries()){
+            int allyNeighbors=country.getArmy();
+            int enemyNeighbors=0;
 
-        return actions.get(maxUtilityIndex);
+            for(Country neighbor: country.getAdjacentOwnedCountries(this)){
+                allyNeighbors+=neighbor.getArmy();
+            }
+            for(Country neighbor: country.getAdjacentOwnedCountries(this)){
+                enemyNeighbors+=neighbor.getArmy();
+            }
+
+            utilities.add(enemyNeighbors-allyNeighbors);
+            ActionContext actionContext=new ActionContext(Phase.DEPLOY_CONFIRM,this);
+            actionContext.setDstCountry(country);
+            actionContext.setDstArmy((int) Math.ceil(troopsToDeploy/5));
+            actions.add(actionContext);
+        }
+
+        return bestAction();
+    }
+    public ActionContext getAttack(ActionContext ac){
+        for(Country srcCountry: this.getCountries()){
+            for(Country dstCountry: srcCountry.getAdjacentUnownedCountries(this)){
+                int srcPower=0;
+                int dstPower=0;
+
+                for(Country srcAlly: srcCountry.getAdjacentOwnedCountries(this)){
+                    srcPower+=srcAlly.getArmy();
+                }
+                for(Country dstAlly: dstCountry.getAdjacentOwnedCountries(dstCountry.getOwner())){
+                    dstPower+=dstAlly.getArmy();
+                }
+
+                utilities.add(dstPower-srcPower);
+                ActionContext actionContext=new ActionContext(Phase.DEPLOY_CONFIRM,this);
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setDstCountry(dstCountry);
+                actionContext.setDstArmy((int) Math.min(3,srcCountry.getArmy()));
+                actions.add(actionContext);
+            }
+        }
+
+
+        return ac;
+    }
+    public ActionContext getRetreat(ActionContext ac){
+
+        return ac;
+    }
+    public ActionContext getFortify(ActionContext ac){
+
+        return ac;
+    }
+    public ActionContext getDefend(ActionContext ac){
+
+        return ac;
+    }
+
+    public ActionContext bestAction(){
+        int maxId=0;
+        int maxUtility=Integer.MIN_VALUE;
+
+        for(int i=0;i<utilities.size();i++){
+            if(utilities.get(i)>maxUtility){
+                maxId=i;
+                maxUtility=utilities.get(i);
+            }
+        }
+        return actions.get(maxId);
     }
 
     public boolean canDeploy(){
-        return this.troopsToDeploy >0;
+        return this.troopsToDeploy>0;
     }
     public boolean canAttack(){
         for(Country country: countries){
@@ -135,189 +134,4 @@ public class PlayerAI extends Player {
         }
         return false;
     }
-
-    private void deployUtility(Country srcCountry, Country dstCountry) {
-        int utility;
-        ActionContext actionContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
-        switch (this.difficulty) {
-            case BABY:
-                break;
-            case EASY:
-                utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
-                for(Country count: dstCountry.getAdjacentCountries()){
-                    if(count.getOwner() != this){utility += 1; }
-                }
-                actionContext.setSrcCountry(srcCountry);
-                actionContext.setDstCountry(dstCountry);
-                utilities.add(utility);
-                actions.add(actionContext);
-                break;
-            case MEDIUM:
-                ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
-                deployContext.setDstCountry(srcCountry);
-
-                int srcCountryAdjacentValue = 0;
-                for(Country c: srcCountry.getAdjacentCountries()){
-                    if(!c.getOwner().equals(srcCountry.getOwner())){
-                        srcCountryAdjacentValue+= c.getArmy();
-                    }
-                }
-                if(this.getTroopsToDeploy()>0){
-                    Random rng = new Random();
-
-                    deployContext.setSrcArmy(rng.nextInt(this.getTroopsToDeploy())-1);
-                    utility = srcCountryAdjacentValue - srcCountry.getAdjacentOwnedCountries(this).length-1;
-                    utilities.add(utility);
-                    actions.add(deployContext);
-                }
-                break;
-            case HARD:
-                actionContext.setDstCountry(srcCountry);
-                int troopsDiff = dstCountry.getArmy() - srcCountry.getArmy();
-                if (troopsDiff < troopsToDeploy && troopsDiff>0) {
-                    actionContext.setSrcArmy(troopsDiff);
-                    utility = troopsDiff+ dstCountry.getAdjacentOwnedCountries(this).length - 1;
-                    utilities.add(utility);
-                    actions.add(actionContext);
-                }
-                break;
-        }
-    }
-
-    private void attackUtility(Country srcCountry, Country dstCountry) {
-        int utility;
-        ActionContext actionContext = new ActionContext(Phase.ATTACK_SRC_CONFIRM, this);
-        switch (this.difficulty) {
-            case BABY:
-                break;
-            case EASY:
-                utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
-                for(Country count: srcCountry.getAdjacentCountries()){
-                    if(count.getOwner() == this){utility += 1; }
-                }
-                for(Country count: dstCountry.getAdjacentCountries()){
-                    if(count.getOwner() == this){utility += 1; }
-                }
-                if((srcCountry.getArmy() - dstCountry.getArmy()) > 1){utility+=5;}
-                utility+= srcCountry.getArmy();
-                actionContext.setSrcCountry(srcCountry);
-                actionContext.setDstCountry(dstCountry);
-                actionContext.setSrcArmy(actionContext.getSrcCountry().getArmy()-1);
-                utilities.add(utility);
-                actions.add(actionContext);
-                break;
-            case MEDIUM:
-                ActionContext attackContext = new ActionContext(Phase.ATTACK_SRC_CONFIRM, this);
-                attackContext.setSrcCountry(srcCountry);
-                attackContext.setDstCountry(dstCountry);
-                //Will only attack high priority
-
-               // if(srcCountry.getArmy()-1 > dstCountry.getArmy()) {
-                    int srcCountryAdjacentValue = 0;
-                    int dstCountryAdjacentValue=0;
-                    for(Country c: srcCountry.getAdjacentCountries()){
-                        if(!c.getOwner().equals(srcCountry.getOwner())){
-                            srcCountryAdjacentValue+= c.getArmy();
-                        }
-                    }
-                    for(Country c: dstCountry.getAdjacentCountries()){
-                        if(!c.getOwner().equals(srcCountry.getOwner()) && !c.equals(srcCountry)){
-                            dstCountryAdjacentValue+=c.getArmy();
-                        }
-                    }
-                    attackContext.setSrcArmy(srcCountry.getArmy()-1);
-                    utilities.add(srcCountryAdjacentValue+dstCountryAdjacentValue/2);
-
-
-                  //  utilities.add(Integer.MIN_VALUE);
-
-
-                actions.add(attackContext);
-                break;
-            case HARD:
-                if(srcCountry.getArmy()>=dstCountry.getArmy() && srcCountry.getArmy()!=1){
-                    int advantage = srcCountry.getArmy()-dstCountry.getArmy();
-                    utility = advantage+dstCountry.getAdjacentOwnedCountries(this).length-1;
-                    if (utility>=2){
-                        actionContext.setSrcCountry(srcCountry);
-                        actionContext.setSrcArmy(srcCountry.getArmy()-1);
-                        actionContext.setDstCountry(dstCountry);
-                        utilities.add(utility);
-                        actions.add(actionContext);
-                    }
-                }
-                break;
-        }
-    }
-
-    private void retreatUtility(Country srcCountry, Country dstCountry) {
-        switch (this.difficulty) {
-            case BABY:
-                break;
-            case EASY:
-                break;
-            case MEDIUM:
-                break;
-            case HARD:
-                break;
-        }
-    }
-
-    private void fortifyUtility(Country srcCountry, Country dstCountry) {
-        int utility;
-        ActionContext actionContext = new ActionContext(Phase.FORTIFY_CONFIRM, this);
-        switch (this.difficulty) {
-            case BABY:
-                break;
-            case EASY:
-                utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
-                for(Country count: srcCountry.getAdjacentCountries()){
-                    if(count.getOwner() == this){utility += 1; }
-                }
-                for(Country count: dstCountry.getAdjacentCountries()){
-                    if(count.getOwner() != this){utility += 1; }
-                }
-                actionContext.setSrcCountry(srcCountry);
-                actionContext.setDstCountry(dstCountry);
-                utilities.add(utility);
-                actions.add(actionContext);
-                break;
-            case MEDIUM:
-                actionContext.setDstCountry(dstCountry);
-                actionContext.setSrcCountry(srcCountry);
-                actionContext.setSrcArmy(srcCountry.getArmy()-1);
-                int dstAdjacentValue= 0;
-                int srcAdjacentValue=0;
-
-                for(Country c: srcCountry.getAdjacentCountries()){
-                    if(!c.getOwner().equals(srcCountry.getOwner())){
-                        srcAdjacentValue+=c.getArmy();
-                    }
-                }
-                for(Country c: dstCountry.getAdjacentCountries()){
-                    if(!c.getOwner().equals(dstCountry.getOwner())){
-                        dstAdjacentValue+=c.getArmy();
-                    }
-                }
-                int differential = dstAdjacentValue-srcAdjacentValue;
-
-                utilities.add(differential);
-                actions.add(actionContext);
-                break;
-            case HARD:
-                if (srcCountry.getAdjacentOwnedCountries(this).length == srcCountry.getAdjacentCountries().length && dstCountry.getAdjacentCountries().length!=dstCountry.getAdjacentOwnedCountries(this).length &&srcCountry.getArmy()>3){
-                    utility = srcCountry.getArmy()-dstCountry.getArmy()-3;
-                    actionContext.setSrcCountry(srcCountry);
-                    actionContext.setDstCountry(dstCountry);
-                    actionContext.setSrcArmy(utility);
-                    utilities.add(utility);
-                    actions.add(actionContext);
-                }
-                break;
-        }
-    }
-
 }

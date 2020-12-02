@@ -99,12 +99,16 @@ public class RiskView extends JFrame{
         switch(ac.getPhase()){
             case NUM_PLAYERS:
                 updatePrompt("Enter the number of players");
-                updateSlider(2,6);
+                updateSlider(1,6);
                 updateMenuVisible(true, false, true,true,false,false);
                 break;
             case NUM_AI:
                 updatePrompt("Enter the number of AI");
-                updateSlider(0,6-ac.getPlayerId());
+                if(ac.getPlayerId()==1){
+                    updateSlider(1,5);
+                }else{
+                    updateSlider(0,6-ac.getPlayerId());
+                }
                 updateMenuVisible(true, false, true,true,false,false);
                 break;
             case PLAYER_NAME:
