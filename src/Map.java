@@ -7,9 +7,9 @@ import java.awt.image.BufferedImage;
  */
 public class Map {
     /** List of the countries in the game **/
-    private Country[] countries;
+    private  Country[] countries;
     /** List of all the continents in the game **/
-    private Continent[] continents;
+    private  Continent[] continents;
     /** The map image **/
     private transient BufferedImage mapImage;
 

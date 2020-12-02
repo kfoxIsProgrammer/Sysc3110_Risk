@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -7,7 +8,7 @@ import java.util.Collections;
  * @author Kevin
  * @version 10-25-2020
  */
-public abstract class Player {
+public abstract class Player implements Serializable {
     /** Boolean describing if this player is an ai **/
     protected final Boolean isAI;
     /** Index of this player **/
@@ -19,7 +20,7 @@ public abstract class Player {
     /** Number of armies that can be allocated to a country **/
     protected int troopsToDeploy;
     /** Hashmap of owned Countries **/
-    protected ArrayList<Country> countries;
+    protected transient ArrayList<Country> countries;
     /** This is used for lose condition **/
     protected boolean hasLost = false;
 

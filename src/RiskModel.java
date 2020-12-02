@@ -1,4 +1,9 @@
+import com.google.gson.Gson;
+
 import java.awt.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -7,17 +12,17 @@ import java.util.*;
  * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi, Kshitij Sawhney
  * @version 11.04.2020
  */
-public class RiskModel {
+public class RiskModel implements Serializable {
     /**List of all the players in the game **/
-    public Player[] players;
+    public   Player[] players;
     /** The map of the game **/
-    public Map map;
+    public   Map map;
     /** The current action context **/
-    public ActionContext actionContext;
+    public  ActionContext actionContext;
     /** The current risk view**/
-    public RiskView view;
+    public transient RiskView view;
     /** The current RiskController**/
-    public RiskController controller;
+    public transient RiskController controller;
     public int numPlayers;
     public int numHumans;
     public int numAI;
@@ -713,8 +718,19 @@ public class RiskModel {
 
         player.troopsToDeploy+=Math.max(3,player.countries.size()/3);
     }
+    public void export(){
+
+        Gson gson = new Gson();
+        try {
+            gson.toJson(this, new FileWriter("Save.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public static void main(String[] args) {
-        new RiskModel();
+        RiskModel test = new RiskModel();
+
     }
 }

@@ -6,7 +6,7 @@ public class Continent {
     /** Name of the continent **/
     private String name;
     /** List of countries within the continent **/
-    private Country[] countries;
+    private transient Country[] countries;
     /** List of countries within the continent **/
     private int[] countryIDs;
     /** Number of troops received as bonus for full ownership **/
