@@ -70,6 +70,9 @@ public class RiskModelTest extends TestCase {
         return(ValidSrcCountry);
     }
     public void setCountriesToPlayer(RiskModel model, int user, int[] countryIndexes){
+        for(int i = 0; i < model.map.getCountries().length; i++){
+            model.map.getCountries()[i].setOwner(null);
+        }
         for(int index : countryIndexes){
             model.players[user].addCountry(model.map.getCountries()[index]);//add Alaska
             model.map.getCountries()[index].setOwner(model.players[user]);
@@ -147,9 +150,6 @@ public class RiskModelTest extends TestCase {
         Stack<Country> toTest = new Stack<>();
         test.players[0].setCountries(new Country[8]);
         test.players[1].setCountries(new Country[0]);
-        for(int i = 0; i < test.map.getCountries().length; i++){
-            test.map.getCountries()[i].setOwner(null);
-        }
         int[] countries = {0,1,5,6,7,8,3,27};
         setCountriesToPlayer(test, 0,countries);
 
@@ -171,9 +171,6 @@ public class RiskModelTest extends TestCase {
         Stack <Country> toTest = new Stack();
         test.players[0].setCountries(new Country[8]);
         test.players[1].setCountries(new Country[0]);
-        for(int i = 0; i < test.map.getCountries().length; i++){
-            test.map.getCountries()[i].setOwner(null);
-        }
         int[] countries = {41,1,40,39,39,37,36,35};
         setCountriesToPlayer(test, 0,countries);
         toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
@@ -183,10 +180,59 @@ public class RiskModelTest extends TestCase {
     }
     public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
-
-
-
+        test.players[0].setCountries(new Country[9]);
+        test.players[1].setCountries(new Country[0]);
+        int[] countries = {0,1,2,3,4,5,6,7,8};
+        setCountriesToPlayer(test,0,countries);
+        test.players[0].removeTroops(test.players[0].troopsToDeploy);
+        test.allocateBonusTroops(test.players[0]);
+        assertEquals(8,test.players[0].getTroopsToDeploy());
     }
+    public void testAttackMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.players[0].setCountries(new Country[1]);
+        test.players[1].setCountries(new Country[2]);
+        setCountriesToPlayer(test, 0, new int[]{0});
+        setCountriesToPlayer(test, 1, new int[]{5,3});
+        test.getCountries()[0].setArmy(5);
+        test.getCountries()[5].setArmy(1);
+        assertTrue(test.attack(test.players[0], test.getCountries()[0],test.getCountries()[5],1,4));
+    }
+
+    public void testDeployMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.players[0].setCountries(new Country[1]);
+        test.players[1].setCountries(new Country[0]);
+        setCountriesToPlayer(test, 0, new int[]{0});
+        test.players[0].removeTroops(test.players[0].troopsToDeploy);
+        test.players[0].troopsToDeploy =5;
+        test.getCountries()[0].setArmy(0);
+        assertTrue(test.deploy(test.players[0], test.getCountries()[0],test.players[0].troopsToDeploy));
+        assertEquals(5, test.getCountries()[0].getArmy());
+    }
+    public void testFortifyMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.players[0].setCountries(new Country[5]);
+        test.players[1].setCountries(new Country[0]);
+        setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
+        test.getCountries()[0].setArmy(10);
+        test.getCountries()[8].setArmy(0);
+        assertTrue(test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[8],9));
+        assertEquals(9,test.getCountries()[8].getArmy());
+    }
+    public void testFortifyWrongMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.players[0].setCountries(new Country[5]);
+        test.players[1].setCountries(new Country[0]);
+        setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
+        test.getCountries()[0].setArmy(10);
+        test.getCountries()[22].setArmy(0);
+        assertFalse(test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[22],9));
+        assertEquals(0,test.getCountries()[22].getArmy());
+    }
+
+
+
 
 
 }
