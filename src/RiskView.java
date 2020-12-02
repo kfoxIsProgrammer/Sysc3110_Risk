@@ -297,12 +297,12 @@ public class RiskView extends JFrame{
         menuConfirm.setActionCommand(ac.getPhase().name());
     }
     private void displayDeploy(ActionContext ac) {
-        eventLogText.append("Player " + ac.getPlayer().getName()+"\n\t"
+        eventLogText.append(ac.getPlayer().getName()+"\n\t"
         + "Deployed: "+ac.getDstArmy() +" unit\n\t" +
                 "To The Country: " +ac.getDstCountry().getName()+"\n");
     }
     private void displayRetreat(ActionContext ac) {
-        eventLogText.append("Player " + ac.getPlayer().getName()+"\n\t"
+        eventLogText.append(ac.getPlayer().getName()+"\n\t"
                 + "Sent: 0" +" unit\n\t" +
                 "back To The Country: " +ac.getSrcCountry().getName()+"\n");
     }
@@ -314,24 +314,29 @@ public class RiskView extends JFrame{
             phases = "Attack";
         else
             phases = "Fortify";
-        eventLogText.append("Player " + ac.getPlayer().getName()+"\t"
-                + "Is now in the "+phases+" Phase \n");
+        eventLogText.append(ac.getPlayer().getName()+"\t"
+                + "Is now in the "+phases+" Phase \n\n");
         if(phases.equals("Fortify")){
             eventLogText.append("\n");
         }
     }
     private void displayReinforce(ActionContext ac) {
+        eventLogText.append(ac.getDstCountry().getName());
     }
 
     private void displayRolls(ActionContext ac){
         if(ac.isAttackerVictory()){
-            eventLogText.append("Player "+ac.getPlayer().name+" won the battle\n\t"+
+            eventLogText.append(ac.getPlayer().name+" Attacked "+
+                            ac.getDstCountry().getOwner().getName()+"\n"+
+                    ac.getDstCountry().getName()+" Attacked "+ac.getDstCountry().getName()+"\n\t"+
                     "Attacker lost "+ac.getSrcArmyDead()+" troops\n\t"+
-                    "Defender lost "+ac.getDstArmyDead()+" troops\n");
+                    "Defender lost "+ac.getDstArmyDead()+" troops\n\n");
         }else {
-            eventLogText.append(ac.getPlayer().name+" lost the battle\n\t"+
+            eventLogText.append(ac.getPlayer().name+" Attacked "+
+                    ac.getDstCountry().getOwner().getName()+"\n"+
+                    ac.getDstCountry().getName()+" Attacked "+ac.getDstCountry().getName()+"\n\t"+
                     "Attacker lost "+ac.getSrcArmyDead()+" troops\n\t"+
-                    "Defender lost "+ac.getDstArmyDead()+" troops\n");
+                    "Defender lost "+ac.getDstArmyDead()+" troops\n\n");
         }
 
         String diceStr="Attacker rolls: [";
