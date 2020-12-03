@@ -25,8 +25,9 @@ public class RiskModel {
     public int numPlayers;
     public int numHumans;
     public int numAI;
-    public String textBuffer;
-    public int numBuffer;
+    public transient String textBuffer;
+    public transient int numBuffer;
+    public int [] troopSave;
 
     /**
      * Constructor for testing purposes
@@ -718,6 +719,10 @@ public class RiskModel {
         player.troopsToDeploy+=Math.max(3,player.countryIndexes.size()/3);
     }
     public void exportToJson(){
+        troopSave = new int[map.getCountries().length];
+        for(int x = 0; x < map.getCountries().length; x++){
+            troopSave[x] = map.getCountries()[x].getArmy();
+        }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
             Writer writer = new FileWriter("Save.txt");
@@ -744,7 +749,7 @@ public class RiskModel {
     }
 
     public static void main(String[] args) {
-        RiskModel test = new RiskModel();
+        new RiskModel();
 
     }
 }

@@ -233,7 +233,8 @@ public class RiskModelTest extends TestCase {
     public void testExportImportMethod(){
         RiskModel test = new RiskModel(twoPlayers);
         test.exportToJson();
-        RiskModel imported = test.importFromJson();
+        RiskModel testImport = test.importFromJson();
+
        // assertEquals(test.players.length, imported.players.length);
     }
 

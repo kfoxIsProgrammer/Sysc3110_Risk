@@ -16,7 +16,7 @@ public abstract class Player{
     /** Name of this player **/
     protected final String name;
     /** The color the player is **/
-    protected final  Color playerColor;
+    protected transient final  Color playerColor;
     protected transient Map map;
     /** Number of armies that can be allocated to a country **/
     protected int troopsToDeploy;
@@ -25,13 +25,22 @@ public abstract class Player{
     /** This is used for lose condition **/
     protected boolean hasLost = false;
 
+    private  Player(){
+        isAI = false;
+        playerId = 1;
+        name = "PleaseIgnore";
+        playerColor = new Color(1,1,1);
+
+
+    }
+
     protected Player(String name, Color color, boolean isAI, int playerId, Map map){
         this.isAI = isAI;
         this.playerId=playerId;
         this.name = name;
         this.playerColor = color;
         this.map = map;
-        countryIndexes = new ArrayList();
+        countryIndexes = new ArrayList<Integer>();
     }
     /**
      * Used to decrement armiesToAllocate
