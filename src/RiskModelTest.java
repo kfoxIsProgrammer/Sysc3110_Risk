@@ -163,9 +163,6 @@ public class RiskModelTest extends TestCase {
         assertTrue(toTest.contains(test.map.getCountries()[8]));
         assertTrue(toTest.contains(test.map.getCountries()[3]));
     }
-    /***
-     * Should not have any country connected to Alberta
-     */
     public void testGetConnectedCountriesThatReturnsNone(){
         RiskModel test = new RiskModel(twoPlayers);
         Stack <Country> toTest = new Stack();
