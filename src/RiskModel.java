@@ -719,20 +719,8 @@ public class RiskModel {
         player.troopsToDeploy+=Math.max(3,player.countryIndexes.size()/3);
     }
     public void exportToJson(){
-        troopSave = new int[map.getCountries().length];
-        for(int x = 0; x < map.getCountries().length; x++){
-            troopSave[x] = map.getCountries()[x].getArmy();
-        }
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try {
-            Writer writer = new FileWriter("Save.txt");
-            gson.toJson(this, writer);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+       ModelSaveLoad saveLoad = new ModelSaveLoad();
+       saveLoad.modelSave(this);
     }
     public RiskModel importFromJson(){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
