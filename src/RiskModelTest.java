@@ -51,7 +51,7 @@ public class RiskModelTest extends TestCase {
      * @param currentUser
      * @return A valid Country object
      */
-    public Country getValidSrcCountryforAttack(Country[] playerOwnedCountries, Player currentUser){
+    public Country getValidSrcCountryForAttack(Country[] playerOwnedCountries, Player currentUser){
         Country ValidSrcCountry = null;
         boolean thereIsAnEnemyAdjacentCountry;
         for(Country coucountry: playerOwnedCountries){
@@ -166,7 +166,7 @@ public class RiskModelTest extends TestCase {
     /***
      * Should not have any country connected to Alberta
      */
-    public void testGetConnectedCountriesThatReturnsnone(){
+    public void testGetConnectedCountriesThatReturnsNone(){
         RiskModel test = new RiskModel(twoPlayers);
         Stack <Country> toTest = new Stack();
         test.players[0].setCountries(new Country[8]);
