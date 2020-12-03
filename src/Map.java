@@ -59,4 +59,12 @@ public class Map {
             }
         }
     }
+    public int getIndexOfCountry(Country country) {
+        for (int x = 0; x < this.getCountries().length; x++) {
+            if (country.getName() == this.getCountries()[x].getName()) {
+                return x;
+            }
+        }
+        return -1;
+    }
 }

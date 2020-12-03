@@ -14,37 +14,15 @@ public class PlayerAI extends Player {
     private ArrayList<ActionContext> actions;
     private ArrayList<Integer> utilities;
     private int maxUtilityIndex;
-    private int continentIndexToFocus;
-    private Continent[] continents;
 
-    public PlayerAI(String name, Color color, int armiesToAllocate, int playerId, Continent[] continents) {
-        super(name, color, true, playerId);
-        this.continents = continents;
+    public PlayerAI(String name, Color color, int armiesToAllocate, int playerId, Map map) {
+        super(name, color, true, playerId, map);
         this.troopsToDeploy = armiesToAllocate;
         this.difficulty=Difficulty.MEDIUM;
     }
-    public boolean isItOptimalContinent(Country focalCountry){
-        int[] continentValue = new int[continents.length];
-        int maxContinentIndex = 0;
-        for(int value: continentValue){
-            value = 0;
-        }
-        for(Country count: this.countries){
-            continentValue[count.getContinentId()] ++;
-        }
 
-        for(int i = 0; i < continentValue.length; i++){
-            if(continentValue[i] > continentValue[maxContinentIndex] && continentValue[i] != continents[i].getCountries().length ){
-                maxContinentIndex = i;
-            }
 
-        }
 
-        if (focalCountry.getContinentId() == maxContinentIndex){
-            return true;
-        }
-        else {return false;}
-    }
     public ActionContext getMove(ActionContext actionContext) {
         this.actions = new ArrayList<>();
         this.utilities = new ArrayList<>();
@@ -57,10 +35,10 @@ public class PlayerAI extends Player {
             case DEPLOY_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
 
-                for (int i = 0; i < countries.size(); i++) {
-                    Country[] dstCountries = countries.get(i).getAdjacentOwnedCountries(this);
+                for (int index : countryIndexes) {
+                    Country[] dstCountries = map.getCountries()[index].getAdjacentOwnedCountries(this);
                     for (int j = 0; j < dstCountries.length; j++) {
-                        deployUtility(countries.get(i), dstCountries[j]);
+                        deployUtility(map.getCountries()[index], dstCountries[j]);
 
                         if (utilities.get(utilities.size() - 1) > maxUtility) {
                             this.maxUtilityIndex = utilities.size() - 1;
@@ -76,10 +54,10 @@ public class PlayerAI extends Player {
             case ATTACK_DST_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
 
-                for (int i = 0; i < countries.size(); i++) {
-                    Country[] dstCountries = countries.get(i).getAdjacentUnownedCountries(this);
+                for (int index : countryIndexes) {
+                    Country[] dstCountries = map.getCountries()[index].getAdjacentUnownedCountries(this);
                     for (int j = 0; j < dstCountries.length; j++) {
-                        attackUtility(countries.get(i), dstCountries[j]);
+                        attackUtility(map.getCountries()[index], dstCountries[j]);
 
                         if (utilities.get(utilities.size() - 1) > maxUtility) {
                             this.maxUtilityIndex = utilities.size() - 1;
@@ -97,10 +75,10 @@ public class PlayerAI extends Player {
             case FORTIFY_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
 
-                for (int i = 0; i < countries.size(); i++) {
-                    ArrayList<Country> dstCountries = countries;
-                    for (int j = 0; j < dstCountries.size(); j++) {
-                        fortifyUtility(countries.get(i), dstCountries.get(j));
+                for (int index : countryIndexes) {
+                    ArrayList<Integer> dstCountries = countryIndexes;
+                    for (int indexDst : dstCountries) {
+                        fortifyUtility(map.getCountries()[index], map.getCountries()[indexDst]);
                         if (utilities.get(utilities.size()) > maxUtility){
                             this.maxUtilityIndex = utilities.size() - 1;
                         }
@@ -120,16 +98,16 @@ public class PlayerAI extends Player {
         return this.troopsToDeploy >0;
     }
     public boolean canAttack(){
-        for(Country country: countries){
-            if(country.getArmy()>1){
+        for(int index: countryIndexes){
+            if(map.getCountries()[index].getArmy()>1){
                 return true;
             }
         }
         return false;
     }
     public boolean canFortify(){
-        for(Country country: countries){
-            if(country.getArmy()>1){
+        for(int index: countryIndexes){
+            if(map.getCountries()[index].getArmy()>1){
                 return false;
             }
         }
@@ -143,15 +121,6 @@ public class PlayerAI extends Player {
             case BABY:
                 break;
             case EASY:
-                utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
-                for(Country count: dstCountry.getAdjacentCountries()){
-                    if(count.getOwner() != this){utility += 1; }
-                }
-                actionContext.setSrcCountry(srcCountry);
-                actionContext.setDstCountry(dstCountry);
-                utilities.add(utility);
-                actions.add(actionContext);
                 break;
             case MEDIUM:
                 ActionContext deployContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
@@ -192,21 +161,6 @@ public class PlayerAI extends Player {
             case BABY:
                 break;
             case EASY:
-                utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
-                for(Country count: srcCountry.getAdjacentCountries()){
-                    if(count.getOwner() == this){utility += 1; }
-                }
-                for(Country count: dstCountry.getAdjacentCountries()){
-                    if(count.getOwner() == this){utility += 1; }
-                }
-                if((srcCountry.getArmy() - dstCountry.getArmy()) > 1){utility+=5;}
-                utility+= srcCountry.getArmy();
-                actionContext.setSrcCountry(srcCountry);
-                actionContext.setDstCountry(dstCountry);
-                actionContext.setSrcArmy(actionContext.getSrcCountry().getArmy()-1);
-                utilities.add(utility);
-                actions.add(actionContext);
                 break;
             case MEDIUM:
                 ActionContext attackContext = new ActionContext(Phase.ATTACK_SRC_CONFIRM, this);
@@ -272,19 +226,6 @@ public class PlayerAI extends Player {
             case BABY:
                 break;
             case EASY:
-                utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
-                for(Country count: srcCountry.getAdjacentCountries()){
-                    if(count.getOwner() == this){utility += 1; }
-                }
-                for(Country count: dstCountry.getAdjacentCountries()){
-                    if(count.getOwner() != this){utility += 1; }
-                }
-                actionContext.setSrcCountry(srcCountry);
-                actionContext.setDstCountry(dstCountry);
-
-                utilities.add(utility);
-                actions.add(actionContext);
                 break;
             case MEDIUM:
                 actionContext.setDstCountry(dstCountry);

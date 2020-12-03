@@ -8,7 +8,7 @@ import java.util.Collections;
  * @author Kevin
  * @version 10-25-2020
  */
-public abstract class Player implements Serializable {
+public abstract class Player{
     /** Boolean describing if this player is an ai **/
     protected final Boolean isAI;
     /** Index of this player **/
@@ -16,20 +16,22 @@ public abstract class Player implements Serializable {
     /** Name of this player **/
     protected final String name;
     /** The color the player is **/
-    protected final Color playerColor;
+    protected final  Color playerColor;
+    protected transient Map map;
     /** Number of armies that can be allocated to a country **/
     protected int troopsToDeploy;
     /** Hashmap of owned Countries **/
-    protected transient ArrayList<Country> countries;
+    protected ArrayList<Integer> countryIndexes;
     /** This is used for lose condition **/
     protected boolean hasLost = false;
 
-    protected Player(String name, Color color, boolean isAI, int playerId){
+    protected Player(String name, Color color, boolean isAI, int playerId, Map map){
         this.isAI = isAI;
         this.playerId=playerId;
         this.name = name;
         this.playerColor = color;
-        this.countries=new ArrayList<>();
+        this.map = map;
+        countryIndexes = new ArrayList();
     }
     /**
      * Used to decrement armiesToAllocate
@@ -45,15 +47,19 @@ public abstract class Player implements Serializable {
      * Add an owned country to this player
      * @param countryToAdd the owned country to add
      */
+
     public void addCountry(Country countryToAdd){
-        this.countries.add(countryToAdd);
+       countryIndexes.add(map.getIndexOfCountry(countryToAdd));
     }
+
+
     /**
      * Remove an owned country to this player
      * @param countryToRemove the owned country to remove
      */
     public void removeCountry(Country countryToRemove){
-        this.countries.remove(countryToRemove);
+        countryIndexes.removeAll(Collections.singleton(Integer.valueOf(map.getIndexOfCountry(countryToRemove))));
+
     }
 
     /**
@@ -63,7 +69,9 @@ public abstract class Player implements Serializable {
      this.hasLost = true;
     }
     public void setCountries(Country[] countries){
-        Collections.addAll(this.countries,countries);
+        for(Country country: countries){
+            countryIndexes.add(map.getIndexOfCountry(country));
+        }
     }
 
     public String getName() {
@@ -73,8 +81,12 @@ public abstract class Player implements Serializable {
         return troopsToDeploy;
     }
     public Country[] getCountries() {
-        Country[] tmpCountries=new Country[countries.size()];
-        tmpCountries=countries.toArray(tmpCountries);
+        Country[] tmpCountries=new Country[countryIndexes.size()];
+        int i = 0;
+        for (int x : countryIndexes){
+            tmpCountries[i] = map.getCountries()[x];
+            i++;
+        }
 
         return tmpCountries;
     }

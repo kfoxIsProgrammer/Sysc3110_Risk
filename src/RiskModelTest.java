@@ -230,6 +230,12 @@ public class RiskModelTest extends TestCase {
         assertFalse(test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[22],9));
         assertEquals(0,test.getCountries()[22].getArmy());
     }
+    public void testExportImportMethod(){
+        RiskModel test = new RiskModel(twoPlayers);
+        test.exportToJson();
+        RiskModel imported = test.importFromJson();
+       // assertEquals(test.players.length, imported.players.length);
+    }
 
 
 

@@ -1,9 +1,8 @@
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.awt.*;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -12,11 +11,11 @@ import java.util.*;
  * @author Dimitry Koutchine, Kevin Fox, Omar Hashmi, Kshitij Sawhney
  * @version 11.04.2020
  */
-public class RiskModel implements Serializable {
+public class RiskModel {
     /**List of all the players in the game **/
-    public   Player[] players;
+    public Player[] players;
     /** The map of the game **/
-    public   Map map;
+    public transient Map map;
     /** The current action context **/
     public  ActionContext actionContext;
     /** The current risk view**/
@@ -81,9 +80,9 @@ public class RiskModel implements Serializable {
         int i=actionContext.getPlayerId();
 
         if(i<numHumans){
-            players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i);
+            players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i,map);
         }else{
-            players[i]=new PlayerAI(name, playerColors[i],startingArmySize,i,map.getContinents());
+            players[i]=new PlayerAI(name, playerColors[i],startingArmySize,i,map);
         }
 
         //All players added
@@ -716,16 +715,31 @@ public class RiskModel implements Serializable {
             }
         }
 
-        player.troopsToDeploy+=Math.max(3,player.countries.size()/3);
+        player.troopsToDeploy+=Math.max(3,player.countryIndexes.size()/3);
     }
-    public void export(){
-
-        Gson gson = new Gson();
+    public void exportToJson(){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
-            gson.toJson(this, new FileWriter("Save.txt"));
+            Writer writer = new FileWriter("Save.txt");
+            gson.toJson(this, writer);
+            writer.flush();
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+    public RiskModel importFromJson(){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try {
+            RiskModel imported = gson.fromJson(new FileReader("Save.txt"),RiskModel.class);
+            return imported;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+
 
     }
 
