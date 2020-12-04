@@ -6,8 +6,16 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
+/**
+ * ModelSaveLoad class responsible for exporting and importing the model using json
+ * @author Dimitry Koutchine
+ * @version 12.04.2020
+ */
 
 public class ModelSaveLoad {
+    /**
+     * Inner class PlayerData that stores all the needed info from model.
+     */
     class PlayerData {
         public String name;
         public int[] countryIDs;
@@ -16,6 +24,15 @@ public class ModelSaveLoad {
         public ActionContext actionContext;
         int troopsToDeploy;
 
+        /**
+         * Constructor for PlayerData
+         * @param name name of player
+         * @param countryIDs array of country ids of owned countries
+         * @param countryTroops array of troops stationed in country
+         * @param isAi bool that determines if player is ai or not
+         * @param actionContext action context of the game
+         * @param troopsToDeploy troops player has to deploy
+         */
         public PlayerData(String name, int[] countryIDs, int[] countryTroops, boolean isAi, ActionContext actionContext,int troopsToDeploy) {
             this.name = name;
             this.countryIDs = countryIDs;
@@ -28,8 +45,10 @@ public class ModelSaveLoad {
     public PlayerData[] players;
 
 
-
-
+    /**
+     * modelSave extracts all the needed information from given model and converts to json format and writes to file
+     * @param model The game model
+     */
     public void modelSave(RiskModel model){
         players = new PlayerData[model.players.length];
 
@@ -51,6 +70,11 @@ public class ModelSaveLoad {
             e.printStackTrace();
         }
     }
+
+    /**
+     * reads file and converts the json data gathered into a model
+     * @return the model constructed.
+     */
     public RiskModel modelLoad(){
         RiskModel importedModel = new RiskModel();
         Color[] playerColors={
