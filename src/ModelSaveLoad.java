@@ -85,13 +85,9 @@ public class ModelSaveLoad {
                 importedModel.players[x].troopsToDeploy = players[x].troopsToDeploy;
                 for(int i = 0; i < players[x].countryIDs.length; i++){
                     importedModel.players[x].countryIndexes.add((Integer) players[x].countryIDs[i]);
-                    importedModel.getCountries()[i].setArmy(players[x].countryTroops[i]);
-                    importedModel.getCountries()[i].setOwner(importedModel.players[x]);
+                    importedModel.getCountries()[players[x].countryIDs[i]].setArmy(players[x].countryTroops[i]);
+                    importedModel.getCountries()[players[x].countryIDs[i]].setOwner(importedModel.players[x]);
                 }
-
-
-
-
 
             }
             importedModel.numHumans = numHumans;
