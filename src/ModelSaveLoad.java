@@ -37,7 +37,7 @@ public class ModelSaveLoad {
             int [] indexes = new int[model.players[x].countryIndexes.size()];
             int [] troops = new int [model.players[x].countryIndexes.size()];
             for(int i = 0; i < troops.length; i++){ troops[i] = model.getCountries()[model.players[x].countryIndexes.get(i)].getArmy();}
-            for(int i = 0; i < indexes.length; i++ ){indexes[i] = model.players[x].countryIndexes.get(i);};
+            for(int i = 0; i < indexes.length; i++ ){indexes[i] = model.players[x].countryIndexes.get(i);}
 
             players[x] = new PlayerData(model.players[x].name, indexes, troops, model.players[x].isAI, model.actionContext, model.players[x].troopsToDeploy);
         }

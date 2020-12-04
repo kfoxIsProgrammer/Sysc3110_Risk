@@ -45,7 +45,6 @@ public class RiskModel {
             actionContext.setPlayerId(i);
             newPlayer(names[i]);
         }
-        allocateCountries();
         allocateArmies();
         this.view.update(actionContext);
     }
