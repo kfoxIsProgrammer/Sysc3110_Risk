@@ -177,7 +177,7 @@ public class RiskModelTest extends TestCase {
     }
     public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
-        test.players[0].setCountries(new Country[9]);
+        test.players[0].countryIndexes = new ArrayList<Integer>();
         test.players[1].setCountries(new Country[0]);
         int[] countries = {0,1,2,3,4,5,6,7,8};
         setCountriesToPlayer(test,0,countries);
