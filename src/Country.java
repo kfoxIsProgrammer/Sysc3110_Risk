@@ -9,7 +9,7 @@ import java.util.Stack;
  */
 public class Country {
     /** Name of the country **/
-    private final String name;
+    private  final String name;
     /** List of the county's vertices **/
     private final Point[] vertices;
     /** Bounding coordinates for the country **/
@@ -25,6 +25,7 @@ public class Country {
     /** Army currently occupying this country **/
     private int army;
     private int continentId;
+
 
     /**
      * Constructor for Country

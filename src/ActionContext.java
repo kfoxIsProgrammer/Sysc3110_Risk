@@ -10,7 +10,7 @@ public class ActionContext {
     /** The current phase **/
     private Phase phase;
     /** The current player **/
-    private Player player;
+    private transient Player player;
     /** The index of the current player **/
     private int playerId;
     /** The countries on the map that should be highlighted **/

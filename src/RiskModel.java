@@ -1,4 +1,8 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.awt.*;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -11,18 +15,19 @@ public class RiskModel {
     /**List of all the players in the game **/
     public Player[] players;
     /** The map of the game **/
-    public Map map;
+    public transient Map map;
     /** The current action context **/
-    public ActionContext actionContext;
+    public  ActionContext actionContext;
     /** The current risk view**/
-    public RiskView view;
+    public transient RiskView view;
     /** The current RiskController**/
-    public RiskController controller;
+    public transient RiskController controller;
     public int numPlayers;
     public int numHumans;
     public int numAI;
-    public String textBuffer;
-    public int numBuffer;
+    public transient String textBuffer;
+    public transient int numBuffer;
+    public int [] troopSave;
 
     /**
      * Constructor for testing purposes
@@ -40,7 +45,6 @@ public class RiskModel {
             actionContext.setPlayerId(i);
             newPlayer(names[i]);
         }
-        allocateCountries();
         allocateArmies();
         this.view.update(actionContext);
     }
@@ -76,9 +80,9 @@ public class RiskModel {
         int i=actionContext.getPlayerId();
 
         if(i<numHumans){
-            players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i);
+            players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i,map);
         }else{
-            players[i]=new PlayerAI(name, playerColors[i],startingArmySize,i,map.getContinents());
+            players[i]=new PlayerAI(name, playerColors[i],startingArmySize,i,map);
         }
 
         //All players added
@@ -113,6 +117,7 @@ public class RiskModel {
                 }
             }
         }
+
         this.actionContext=new ActionContext(Phase.DEPLOY_DST, this.players[0]);
     }
     private void allocateArmies(){
@@ -744,10 +749,22 @@ public class RiskModel {
             }
         }
 
-        player.troopsToDeploy+=Math.max(3,player.countries.size()/3);
+        player.troopsToDeploy+=Math.max(3,player.countryIndexes.size()/3);
+    }
+    public void exportToJson(){
+       ModelSaveLoad saveLoad = new ModelSaveLoad();
+       saveLoad.modelSave(this);
+    }
+    public RiskModel importFromJson(){
+        ModelSaveLoad saveLoad = new ModelSaveLoad();
+        RiskModel temp = saveLoad.modelLoad();
+        return  temp;
+
     }
 
     public static void main(String[] args) {
-        new RiskModel();
+        new RiskModel().importFromJson();
+        System.out.println("test");
+
     }
 }

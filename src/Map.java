@@ -7,9 +7,9 @@ import java.awt.image.BufferedImage;
  */
 public class Map {
     /** List of the countries in the game **/
-    private Country[] countries;
+    private  Country[] countries;
     /** List of all the continents in the game **/
-    private Continent[] continents;
+    private  Continent[] continents;
     /** The map image **/
     private transient BufferedImage mapImage;
 
@@ -58,5 +58,13 @@ public class Map {
                 System.out.printf("\t%s\n", country.getName());
             }
         }
+    }
+    public int getIndexOfCountry(Country country) {
+        for (int x = 0; x < this.getCountries().length; x++) {
+            if (country == this.getCountries()[x]) {
+                return x;
+            }
+        }
+        return -1;
     }
 }

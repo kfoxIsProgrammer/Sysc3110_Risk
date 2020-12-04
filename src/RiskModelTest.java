@@ -227,6 +227,37 @@ public class RiskModelTest extends TestCase {
         assertFalse(test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[22],9));
         assertEquals(0,test.getCountries()[22].getArmy());
     }
+    public void testExportImportMethod(){
+        RiskModel test = new RiskModel(sixPlayers);
+        for(int x = 0; x < test.map.getCountries().length; x ++) {
+            test.map.getCountries()[x].setArmy(x + 1);
+        }
+
+        test.exportToJson();
+        RiskModel imported = new RiskModel().importFromJson();
+        //checking players
+        for(int x = 0; x < test.players.length; x++) {
+            assertEquals(test.players[x].name, imported.players[x].name);
+            assertEquals(test.players[x].troopsToDeploy, imported.players[x].troopsToDeploy);
+            assertEquals(test.players[x].countryIndexes, imported.players[x].countryIndexes);
+            assertEquals(test.players[x].isAI, imported.players[x].isAI);
+            assertEquals(test.players[x].hasLost, imported.players[x].hasLost);
+        }
+        for(int x = 0; x < test.getCountries().length; x ++){
+            System.out.println(test.getCountries()[x].getOwner().getName() +" : "+imported.getCountries()[x].getOwner().getName());
+        }
+        for(int x = 0; x < test.map.getCountries().length; x ++ ){
+            assertEquals(test.map.getCountries()[x].getArmy(), imported.map.getCountries()[x].getArmy());
+            assertEquals(test.getCountries()[x].getOwner().name, imported.getCountries()[x].getOwner().name);
+        }
+        assertEquals(test.actionContext.getPlayer().getName(),imported.actionContext.getPlayer().getName());
+        assertEquals(test.actionContext.getPhase(),imported.actionContext.getPhase());
+
+
+
+    }
+
+
 
 
 
