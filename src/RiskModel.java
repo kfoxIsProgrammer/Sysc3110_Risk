@@ -118,6 +118,8 @@ public class RiskModel {
                 }
             }
         }
+
+
         this.actionContext=new ActionContext(Phase.DEPLOY_DST, this.players[0]);
     }
     private void allocateArmies(){
@@ -723,21 +725,17 @@ public class RiskModel {
        saveLoad.modelSave(this);
     }
     public RiskModel importFromJson(){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try {
-            RiskModel imported = gson.fromJson(new FileReader("Save.txt"),RiskModel.class);
-            return imported;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-
-
+        ModelSaveLoad saveLoad = new ModelSaveLoad();
+        RiskModel temp = saveLoad.modelLoad();
+        temp.actionContext.setPhase(Phase.FORTIFY_DST);
+        temp.actionContext.setPlayer(temp.players[temp.players.length]);
+        return  temp;
 
     }
 
     public static void main(String[] args) {
-        new RiskModel();
+        new RiskModel().importFromJson();
+        System.out.println("test");
 
     }
 }

@@ -79,7 +79,6 @@ public class MapImport {
     private boolean parseJSONData(String jsonData){
         Gson gson=new Gson();
         map=gson.fromJson(jsonData,Map.class);
-
         for(Country country: map.getCountries()){
             int numAdjacentCountries=country.getAdjacentCountryIDs().length;
             Country[] adjacentCountries=new Country[numAdjacentCountries];

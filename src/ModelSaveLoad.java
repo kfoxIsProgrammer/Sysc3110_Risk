@@ -1,18 +1,20 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.awt.*;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class ModelSaveLoad {
     class PlayerData {
         public String name;
-        public Object[] countryIDs;
+        public int[] countryIDs;
         public int[] countryTroops;
         public boolean isAi;
 
-        public PlayerData(String name, Object[] countryIDs, int[] countryTroops, boolean isAi) {
+        public PlayerData(String name, int[] countryIDs, int[] countryTroops, boolean isAi) {
             this.name = name;
             this.countryIDs = countryIDs;
             this.countryTroops = countryTroops;
@@ -28,9 +30,12 @@ public class ModelSaveLoad {
         players = new PlayerData[model.players.length];
 
         for (int x = 0; x < players.length; x ++){
+            int [] indexes = new int[model.players[x].countryIndexes.size()];
             int [] troops = new int [model.players[x].countryIndexes.size()];
             for(int i = 0; i < troops.length; i++){ troops[i] = model.getCountries()[model.players[x].countryIndexes.get(i)].getArmy();}
-            players[x] = new PlayerData(model.players[x].name, model.players[x].countryIndexes.toArray(), troops, model.players[x].isAI);
+            for(int i = 0; i < indexes.length; i++ ){indexes[i] = model.players[x].countryIndexes.get(i);};
+
+            players[x] = new PlayerData(model.players[x].name, indexes, troops, model.players[x].isAI);
         }
         try {
             Writer writer = new FileWriter("Save.txt");
@@ -41,9 +46,58 @@ public class ModelSaveLoad {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public RiskModel modelLoad(){
+        RiskModel importedModel = new RiskModel();
+        Color[] playerColors={
+                new Color(255, 102, 0),
+                new Color(81, 119, 241),
+                new Color(255, 0  , 0),
+                new Color(0  , 255, 0),
+                new Color(255, 0, 255),
+                new Color(0, 255, 255)
+        };
+
+
+        try {
+            int numHumans = 0;
+            int numAi = 0;
+            Reader reader = new FileReader("Save.txt");
+            players = new Gson().fromJson(reader, PlayerData[].class);
+            reader.close();
+            importedModel.players = new Player[players.length];
+            importedModel.numPlayers = players.length;
+            for (int x = 0; x < players.length; x++){
+
+                if (players[x].isAi) {
+                    importedModel.players[x] = new PlayerAI(players[x].name, playerColors[x],0, x, importedModel.map);
+                    numAi ++;
+                }
+                else{
+                    importedModel.players[x] = new PlayerHuman(players[x].name, playerColors[x],0, x, importedModel.map);
+                    numHumans ++;
+                }
+                for(int i = 0; i < players[x].countryIDs.length; i++){
+                    importedModel.players[x].countryIndexes.add((Integer) players[x].countryIDs[i]);
+                    importedModel.getCountries()[i].setArmy(players[x].countryTroops[i]);
+                    importedModel.getCountries()[i].setOwner(importedModel.players[x]);
+                }
 
 
 
+
+
+            }
+            importedModel.numHumans = numHumans;
+            importedModel.numAI = numAi;
+            return importedModel;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  null;
 
 
     }

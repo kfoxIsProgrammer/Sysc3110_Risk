@@ -25,15 +25,6 @@ public abstract class Player{
     /** This is used for lose condition **/
     protected boolean hasLost = false;
 
-    private  Player(){
-        isAI = false;
-        playerId = 1;
-        name = "PleaseIgnore";
-        playerColor = new Color(1,1,1);
-
-
-    }
-
     protected Player(String name, Color color, boolean isAI, int playerId, Map map){
         this.isAI = isAI;
         this.playerId=playerId;
