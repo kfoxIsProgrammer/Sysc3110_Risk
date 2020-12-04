@@ -13,12 +13,16 @@ public class ModelSaveLoad {
         public int[] countryIDs;
         public int[] countryTroops;
         public boolean isAi;
+        public ActionContext actionContext;
+        int troopsToDeploy;
 
-        public PlayerData(String name, int[] countryIDs, int[] countryTroops, boolean isAi) {
+        public PlayerData(String name, int[] countryIDs, int[] countryTroops, boolean isAi, ActionContext actionContext,int troopsToDeploy) {
             this.name = name;
             this.countryIDs = countryIDs;
             this.countryTroops = countryTroops;
             this.isAi = isAi;
+            this.actionContext = actionContext;
+            this.troopsToDeploy = troopsToDeploy;
         }
     }
     public PlayerData[] players;
@@ -35,7 +39,7 @@ public class ModelSaveLoad {
             for(int i = 0; i < troops.length; i++){ troops[i] = model.getCountries()[model.players[x].countryIndexes.get(i)].getArmy();}
             for(int i = 0; i < indexes.length; i++ ){indexes[i] = model.players[x].countryIndexes.get(i);};
 
-            players[x] = new PlayerData(model.players[x].name, indexes, troops, model.players[x].isAI);
+            players[x] = new PlayerData(model.players[x].name, indexes, troops, model.players[x].isAI, model.actionContext, model.players[x].troopsToDeploy);
         }
         try {
             Writer writer = new FileWriter("Save.txt");
@@ -65,6 +69,7 @@ public class ModelSaveLoad {
             Reader reader = new FileReader("Save.txt");
             players = new Gson().fromJson(reader, PlayerData[].class);
             reader.close();
+            importedModel.actionContext =players[players.length-1].actionContext;
             importedModel.players = new Player[players.length];
             importedModel.numPlayers = players.length;
             for (int x = 0; x < players.length; x++){
@@ -77,6 +82,7 @@ public class ModelSaveLoad {
                     importedModel.players[x] = new PlayerHuman(players[x].name, playerColors[x],0, x, importedModel.map);
                     numHumans ++;
                 }
+                importedModel.players[x].troopsToDeploy = players[x].troopsToDeploy;
                 for(int i = 0; i < players[x].countryIDs.length; i++){
                     importedModel.players[x].countryIndexes.add((Integer) players[x].countryIDs[i]);
                     importedModel.getCountries()[i].setArmy(players[x].countryTroops[i]);
@@ -90,6 +96,11 @@ public class ModelSaveLoad {
             }
             importedModel.numHumans = numHumans;
             importedModel.numAI = numAi;
+            for(Player player: importedModel.players){
+                if (player.playerId == importedModel.actionContext.getPlayerId()){
+                    importedModel.actionContext.setPlayer(player);
+                }
+            }
             return importedModel;
 
         } catch (FileNotFoundException e) {

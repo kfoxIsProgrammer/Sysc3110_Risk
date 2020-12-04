@@ -119,7 +119,6 @@ public class RiskModel {
             }
         }
 
-
         this.actionContext=new ActionContext(Phase.DEPLOY_DST, this.players[0]);
     }
     private void allocateArmies(){
@@ -727,8 +726,6 @@ public class RiskModel {
     public RiskModel importFromJson(){
         ModelSaveLoad saveLoad = new ModelSaveLoad();
         RiskModel temp = saveLoad.modelLoad();
-        temp.actionContext.setPhase(Phase.FORTIFY_DST);
-        temp.actionContext.setPlayer(temp.players[temp.players.length]);
         return  temp;
 
     }
