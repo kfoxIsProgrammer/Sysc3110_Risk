@@ -41,6 +41,7 @@ public class RiskModel {
         this.controller =new RiskController(this);
         this.view =new RiskView(controller,map);
         setNumPlayers(names.length);
+        this.numHumans = names.length;
         for(int i=0;i<numPlayers;i++){
             actionContext.setPlayerId(i);
             newPlayer(names[i]);
@@ -57,6 +58,7 @@ public class RiskModel {
         this.controller =new RiskController(this);
         this.view =new RiskView(this.controller,map);
         this.view.update(this.actionContext);
+
     }
     public void setNumPlayers(int numPlayers){
         this.numPlayers=numPlayers;
@@ -763,7 +765,7 @@ public class RiskModel {
     }
 
     public static void main(String[] args) {
-        new RiskModel().importFromJson();
+        new RiskModel();
         System.out.println("test");
 
     }

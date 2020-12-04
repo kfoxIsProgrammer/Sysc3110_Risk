@@ -22,14 +22,14 @@ public class PlayerAI extends Player {
         this.troopsToDeploy = armiesToAllocate;
         this.difficulty=Difficulty.EASY;
     }
-    public boolean isItOptimalContinent(Country focalCountry){
+    /*public boolean isItOptimalContinent(Country focalCountry){
         int[] continentValue = new int[continents.length];
         int maxContinentIndex = 0;
         for(int value: continentValue){
             value = 0;
         }
-        for(Country count: this.countries){
-            continentValue[count.getContinentId()] ++;
+        for(int Index: this.countryIndexes){
+            continentValue[map.getCountries()[Index].getContinentId()] ++;
         }
 
         for(int i = 0; i < continentValue.length; i++){
@@ -43,7 +43,7 @@ public class PlayerAI extends Player {
             return true;
         }
         else {return false;}
-    }
+    }*/
     public ActionContext getMove(ActionContext actionContext) {
         this.actions = new ArrayList<>();
         this.utilities = new ArrayList<>();
@@ -143,7 +143,7 @@ public class PlayerAI extends Player {
                 break;
             case EASY:
                 utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+               // if(isItOptimalContinent(dstCountry)){utility+= 10;}
                 for(Country count: dstCountry.getAdjacentCountries()){
                     if(count.getOwner() != this){utility += 1; }
                 }
@@ -194,7 +194,7 @@ public class PlayerAI extends Player {
                 break;
             case EASY:
                 utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+                //if(isItOptimalContinent(dstCountry)){utility+= 10;}
                 for(Country count: srcCountry.getAdjacentCountries()){
                     if(count.getOwner() == this){utility += 1; }
                 }
@@ -274,7 +274,7 @@ public class PlayerAI extends Player {
                 break;
             case EASY:
                 utility = 0;
-                if(isItOptimalContinent(dstCountry)){utility+= 10;}
+                //if(isItOptimalContinent(dstCountry)){utility+= 10;}
                 Country[] counts= srcCountry.getAdjacentCountries();
                 if(counts!= null) {
                     boolean flag = false;
