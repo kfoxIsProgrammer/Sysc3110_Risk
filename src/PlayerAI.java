@@ -16,6 +16,7 @@ public class PlayerAI extends Player {
     private int maxUtilityIndex;
     private int continentIndexToFocus;
     private Continent[] continents;
+    private int attackCounter = 0;
 
     public PlayerAI(String name, Color color, int armiesToAllocate, int playerId, Map map) {
         super(name, color, true, playerId, map);
