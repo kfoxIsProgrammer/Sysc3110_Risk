@@ -70,11 +70,8 @@ public class RiskModelTest extends TestCase {
         return(ValidSrcCountry);
     }
     public void setCountriesToPlayer(RiskModel model, int user, int[] countryIndexes){
-        for(int i = 0; i < model.map.getCountries().length; i++){
-            model.map.getCountries()[i].setOwner(null);
-        }
         for(int index : countryIndexes){
-            model.players[user].addCountry(model.map.getCountries()[index]);//add Alaska
+            model.players[user].addCountry(model.map.getCountries()[index]);
             model.map.getCountries()[index].setOwner(model.players[user]);
 
         }
@@ -147,6 +144,9 @@ public class RiskModelTest extends TestCase {
      */
     public void testGetConnectedCountries(){
         RiskModel test = new RiskModel(twoPlayers);
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
         Stack<Country> toTest = new Stack<>();
         test.players[0].countryIndexes = new ArrayList<Integer>();
         test.players[1].countryIndexes = new ArrayList<Integer>();
@@ -165,6 +165,9 @@ public class RiskModelTest extends TestCase {
     }
     public void testGetConnectedCountriesThatReturnsNone(){
         RiskModel test = new RiskModel(twoPlayers);
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
         Stack <Country> toTest = new Stack();
         test.players[0].setCountries(new Country[8]);
         test.players[1].setCountries(new Country[0]);
@@ -177,6 +180,9 @@ public class RiskModelTest extends TestCase {
     }
     public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
         test.players[0].countryIndexes = new ArrayList<Integer>();
         test.players[1].countryIndexes = new ArrayList<Integer>();
         int[] countries = {0,1,2,3,4,5,6,7,8};
@@ -187,17 +193,24 @@ public class RiskModelTest extends TestCase {
     }
     public void testAttackMethod(){
         RiskModel test = new RiskModel(twoPlayers);
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
         test.players[0].countryIndexes = new ArrayList<Integer>();
         test.players[1].countryIndexes = new ArrayList<Integer>();
-        setCountriesToPlayer(test, 0, new int[]{0});
+        setCountriesToPlayer(test, 0, new int[]{0,7});
         setCountriesToPlayer(test, 1, new int[]{5,3});
+        assertEquals(test.players[0],test.map.getCountries()[7].getOwner());
         test.getCountries()[0].setArmy(5);
-        test.getCountries()[5].setArmy(1);
+        test.getCountries()[5].setArmy(5);
         assertTrue(test.attack(test.players[0], test.getCountries()[0],test.getCountries()[5],1,4));
     }
 
     public void testDeployMethod(){
         RiskModel test = new RiskModel(twoPlayers);
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
         test.players[0].countryIndexes = new ArrayList<Integer>();
         test.players[1].countryIndexes = new ArrayList<Integer>();
         setCountriesToPlayer(test, 0, new int[]{0});
@@ -209,6 +222,9 @@ public class RiskModelTest extends TestCase {
     }
     public void testFortifyMethod(){
         RiskModel test = new RiskModel(twoPlayers);
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
         test.players[0].countryIndexes = new ArrayList<Integer>();
         test.players[1].countryIndexes = new ArrayList<Integer>();
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
@@ -219,6 +235,9 @@ public class RiskModelTest extends TestCase {
     }
     public void testFortifyWrongMethod(){
         RiskModel test = new RiskModel(twoPlayers);
+        for(int i = 0; i < test.map.getCountries().length; i++){
+            test.map.getCountries()[i].setOwner(null);
+        }
         test.players[0].countryIndexes = new ArrayList<Integer>();
         test.players[1].countryIndexes = new ArrayList<Integer>();
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
