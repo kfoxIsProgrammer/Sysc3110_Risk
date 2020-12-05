@@ -71,6 +71,26 @@ public class PlayerAI extends Player {
             case ATTACK_DST:
             case ATTACK_SRC_ARMY:
             case ATTACK_SRC_CONFIRM:
+                maxUtility = Integer.MIN_VALUE;
+                for (int i = 0; i < countryIndexes.size(); i++) {
+                    Country[] dstCountries = map.getCountries()[countryIndexes.get(i)].getAdjacentUnownedCountries(this);
+                    for (int j = 0; j < dstCountries.length; j++) {
+                        attackUtility(map.getCountries()[countryIndexes.get(i)], dstCountries[j]);
+
+                        if (utilities.get(utilities.size() - 1) > maxUtility) {
+                            maxUtility = utilities.get(utilities.size()-1);
+                            this.maxUtilityIndex = utilities.size() - 1;
+                        }
+                    }
+                }
+                if(attackCounter< 3 && attackCounter < actions.size()) {
+                    this.attackCounter++;
+                    return actions.get(maxUtilityIndex);
+                }
+                else {
+                    this.attackCounter=0;
+                    return new ActionContext(Phase.FORTIFY_SRC, this);
+                }
             case ATTACK_DST_ARMY:
             case ATTACK_DST_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
