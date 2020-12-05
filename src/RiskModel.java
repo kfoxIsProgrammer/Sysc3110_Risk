@@ -342,6 +342,9 @@ public class RiskModel {
                 this.actionContext.setSrcCountry(clickedCountry);
                 break;
             case FORTIFY_DST:
+                if(!clickedCountry.getOwner().equals(this.actionContext.getPlayer()) || !this.getConnectedOwnedCountries(actionContext.getSrcCountry(),actionContext.getSrcCountry(),actionContext.getPlayer(),new Stack<Country>()).contains(clickedCountry)){
+                    break;
+                }
                 this.actionContext.setPhase(Phase.FORTIFY_ARMY);
                 this.actionContext.setDstCountry(clickedCountry);
                 break;

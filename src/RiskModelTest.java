@@ -273,8 +273,11 @@ public class RiskModelTest extends TestCase {
         assertEquals(test.actionContext.getPlayer().getName(),imported.actionContext.getPlayer().getName());
         assertEquals(test.actionContext.getPhase(),imported.actionContext.getPhase());
 
+    }
 
-
+    public void testIsConnected(){
+        RiskModel test = new RiskModel(twoPlayers);
+        assertTrue(test.getCountries()[1].isConnected(test.getCountries()[5]));
     }
 
 
