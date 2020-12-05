@@ -148,8 +148,8 @@ public class RiskModelTest extends TestCase {
     public void testGetConnectedCountries(){
         RiskModel test = new RiskModel(twoPlayers);
         Stack<Country> toTest = new Stack<>();
-        test.players[0].setCountries(new Country[8]);
-        test.players[1].setCountries(new Country[0]);
+        test.players[0].countryIndexes = new ArrayList<Integer>();
+        test.players[1].countryIndexes = new ArrayList<Integer>();
         int[] countries = {0,1,5,6,7,8,3,27};
         setCountriesToPlayer(test, 0,countries);
 
@@ -178,7 +178,7 @@ public class RiskModelTest extends TestCase {
     public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
         test.players[0].countryIndexes = new ArrayList<Integer>();
-        test.players[1].setCountries(new Country[0]);
+        test.players[1].countryIndexes = new ArrayList<Integer>();
         int[] countries = {0,1,2,3,4,5,6,7,8};
         setCountriesToPlayer(test,0,countries);
         test.players[0].removeTroops(test.players[0].troopsToDeploy);
@@ -187,8 +187,8 @@ public class RiskModelTest extends TestCase {
     }
     public void testAttackMethod(){
         RiskModel test = new RiskModel(twoPlayers);
-        test.players[0].setCountries(new Country[1]);
-        test.players[1].setCountries(new Country[2]);
+        test.players[0].countryIndexes = new ArrayList<Integer>();
+        test.players[1].countryIndexes = new ArrayList<Integer>();
         setCountriesToPlayer(test, 0, new int[]{0});
         setCountriesToPlayer(test, 1, new int[]{5,3});
         test.getCountries()[0].setArmy(5);
@@ -198,8 +198,8 @@ public class RiskModelTest extends TestCase {
 
     public void testDeployMethod(){
         RiskModel test = new RiskModel(twoPlayers);
-        test.players[0].setCountries(new Country[1]);
-        test.players[1].setCountries(new Country[0]);
+        test.players[0].countryIndexes = new ArrayList<Integer>();
+        test.players[1].countryIndexes = new ArrayList<Integer>();
         setCountriesToPlayer(test, 0, new int[]{0});
         test.players[0].removeTroops(test.players[0].troopsToDeploy);
         test.players[0].troopsToDeploy =5;
@@ -209,8 +209,8 @@ public class RiskModelTest extends TestCase {
     }
     public void testFortifyMethod(){
         RiskModel test = new RiskModel(twoPlayers);
-        test.players[0].setCountries(new Country[5]);
-        test.players[1].setCountries(new Country[0]);
+        test.players[0].countryIndexes = new ArrayList<Integer>();
+        test.players[1].countryIndexes = new ArrayList<Integer>();
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
         test.getCountries()[0].setArmy(10);
         test.getCountries()[8].setArmy(0);
@@ -219,8 +219,8 @@ public class RiskModelTest extends TestCase {
     }
     public void testFortifyWrongMethod(){
         RiskModel test = new RiskModel(twoPlayers);
-        test.players[0].setCountries(new Country[5]);
-        test.players[1].setCountries(new Country[0]);
+        test.players[0].countryIndexes = new ArrayList<Integer>();
+        test.players[1].countryIndexes = new ArrayList<Integer>();
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
         test.getCountries()[0].setArmy(10);
         test.getCountries()[22].setArmy(0);
@@ -234,7 +234,8 @@ public class RiskModelTest extends TestCase {
         }
 
         test.exportToJson();
-        RiskModel imported = new RiskModel().importFromJson();
+        RiskModel imported = new RiskModel();
+        imported.importFromJson();
         //checking players
         for(int x = 0; x < test.players.length; x++) {
             assertEquals(test.players[x].name, imported.players[x].name);

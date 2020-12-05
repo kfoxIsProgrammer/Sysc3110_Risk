@@ -757,16 +757,17 @@ public class RiskModel {
        ModelSaveLoad saveLoad = new ModelSaveLoad();
        saveLoad.modelSave(this);
     }
-    public RiskModel importFromJson(){
+    public void importFromJson(){
         ModelSaveLoad saveLoad = new ModelSaveLoad();
-        RiskModel temp = saveLoad.modelLoad();
-        return  temp;
+        saveLoad.modelLoad(this);
+        view.update(this.actionContext);
+
+
 
     }
 
     public static void main(String[] args) {
-        new RiskModel();
-        System.out.println("test");
+      new RiskModel();
 
     }
 }
