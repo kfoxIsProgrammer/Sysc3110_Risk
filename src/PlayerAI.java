@@ -94,19 +94,7 @@ public class PlayerAI extends Player {
                 }
             case ATTACK_DST_ARMY:
             case ATTACK_DST_CONFIRM:
-                maxUtility = Integer.MIN_VALUE;
 
-                for (int index : countryIndexes) {
-                    Country[] dstCountries = map.getCountries()[index].getAdjacentUnownedCountries(this);
-                    for (int j = 0; j < dstCountries.length; j++) {
-                        attackUtility(map.getCountries()[index], dstCountries[j]);
-
-                        if (utilities.get(utilities.size() - 1) > maxUtility) {
-                            this.maxUtilityIndex = utilities.size() - 1;
-                        }
-                    }
-                }
-                return actions.get(maxUtilityIndex);
             case RETREAT_ARMY:
             case RETREAT_CONFIRM:
                 //TODO This
@@ -119,10 +107,16 @@ public class PlayerAI extends Player {
 
                 for (int index : countryIndexes) {
                     ArrayList<Integer> dstCountries = countryIndexes;
-                    for (int indexDst : dstCountries) {
-                        fortifyUtility(map.getCountries()[index], map.getCountries()[indexDst]);
-                        if (utilities.get(utilities.size()) > maxUtility){
-                            this.maxUtilityIndex = utilities.size() - 1;
+                    for (int dstIndex : dstCountries) {
+                        fortifyUtility(map.getCountries()[index], map.getCountries()[dstIndex]);
+                        if (utilities.size() > 0) {
+                            if (utilities.get(utilities.size() - 1) > maxUtility) {
+                                maxUtility = utilities.get(utilities.size() - 1);
+                                this.maxUtilityIndex = utilities.size() - 1;
+                            }
+                        }
+                        else{
+                            return new ActionContext(Phase.DEPLOY_DST,this);
                         }
                     }
                 }
