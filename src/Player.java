@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -45,28 +44,27 @@ public abstract class Player{
     }
     /**
      * Add an owned country to this player
-     * @param countryToAdd the owned country to add
+     * @param country the owned country to add
      */
 
-    public void addCountry(Country countryToAdd){
-       countryIndexes.add(map.getIndexOfCountry(countryToAdd));
+    public void addCountry(Country country){
+       countryIndexes.add(map.getIndexOfCountry(country));
+       country.setOwner(this);
     }
-
-
     /**
      * Remove an owned country to this player
-     * @param countryToRemove the owned country to remove
+     * @param country the owned country to remove
      */
-    public void removeCountry(Country countryToRemove){
-        countryIndexes.removeAll(Collections.singleton(Integer.valueOf(map.getIndexOfCountry(countryToRemove))));
+    public void removeCountry(Country country){
+        countryIndexes.removeAll(Collections.singleton(Integer.valueOf(map.getIndexOfCountry(country))));
 
     }
 
     /**
      * Player has lost and boolean is set to true
      */
-    public void setHasLost(){
-     this.hasLost = true;
+    public void setHasLost(boolean b){
+     hasLost = b;
     }
     public void setCountries(Country[] countries){
         for(Country country: countries){
@@ -97,4 +95,7 @@ public abstract class Player{
         return playerColor;
     }
 
+    public String toString(){
+        return name;
+    }
 }

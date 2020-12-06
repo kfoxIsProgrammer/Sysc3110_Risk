@@ -46,4 +46,8 @@ public class Continent {
     public int getBonusTroops() {
         return bonusTroops;
     }
+
+    public String toString(){
+        return name;
+    }
 }

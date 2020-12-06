@@ -53,7 +53,7 @@ public class PlayerAI extends Player {
 
         switch (actionContext.getPhase()) {
             case DEPLOY_DST:
-            case DEPLOY_ARMY:
+            case DEPLOY_NUM_TROOPS:
             case DEPLOY_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
 
@@ -71,8 +71,8 @@ public class PlayerAI extends Player {
                 return actions.get(maxUtilityIndex);
             case ATTACK_SRC:
             case ATTACK_DST:
-            case ATTACK_SRC_ARMY:
-            case ATTACK_SRC_CONFIRM:
+            case ATTACK_NUM_TROOPS:
+            case ATTACK_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
                 for (int i = 0; i < countryIndexes.size(); i++) {
                     Country[] dstCountries = map.getCountries()[countryIndexes.get(i)].getAdjacentUnownedCountries(this);
@@ -93,16 +93,16 @@ public class PlayerAI extends Player {
                     this.attackCounter=0;
                     return new ActionContext(Phase.FORTIFY_SRC, this);
                 }
-            case ATTACK_DST_ARMY:
-            case ATTACK_DST_CONFIRM:
+            case DEFEND_NUM_TROOPS:
+            case DEFEND_CONFIRM:
 
-            case RETREAT_ARMY:
+            case RETREAT_NUM_TROOPS:
             case RETREAT_CONFIRM:
                 //TODO This
                 break;
             case FORTIFY_SRC:
             case FORTIFY_DST:
-            case FORTIFY_ARMY:
+            case FORTIFY_NUM_TROOPS:
             case FORTIFY_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
 
@@ -122,7 +122,6 @@ public class PlayerAI extends Player {
                     }
                 }
                 return actions.get(maxUtilityIndex);
-            case NEW_GAME:
             case GAME_OVER:
             default:
                 return null;
@@ -210,7 +209,7 @@ public class PlayerAI extends Player {
 
     private void attackUtility(Country srcCountry, Country dstCountry) {
         int utility;
-        ActionContext actionContext = new ActionContext(Phase.ATTACK_SRC_CONFIRM, this);
+        ActionContext actionContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
         switch (this.difficulty) {
             case BABY:
                 break;
@@ -234,7 +233,7 @@ public class PlayerAI extends Player {
                 }
                 break;
             case MEDIUM:
-                ActionContext attackContext = new ActionContext(Phase.ATTACK_SRC_CONFIRM, this);
+                ActionContext attackContext = new ActionContext(Phase.ATTACK_CONFIRM, this);
                 attackContext.setSrcCountry(srcCountry);
                 attackContext.setDstCountry(dstCountry);
                 //Will only attack high priority
