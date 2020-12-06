@@ -140,8 +140,6 @@ public class Country {
         }
     }
 
-
-
     /**
      * Setter for adjacent countries to this country
      * @param adjacentCountries the adjacent countries in an array
@@ -315,5 +313,9 @@ public class Country {
             }
         }
         return toTest;
+    }
+
+    public String toString(){
+        return name;
     }
 }

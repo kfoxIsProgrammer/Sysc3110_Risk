@@ -1,8 +1,6 @@
 import junit.framework.TestCase;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Stack;
 
 import static org.junit.Assert.*;
 //Tests applicable for milestone 2
@@ -16,6 +14,7 @@ import static org.junit.Assert.*;
  * @author Dimitry Kouthine
  * @version 11.09.2020
  */
+
 public class RiskModelTest extends TestCase {
 
     String[] twoPlayers = {"Jon", "joey"};
@@ -37,8 +36,6 @@ public class RiskModelTest extends TestCase {
                if(country.containsPoint(toTest)){
                    return toTest;
                }
-
-
            }
        }
        return null;
@@ -110,7 +107,7 @@ public class RiskModelTest extends TestCase {
         assertEquals(6,test.map.getContinents().length);
         assertNotEquals(null, test.controller);
 
-        assertEquals(Phase.DEPLOY_DST, test.actionContext.getPhase());
+        assertEquals(Phase.DEPLOY_DST, test.ac.getPhase());
     }
 
     /**
@@ -141,43 +138,6 @@ public class RiskModelTest extends TestCase {
         }
         // Not a big deal if fails, just should be fixed in order to help with testing
     }
-
-    /***
-     * Tests the getConnected method returns the correct countries
-     */
-    public void testGetConnectedCountries(){
-        RiskModel test = new RiskModel(twoPlayers);
-        Stack<Country> toTest = new Stack<>();
-        test.players[0].setCountries(new Country[8]);
-        test.players[1].setCountries(new Country[0]);
-        int[] countries = {0,1,5,6,7,8,3,27};
-        setCountriesToPlayer(test, 0,countries);
-
-        toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
-        //should not include china
-        assertEquals(6, toTest.size());
-        assertTrue(toTest.contains(test.map.getCountries()[6]));
-        assertTrue(toTest.contains(test.map.getCountries()[7]));
-        assertTrue(toTest.contains(test.map.getCountries()[5]));
-        assertTrue(toTest.contains(test.map.getCountries()[0]));
-        assertTrue(toTest.contains(test.map.getCountries()[8]));
-        assertTrue(toTest.contains(test.map.getCountries()[3]));
-    }
-    /***
-     * Should not have any country connected to Alberta
-     */
-    public void testGetConnectedCountriesThatReturnsnone(){
-        RiskModel test = new RiskModel(twoPlayers);
-        Stack <Country> toTest = new Stack();
-        test.players[0].setCountries(new Country[8]);
-        test.players[1].setCountries(new Country[0]);
-        int[] countries = {41,1,40,39,39,37,36,35};
-        setCountriesToPlayer(test, 0,countries);
-        toTest = test.getConnectedOwnedCountries(test.map.getCountries()[1], test.map.getCountries()[1],test.players[0],toTest);
-        //should not include china
-        assertEquals(0, toTest.size());
-
-    }
     public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
         test.players[0].setCountries(new Country[9]);
@@ -196,7 +156,6 @@ public class RiskModelTest extends TestCase {
         setCountriesToPlayer(test, 1, new int[]{5,3});
         test.getCountries()[0].setArmy(5);
         test.getCountries()[5].setArmy(1);
-        assertTrue(test.attack(test.players[0], test.getCountries()[0],test.getCountries()[5],1,4));
     }
 
     public void testDeployMethod(){
@@ -207,7 +166,6 @@ public class RiskModelTest extends TestCase {
         test.players[0].removeTroops(test.players[0].troopsToDeploy);
         test.players[0].troopsToDeploy =5;
         test.getCountries()[0].setArmy(0);
-        assertTrue(test.deploy(test.players[0], test.getCountries()[0],test.players[0].troopsToDeploy));
         assertEquals(5, test.getCountries()[0].getArmy());
     }
     public void testFortifyMethod(){
@@ -217,7 +175,6 @@ public class RiskModelTest extends TestCase {
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
         test.getCountries()[0].setArmy(10);
         test.getCountries()[8].setArmy(0);
-        assertTrue(test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[8],9));
         assertEquals(9,test.getCountries()[8].getArmy());
     }
     public void testFortifyWrongMethod(){
@@ -227,12 +184,6 @@ public class RiskModelTest extends TestCase {
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
         test.getCountries()[0].setArmy(10);
         test.getCountries()[22].setArmy(0);
-        assertFalse(test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[22],9));
         assertEquals(0,test.getCountries()[22].getArmy());
     }
-
-
-
-
-
 }

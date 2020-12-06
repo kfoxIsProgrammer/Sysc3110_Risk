@@ -12,7 +12,8 @@ public class ActionContext {
     /** The current player **/
     private Player player;
     /** The index of the current player **/
-    private int playerId;
+    private int playerIndex;
+    private boolean isAI;
     /** The countries on the map that should be highlighted **/
     private Country[] highlightedCountries;
     /** Source country **/
@@ -32,15 +33,10 @@ public class ActionContext {
     /** The dice roll information **/
     private Integer[][] diceRolls;
 
-    private String AIText;
-
     /** Constructor for ActionContext **/
     public ActionContext(Phase phase, Player player){
         this.phase=phase;
         this.player=player;
-    }
-    public ActionContext(){
-        this.phase=Phase.NEW_GAME;
     }
 
     /**
@@ -58,8 +54,11 @@ public class ActionContext {
         this.player = player;
     }
     /** Setter for current Player **/
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
+    public void setPlayerIndex(int playerIndex) {
+        this.playerIndex = playerIndex;
+    }
+    public void setAI(boolean AI) {
+        isAI = AI;
     }
     /**
      * Setter for countries for the view to highlight
@@ -67,6 +66,21 @@ public class ActionContext {
      */
     public void setHighlightedCountries(Country[] highlightedCountries) {
         this.highlightedCountries = highlightedCountries;
+    }
+    public void addHighlightedCountry(Country country){
+        if(highlightedCountries==null || highlightedCountries.length==0){
+            highlightedCountries=new Country[1];
+            highlightedCountries[0]=country;
+        }
+        else{
+            Country[] tmp=new Country[highlightedCountries.length+1];
+            for(int i=0;i< highlightedCountries.length;i++){
+                tmp[i]=highlightedCountries[i];
+            }
+            tmp[tmp.length-1]=country;
+
+            highlightedCountries=tmp;
+        }
     }
     /**
      * Setter for the country that is making an action
@@ -132,9 +146,10 @@ public class ActionContext {
     public Player getPlayer() {
         return player;
     }
-    public int getPlayerId() {
-        return playerId;
+    public int getPlayerIndex() {
+        return playerIndex;
     }
+    public boolean isAI(){return isAI;}
     public Country[] getHighlightedCountries() {
         return highlightedCountries;
     }
@@ -156,7 +171,7 @@ public class ActionContext {
     public int getDstArmyDead() {
         return dstArmyDead;
     }
-    public boolean isAttackerVictory() {
+    public boolean attackerVictory() {
         return attackerVictory;
     }
     public Integer[][] getDiceRolls() {

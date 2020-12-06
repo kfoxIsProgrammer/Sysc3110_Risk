@@ -4,10 +4,10 @@ This is used for our Sysc 3110 Project. The game of risk
 Team: Java Squad
 
 
-__Teammates (Add your name and email):__
-1. Kevin Fox : kevinfox@cmail.carleton.ca @SolidFox#7122
-2. Dimitry Koutchine : DimitryKoutchine@cmail.carleton.ca @Dkout#7347
-3. Omar Hashmi : OmarHashmi@cmail.carleton.ca @belt#8711
+__Teammates:__
+1. Kevin Fox : kevinfox@cmail.carleton.ca
+2. Dimitry Koutchine : DimitryKoutchine@cmail.carleton.ca
+3. Omar Hashmi : OmarHashmi@cmail.carleton.ca
 4. Kshitij Sawhney : kshitijsawhney@cmail.carleton.ca
 
 __Deliverables:__

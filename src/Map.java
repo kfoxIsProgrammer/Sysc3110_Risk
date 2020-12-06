@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -38,6 +39,21 @@ public class Map {
      */
     public BufferedImage getMapImage() {
         return mapImage;
+    }
+
+    /**
+     * Checks if a point is inside any country
+     *
+     * @param point The point to be tested
+     * @return The country that the points is inside, null if it isn't in any country
+     */
+    public Country pointToCountry(Point point){
+        for(Country country: countries){
+            if(country.containsPoint(point)){
+                return country;
+            }
+        }
+        return null;
     }
 
     /**
