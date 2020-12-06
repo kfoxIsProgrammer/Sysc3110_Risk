@@ -173,6 +173,7 @@ public class RiskView extends JFrame{
                 updateMap(ac.getSrcCountry(),ac.getSrcCountry().getAdjacentUnownedCountries(ac.getPlayer()));
                 break;
             case ATTACK_SRC_ARMY:
+
                 if(!ac.getPlayer().isAI) {
                     updatePrompt(ac.getPlayer(), "how many troops will you attack " + ac.getDstCountry().getName() + " with");
                     updateSlider(1, Math.min(ac.getSrcArmy() - 1, 3));
@@ -182,6 +183,7 @@ public class RiskView extends JFrame{
                     updateMenuVisible(false, false, false, false, false, false);
                     this.riskController.actionPerformed(new ActionEvent(this,1,"Confirm"));
                 }
+                updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 break;
             case ATTACK_SRC_CONFIRM:
                 if(!ac.getPlayer().isAI) {
@@ -193,6 +195,7 @@ public class RiskView extends JFrame{
                     updateMenuVisible(false, false, false, false, false, false);
                     this.riskController.actionPerformed(new ActionEvent(this,1,"Confirm"));
                 }
+                updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 break;
             case ATTACK_DST_ARMY:
                 if(!ac.getDstCountry().getOwner().isAI) {
@@ -204,9 +207,9 @@ public class RiskView extends JFrame{
                     updateMenuVisible(false, false, false, false, false, false);
                     this.riskController.actionPerformed(new ActionEvent(this,1,"Confirm"));
                 }
+                updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 break;
             case ATTACK_DST_CONFIRM:
-                updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 if(!ac.getDstCountry().getOwner().isAI) {
                     updatePrompt(ac.getPlayer(), "are you sure you want to defend " + ac.getDstCountry().getName() + " from " + ac.getSrcCountry().getName() + " with " + ac.getDstArmy() + " troops");
                     updateMenuVisible(true, false, false, true, false, false);
@@ -215,6 +218,7 @@ public class RiskView extends JFrame{
                     updateMenuVisible(false, false, false, false, false, false);
                     this.riskController.actionPerformed(new ActionEvent(this,1,"Confirm"));
                 }
+                updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 break;
             case RETREAT_ARMY:
                 updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
@@ -328,13 +332,13 @@ public class RiskView extends JFrame{
         if(ac.isAttackerVictory()){
             eventLogText.append(ac.getPlayer().name+" Attacked "+
                             ac.getDstCountry().getOwner().getName()+"\n"+
-                    ac.getDstCountry().getName()+" Attacked "+ac.getDstCountry().getName()+"\n\t"+
+                    ac.getSrcCountry().getName()+" Attacked "+ac.getDstCountry().getName()+"\n\t"+
                     "Attacker lost "+ac.getSrcArmyDead()+" troops\n\t"+
                     "Defender lost "+ac.getDstArmyDead()+" troops\n\n");
         }else {
             eventLogText.append(ac.getPlayer().name+" Attacked "+
                     ac.getDstCountry().getOwner().getName()+"\n"+
-                    ac.getDstCountry().getName()+" Attacked "+ac.getDstCountry().getName()+"\n\t"+
+                    ac.getSrcCountry().getName()+" Attacked "+ac.getDstCountry().getName()+"\n\t"+
                     "Attacker lost "+ac.getSrcArmyDead()+" troops\n\t"+
                     "Defender lost "+ac.getDstArmyDead()+" troops\n\n");
         }
@@ -405,6 +409,7 @@ public class RiskView extends JFrame{
             countryLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK,3));
 
             mapPane.add(countryLabel,Integer.valueOf(2));
+
         }
     }
     private void updatePrompt(Player player, String prompt){

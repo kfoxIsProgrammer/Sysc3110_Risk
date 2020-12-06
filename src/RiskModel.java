@@ -222,7 +222,7 @@ public class RiskModel {
                 if(players[nextIndex].isAI){
                     actionContext=new ActionContext(Phase.DEPLOY_CONFIRM,players[nextIndex]);
                     AIMoves();
-                    return nextPlayer(players[nextIndex]);
+                    return this.players[nextIndex];
                 }
                 else{
                     return this.players[nextIndex];
@@ -451,14 +451,18 @@ public class RiskModel {
                 this.actionContext.setPlayer(actionContext.getDstCountry().getOwner());
                 break;
             case ATTACK_DST_CONFIRM:
+                if(this.actionContext.getDstCountry().getOwner().isAI){
+                    this.actionContext.setDstArmy(this.actionContext.getDstCountry().getArmy()>1? 2:1);
+                }
                 if(attack(this.actionContext.getPlayer(),
                         this.actionContext.getSrcCountry(),
                         this.actionContext.getDstCountry(),
                         this.actionContext.getSrcArmy(),
                         this.actionContext.getDstArmy())){
-                    this.actionContext.setPhase(Phase.RETREAT_ARMY);
-                    this.actionContext.setPlayer(actionContext.getSrcCountry().getOwner());
-                }
+
+                        this.actionContext.setPhase(Phase.RETREAT_ARMY);
+                        this.actionContext.setPlayer(actionContext.getSrcCountry().getOwner());
+                    }
                 else
                     System.out.println("Attack failed");
                 break;
@@ -479,20 +483,14 @@ public class RiskModel {
                     if(retreat(this.actionContext.getPlayer(),
                             this.actionContext.getSrcCountry(),
                             this.actionContext.getDstCountry(),
-                            0))
-                        this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
-                    else
-                        System.out.println("Retreat failed");
-
+                            0)){}
                 }else {
                     if (retreat(this.actionContext.getPlayer(),
                             this.actionContext.getSrcCountry(),
                             this.actionContext.getDstCountry(),
-                            this.actionContext.getDstArmy()))
-                        this.actionContext = new ActionContext(Phase.ATTACK_SRC, this.actionContext.getPlayer());
-                    else
-                        System.out.println("Retreat failed");
+                            this.actionContext.getDstArmy())){}
                 }
+                this.actionContext=new ActionContext(Phase.ATTACK_SRC,this.actionContext.getPlayer());
                 break;
             case FORTIFY_SRC:
             case FORTIFY_ARMY:
@@ -580,6 +578,7 @@ public class RiskModel {
             return false;
         }
 
+        System.out.println(attackingCountry.getOwner().equals(defendingCountry.getOwner()));
         int defendingArmy = unitsToDefend;
         int attackingArmy = unitsToAttack;
 
@@ -682,11 +681,10 @@ public class RiskModel {
      * @return boolean True: success, False: fail
      */
     private boolean retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
-        defendingCountry.removeArmy(unitsToRetreat);
-        attackingCountry.addArmy(unitsToRetreat);
+            defendingCountry.removeArmy(unitsToRetreat);
+            attackingCountry.addArmy(unitsToRetreat);
+            return true;
 
-
-        return true;
     }
     /**
      * Method that performs the fortification action. The army of one country is moved to another country owned by the player and that is also connected through owned territory.
@@ -764,8 +762,6 @@ public class RiskModel {
         ModelSaveLoad saveLoad = new ModelSaveLoad();
         saveLoad.modelLoad(this);
         view.update(this.actionContext);
-
-
 
     }
 
