@@ -63,6 +63,7 @@ public class PlayerAI extends Player {
                         deployUtility(map.getCountries()[index], dstCountries[j]);
 
                         if (utilities.get(utilities.size() - 1) > maxUtility) {
+                            maxUtility = utilities.get(utilities.size()-1);
                             this.maxUtilityIndex = utilities.size() - 1;
                         }
                     }
@@ -163,10 +164,12 @@ public class PlayerAI extends Player {
                     if(count.getOwner() != this){utility += 1; }
                 }
 
-                    actionContext.setDstArmy(1);
-                    actionContext.setDstCountry(dstCountry);
-                    utilities.add(utility);
-                    actions.add(actionContext);
+                actionContext.setDstArmy(1);
+                actionContext.setDstCountry(dstCountry);
+                actionContext.setSrcCountry(srcCountry);
+                System.out.printf("\t\t\t%s\t%s\n", actionContext.getSrcCountry().getName(),actionContext.getDstCountry().getName());
+                utilities.add(utility);
+                actions.add(actionContext);
 
                 break;
             case MEDIUM:

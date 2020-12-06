@@ -3,9 +3,7 @@ import com.google.gson.GsonBuilder;
 
 import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
+
 /**
  * ModelSaveLoad class responsible for exporting and importing the model using json
  * @author Dimitry Koutchine
@@ -16,14 +14,31 @@ public class ModelSaveLoad {
 
 
     /**
-     * Inner class PlayerData that stores all the needed info from model.
+     * Inner class modelData that stores all the needed info from model.
+     */
+    static class ModelData {
+        private ActionContext ac;
+        private PlayerData[] players;
+        private String fileName;
+        public ModelData(ActionContext ac, PlayerData[] playerData, String fileName){
+            this.ac = ac;
+            this.players = playerData;
+            this.fileName = fileName;
+        }
+
+
+
+
+    }
+
+    /**
+     * inner Class for saving individual player data.
      */
     static class PlayerData {
         public String name;
         public int[] countryIDs;
         public int[] countryTroops;
         public boolean isAi;
-        public ActionContext actionContext;
         int troopsToDeploy;
 
         /**
@@ -32,15 +47,13 @@ public class ModelSaveLoad {
          * @param countryIDs array of country ids of owned countries
          * @param countryTroops array of troops stationed in country
          * @param isAi bool that determines if player is ai or not
-         * @param actionContext action context of the game
          * @param troopsToDeploy troops player has to deploy
          */
-        public PlayerData(String name, int[] countryIDs, int[] countryTroops, boolean isAi, ActionContext actionContext,int troopsToDeploy) {
+        public PlayerData(String name, int[] countryIDs, int[] countryTroops, boolean isAi, int troopsToDeploy) {
             this.name = name;
             this.countryIDs = countryIDs;
             this.countryTroops = countryTroops;
             this.isAi = isAi;
-            this.actionContext = actionContext;
             this.troopsToDeploy = troopsToDeploy;
         }
     }
@@ -53,6 +66,7 @@ public class ModelSaveLoad {
      */
     public static void modelSave(RiskModel model){
         PlayerData[] players;
+        ModelData modelData;
         players = new PlayerData[model.players.length];
 
         for (int x = 0; x < players.length; x ++){
@@ -62,12 +76,14 @@ public class ModelSaveLoad {
                 troops[i] = model.getCountries()[model.players[x].countryIndexes.get(i)].getArmy();
                 indexes[i] = model.players[x].countryIndexes.get(i);
             }
-            players[x] = new PlayerData(model.players[x].name, indexes, troops, model.players[x].isAI, model.actionContext, model.players[x].troopsToDeploy);
+            players[x] = new PlayerData(model.players[x].name, indexes, troops, model.players[x].isAI, model.players[x].troopsToDeploy);
         }
+        modelData = new ModelData(model.actionContext,players,model.map.getFilename());
+
         try {
             Writer writer = new FileWriter("Save.txt");
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(players,writer);
+            gson.toJson(modelData,writer);
             writer.flush();
             writer.close();
         } catch (IOException e) {
@@ -80,7 +96,7 @@ public class ModelSaveLoad {
      * @return the model constructed.
      */
     public static void modelLoad(RiskModel riskModel){
-        PlayerData[] players;
+        ModelData modelData;
         Color[] playerColors={
                 new Color(255, 102, 0),
                 new Color(81, 119, 241),
@@ -95,26 +111,27 @@ public class ModelSaveLoad {
             int numHumans = 0;
             int numAi = 0;
             Reader reader = new FileReader("Save.txt");
-            players = new Gson().fromJson(reader, PlayerData[].class);
+            modelData = new Gson().fromJson(reader, ModelData.class);
             reader.close();
-            riskModel.actionContext =players[players.length-1].actionContext;
-            riskModel.players = new Player[players.length];
-            riskModel.numPlayers = players.length;
-            for (int x = 0; x < players.length; x++){
+            riskModel.actionContext =modelData.ac;
+            riskModel.map.Import(modelData.fileName);
+            riskModel.players = new Player[modelData.players.length];
+            riskModel.numPlayers = modelData.players.length;
+            for (int x = 0; x < modelData.players.length; x++){
 
-                if (players[x].isAi) {
-                    riskModel.players[x] = new PlayerAI(players[x].name, playerColors[x],0, x, riskModel.map);
+                if (modelData.players[x].isAi) {
+                    riskModel.players[x] = new PlayerAI(modelData.players[x].name, playerColors[x],0, x, riskModel.map);
                     numAi ++;
                 }
                 else{
-                    riskModel.players[x] = new PlayerHuman(players[x].name, playerColors[x],0, x, riskModel.map);
+                    riskModel.players[x] = new PlayerHuman(modelData.players[x].name, playerColors[x],0, x, riskModel.map);
                     numHumans ++;
                 }
-                riskModel.players[x].troopsToDeploy = players[x].troopsToDeploy;
-                for(int i = 0; i < players[x].countryIDs.length; i++){
-                    riskModel.players[x].countryIndexes.add((Integer) players[x].countryIDs[i]);
-                    riskModel.getCountries()[players[x].countryIDs[i]].setArmy(players[x].countryTroops[i]);
-                    riskModel.getCountries()[players[x].countryIDs[i]].setOwner(riskModel.players[x]);
+                riskModel.players[x].troopsToDeploy = modelData.players[x].troopsToDeploy;
+                for(int i = 0; i < modelData.players[x].countryIDs.length; i++){
+                    riskModel.players[x].countryIndexes.add((Integer) modelData.players[x].countryIDs[i]);
+                    riskModel.getCountries()[modelData.players[x].countryIDs[i]].setArmy(modelData.players[x].countryTroops[i]);
+                    riskModel.getCountries()[modelData.players[x].countryIDs[i]].setOwner(riskModel.players[x]);
                 }
 
             }
