@@ -78,7 +78,7 @@ public class ModelSaveLoad {
             }
             players[x] = new PlayerData(model.players[x].name, indexes, troops, model.players[x].isAI, model.players[x].troopsToDeploy);
         }
-        modelData = new ModelData(model.actionContext,players,model.map.getFilename());
+        modelData = new ModelData(model.ac,players,model.map.getFilename());
 
         try {
             Writer writer = new FileWriter("Save.txt");
@@ -113,7 +113,7 @@ public class ModelSaveLoad {
             Reader reader = new FileReader("Save.txt");
             modelData = new Gson().fromJson(reader, ModelData.class);
             reader.close();
-            riskModel.actionContext =modelData.ac;
+            riskModel.ac=modelData.ac;
             riskModel.map.Import(modelData.fileName);
             riskModel.players = new Player[modelData.players.length];
             riskModel.numPlayers = modelData.players.length;
@@ -138,8 +138,8 @@ public class ModelSaveLoad {
             riskModel.numHumans = numHumans;
             riskModel.numAI = numAi;
             for(Player player: riskModel.players){
-                if (player.playerId == riskModel.actionContext.getPlayerId()){
-                    riskModel.actionContext.setPlayer(player);
+                if (player.playerId == riskModel.ac.getPlayerIndex()){
+                    riskModel.ac.setPlayer(player);
                 }
             }
 

@@ -39,6 +39,7 @@ public class RiskModel {
             ac.setPlayerIndex(i);
             setPlayerName(names[i]);
         }
+        allocateCountries();
         allocateArmies();
         this.view.update(ac);
     }
@@ -159,6 +160,7 @@ public class RiskModel {
             if(!this.players[nextIndex].getHasLost()){
                 return this.players[nextIndex];
             }
+
             //Error no more players call game is over
             if(this.players[nextIndex].equals(player)){
                 gameIsOver();
@@ -170,7 +172,24 @@ public class RiskModel {
 
     private void AIMoves(){
         PlayerAI AI=(PlayerAI) ac.getPlayer();
-        ActionContext AIAction;
+        ActionContext AIAction = null;
+
+        /** Claim **/
+        if(ac.getPhase()==Phase.CLAIM_COUNTRY){
+            AIAction=AI.getMove(ac);
+            deploy(AI,AIAction.getDstCountry(),1);
+            view.updateAI(AIAction);
+        }
+        /** Initial Deploy **/
+        if(ac.getPhase()==Phase.INITIAL_DEPLOY_DST){
+            AIAction=AI.getMove(ac);
+            deploy(AI,AIAction.getDstCountry(),1);
+            view.updateAI(AIAction);
+        }
+        /** Deploy **/
+        /** Attack **/
+        /** Retreat **/
+        /** Fortify **/
     }
 
     /********************  USER INPUT METHODS  ********************/
@@ -221,6 +240,10 @@ public class RiskModel {
                 break;
         }
         view.update(ac);
+
+        if(ac.getPlayer()!=null && ac.getPlayer().isAI){
+            AIMoves();
+        }
     }
     public void numTroops(int numTroops){
         switch (this.ac.getPhase()) {
@@ -285,28 +308,17 @@ public class RiskModel {
                 }
                 break;
         }
-
         view.update(this.ac);
+
+        if(ac.getPlayer()!=null && ac.getPlayer().isAI){
+            AIMoves();
+        }
     }
     /**
      * Method to deal with when the user clicks a confirm button
      */
     public void menuConfirm(){
         switch (this.ac.getPhase()) {
-//            case DEPLOY_DST:
-//                if(this.ac.getPlayer().isAI) {
-//                    this.ac.setPhase(Phase.DEPLOY_NUM_TROOPS);
-//                }
-//                break;
-//            case DEPLOY_NUM_TROOPS:
-//                if(!ac.getPlayer().isAI) {
-//                    ac.setDstArmy(numBuffer);
-//                    ac.setPhase(Phase.DEPLOY_CONFIRM);
-//                }else{
-//                    this.ac = (((PlayerAI)this.ac.getPlayer()).getMove(this.ac));
-//
-//                }
-//                break;
             case INITIAL_DEPLOY_CONFIRM:
                 deploy(this.ac.getPlayer(),
                         this.ac.getDstCountry(),
@@ -330,12 +342,19 @@ public class RiskModel {
                     this.ac = new ActionContext(Phase.DEPLOY_DST, this.ac.getPlayer());
                 }
                 break;
-//            case ATTACK_SRC:
-//                this.ac = (((PlayerAI)this.ac.getPlayer()).getMove(this.ac));
-//                break;
             case ATTACK_CONFIRM:
                 ac.setPhase(Phase.DEFEND_NUM_TROOPS);
                 this.ac.setPlayer(ac.getDstCountry().getOwner());
+                if(ac.getPlayer().isAI){
+                    ac.setDstArmy(Math.min(2,ac.getDstCountry().getArmy()));
+                    ac.setPlayer(ac.getSrcCountry().getOwner());
+                    attack(ac.getPlayer(),
+                            ac.getSrcCountry(),
+                            ac.getDstCountry(),
+                            ac.getSrcArmy(),
+                            ac.getDstArmy());
+                    ac.setPhase(Phase.RETREAT_NUM_TROOPS);
+                }
                 break;
             case DEFEND_CONFIRM:
                 attack(ac.getPlayer(),
@@ -346,18 +365,6 @@ public class RiskModel {
                 this.ac.setPhase(Phase.RETREAT_NUM_TROOPS);
                 this.ac.setPlayer(ac.getSrcCountry().getOwner());
                 break;
-//            case ATTACK_NUM_TROOPS:
-//                ac.setSrcArmy(numBuffer);
-//                ac.setPhase(Phase.ATTACK_CONFIRM);
-//                break;
-//            case DEFEND_NUM_TROOPS:
-//                ac.setDstArmy(numBuffer);
-//                ac.setPhase(Phase.DEFEND_CONFIRM);
-//                break;
-//            case RETREAT_NUM_TROOPS:
-//                ac.setDstArmy(numBuffer);
-//                ac.setPhase(Phase.RETREAT_CONFIRM);
-//                break;
             case RETREAT_CONFIRM:
                 if(this.ac.getPlayer().isAI){
                     retreat(ac.getPlayer(),
@@ -373,29 +380,19 @@ public class RiskModel {
                 }
                 this.ac =new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
                 break;
-//            case FORTIFY_SRC:
-//            case FORTIFY_NUM_TROOPS:
-//                if(this.ac.getPlayer().isAI){
-//                    this.ac = (((PlayerAI)this.ac.getPlayer()).getMove(this.ac));
-//                }else {
-//                    ac.setSrcArmy(numBuffer);
-//                }
-//                if(!this.ac.getPhase().equals(Phase.DEPLOY_DST)) {
-//                    fortify(this.ac.getPlayer(),
-//                            this.ac.getSrcCountry(),
-//                            this.ac.getDstCountry(),
-//                            this.ac.getSrcArmy());
-//                }
-//                ac.setPlayer(nextPlayer(this.ac.getPlayer()));
-//                allocateBonusTroops(ac.getPlayer());
-//                if (ac.getPlayer().getTroopsToDeploy() > 0) {
-//                    this.ac = new ActionContext(Phase.DEPLOY_DST, this.ac.getPlayer());
-//                } else {
-//                    this.ac = new ActionContext(Phase.ATTACK_SRC, this.ac.getPlayer());
-//                }
-//                break;
+            case FORTIFY_CONFIRM:
+                fortify(ac.getPlayer(),
+                    ac.getSrcCountry(),
+                    ac.getDstCountry(),
+                    ac.getSrcArmy());
+                ac=new ActionContext(Phase.DEPLOY_DST,nextPlayer(ac.getPlayer()));
+                break;
         }
         view.update(this.ac);
+
+        if(ac.getPlayer()!=null && ac.getPlayer().isAI){
+            AIMoves();
+        }
     }
     /**
      * Methods to deal with when the user clicks a back button
@@ -405,11 +402,13 @@ public class RiskModel {
             case DEPLOY_DST:
             case DEPLOY_NUM_TROOPS:
             case DEPLOY_CONFIRM:
-                ac =new ActionContext(Phase.DEPLOY_DST, ac.getPlayer());
+                ac=new ActionContext(Phase.DEPLOY_DST, ac.getPlayer());
                 break;
             case ATTACK_DST:
             case ATTACK_NUM_TROOPS:
             case ATTACK_CONFIRM:
+            case RETREAT_NUM_TROOPS:
+            case RETREAT_CONFIRM:
                 ac =new ActionContext(Phase.ATTACK_SRC, ac.getPlayer());
                 break;
             case DEFEND_CONFIRM:
@@ -470,9 +469,9 @@ public class RiskModel {
         System.out.printf("%d\n", ac.getPlayerIndex());
 
         if(i<numHumans){
-            this.players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i);
+            this.players[i]=new PlayerHuman(name,playerColors[i],startingArmySize,i,map);
         }else{
-            this.players[i]=new PlayerAI(name, playerColors[i],startingArmySize,i,map.getContinents());
+            this.players[i]=new PlayerAI(name, playerColors[i],startingArmySize,i,map);
         }
         ac.setPlayerIndex(i+1);
 
@@ -511,7 +510,7 @@ public class RiskModel {
      * @param troopsToDeploy int that represent the amount of army units to move.
      * @return boolean fortify that returns a true if the function was successful.
      */
-    private void deploy(Player player, Country destinationCountry, int troopsToDeploy){
+    public void deploy(Player player, Country destinationCountry, int troopsToDeploy){
         player.removeTroops(troopsToDeploy);
         destinationCountry.addArmy(troopsToDeploy);
     }
@@ -522,7 +521,7 @@ public class RiskModel {
      * @param unitsToAttack number of attackers from the attacking country
      * @return Boolean true = no error, false = units to attack error
      */
-    private void attack(Player player, Country attackingCountry, Country defendingCountry, int unitsToAttack, int unitsToDefend){
+    public void attack(Player player, Country attackingCountry, Country defendingCountry, int unitsToAttack, int unitsToDefend){
         int defendingArmy = unitsToDefend;
         int attackingArmy = unitsToAttack;
 
@@ -622,7 +621,7 @@ public class RiskModel {
      * @param unitsToRetreat the number of units to send to the attacking country
      * @return boolean True: success, False: fail
      */
-    private void retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
+    public void retreat(Player player, Country attackingCountry, Country defendingCountry, int unitsToRetreat){
         defendingCountry.removeArmy(unitsToRetreat);
         attackingCountry.addArmy(unitsToRetreat);
     }
@@ -634,7 +633,7 @@ public class RiskModel {
      * @param unitsToSend int that represent the amount of army units to move.
      * @return boolean  that returns a true if the function was successful.
      */
-    private void fortify(Player player, Country sourceCountry, Country destinationCountry, int unitsToSend){
+    public void fortify(Player player, Country sourceCountry, Country destinationCountry, int unitsToSend){
         sourceCountry.removeArmy(unitsToSend);
         destinationCountry.addArmy(unitsToSend);
     }
@@ -673,8 +672,6 @@ public class RiskModel {
     }
 
     public static void main(String[] args) {
-      RiskModel test = new RiskModel();
-      test.importFromJson();
-
+      new RiskModel();
     }
 }

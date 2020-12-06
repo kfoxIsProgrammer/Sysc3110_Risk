@@ -29,8 +29,8 @@ public class RiskView extends JFrame{
 
         this.controller = controller;
         this.map=map;
-        this.mapHeight=map.getMapImage().getHeight();
-        this.mapWidth=map.getMapImage().getWidth();
+        int mapHeight=map.getMapImage().getHeight();
+        int mapWidth=map.getMapImage().getWidth();
 
         setLayout(new GridBagLayout());
 
@@ -103,7 +103,6 @@ public class RiskView extends JFrame{
         controller.setPhase(ac.getPhase());
         updatePhase(ac);
         updatePlayerName(ac.getPlayer());
-        System.out.printf("\t%s\n",ac.getPhase());
         switch(ac.getPhase()){
             case NUM_HUMANS:
                 updatePrompt("Enter the number of players");
@@ -176,10 +175,10 @@ public class RiskView extends JFrame{
                 updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 displayRolls(ac);
                 if (!ac.attackerVictory() || ac.getSrcArmy() - ac.getSrcArmyDead() < 2) {
-                    updateMenuVisible(true, false, false, false, true, true);
+                    updateMenuVisible(true, false, false, false, true, false);
                 } else {
                     updateSlider(0, ac.getSrcArmy() - ac.getSrcArmyDead() - 1);
-                    updateMenuVisible(true, false, true, true, false, true);
+                    updateMenuVisible(true, false, true, true, false, false);
                 }
                 break;
             case RETREAT_CONFIRM:
@@ -207,6 +206,27 @@ public class RiskView extends JFrame{
                 break;
         }
     }
+    public void updateAI(ActionContext ac){
+        switch(ac.getPhase()){
+            case CLAIM_COUNTRY:
+                updateMap(ac.getHighlightedCountries());
+                updatePrompt(ac.getPlayer(),"claimed "+ac.getDstCountry());
+                updateMenuVisible(true,false,false,true,false,false);
+            case INITIAL_DEPLOY_CONFIRM:
+                updateMap(ac.getHighlightedCountries());
+                updatePrompt(ac.getPlayer(),"deployed "+ac.getDstArmy()+" troops to "+ac.getDstCountry());
+                updateMenuVisible(true,false,false,true,false,false);
+                break;
+            case DEPLOY_CONFIRM:
+                break;
+            case ATTACK_CONFIRM:
+                break;
+            case RETREAT_CONFIRM:
+                break;
+            case FORTIFY_CONFIRM:
+                break;
+        }
+    }
 
     private void displayDeploy(ActionContext ac) {
         eventLogText.append(ac.getPlayer().getName()+"\n\t"
@@ -220,7 +240,7 @@ public class RiskView extends JFrame{
     }
     private void displayNextPhase(ActionContext ac) {
         String phases;
-        if(ac.getPhase().equals(Phase.DEPLOY_DST) || ac.getPhase().equals(Phase.DEPLOY_ARMY))
+        if(ac.getPhase().equals(Phase.DEPLOY_DST) || ac.getPhase().equals(Phase.DEPLOY_NUM_TROOPS))
             phases = "Deploy";
         else if(ac.getPhase().equals(Phase.ATTACK_SRC))
             phases = "Attack";
@@ -294,6 +314,10 @@ public class RiskView extends JFrame{
     private void updateMap(Country[] countries){
         mapPane.removeAll();
         mapPane.add(mapImage);
+
+        if(countries==null){
+            return;
+        }
 
         for(int i=0;i<countries.length;i++){
             Country country=countries[i];
