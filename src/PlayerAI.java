@@ -217,12 +217,14 @@ public class PlayerAI extends Player {
                     if(count.getOwner() == this){utility += 1; }
                 }
                 if((srcCountry.getArmy() - dstCountry.getArmy()) > 1){utility+=5;}
-                utility+= srcCountry.getArmy();
-                actionContext.setSrcCountry(srcCountry);
-                actionContext.setDstCountry(dstCountry);
-                actionContext.setSrcArmy(actionContext.getSrcCountry().getArmy()-1);
-                utilities.add(utility);
-                actions.add(actionContext);
+                if(!srcCountry.getOwner().equals(dstCountry.getOwner())) {
+                    utility += srcCountry.getArmy();
+                    actionContext.setSrcCountry(srcCountry);
+                    actionContext.setDstCountry(dstCountry);
+                    actionContext.setSrcArmy(actionContext.getSrcCountry().getArmy() - 1);
+                    utilities.add(utility);
+                    actions.add(actionContext);
+                }
                 break;
             case MEDIUM:
                 ActionContext attackContext = new ActionContext(Phase.ATTACK_SRC_CONFIRM, this);
