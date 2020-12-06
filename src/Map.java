@@ -12,14 +12,18 @@ public class Map {
     private  Continent[] continents;
     /** The map image **/
     private transient BufferedImage mapImage;
+    private String filename;
 
     public static Map Import(String filename){
         MapImport mapFileParser=new MapImport(filename);
         Map tmpMap=mapFileParser.getMapData();
         tmpMap.mapImage=mapFileParser.getMapImage();
+        tmpMap.filename = filename;
 
         return tmpMap;
     }
+
+    public String getFilename(){return filename;}
 
     /**
      * @return The array of countries

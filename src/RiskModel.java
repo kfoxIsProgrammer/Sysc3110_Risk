@@ -766,7 +766,8 @@ public class RiskModel {
     }
 
     public static void main(String[] args) {
-      new RiskModel();
+      RiskModel test = new RiskModel();
+      test.importFromJson();
 
     }
 }
