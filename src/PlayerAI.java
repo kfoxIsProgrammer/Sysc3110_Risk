@@ -21,7 +21,7 @@ public class PlayerAI extends Player {
     public PlayerAI(String name, Color color, int armiesToAllocate, int playerId, Map map) {
         super(name, color, true, playerId, map);
         this.troopsToDeploy = armiesToAllocate;
-        this.difficulty=Difficulty.EASY;
+        this.difficulty=Difficulty.HARD;
     }
     /*public boolean isItOptimalContinent(Country focalCountry){
         int[] continentValue = new int[continents.length];
@@ -189,13 +189,17 @@ public class PlayerAI extends Player {
                 }
                 break;
             case HARD:
-                actionContext.setDstCountry(srcCountry);
+                actionContext.setDstCountry(dstCountry);
                 int troopsDiff = dstCountry.getArmy() - srcCountry.getArmy();
                 if (troopsDiff < troopsToDeploy && troopsDiff>0) {
-                    actionContext.setSrcArmy(troopsDiff);
+                    actionContext.setDstArmy(troopsDiff);
                     utility = troopsDiff+ dstCountry.getAdjacentOwnedCountries(this).length - 1;
                     utilities.add(utility);
                     actions.add(actionContext);
+                }else{
+                actionContext.setDstArmy(1);
+                utilities.add(-100);
+                actions.add(actionContext);
                 }
                 break;
         }
@@ -245,25 +249,17 @@ public class PlayerAI extends Player {
                     }
                     attackContext.setSrcArmy(srcCountry.getArmy()-1);
                     utilities.add(srcCountryAdjacentValue+dstCountryAdjacentValue/2);
-
-
                   //  utilities.add(Integer.MIN_VALUE);
-
-
                 actions.add(attackContext);
                 break;
             case HARD:
-                if(srcCountry.getArmy()>=dstCountry.getArmy() && srcCountry.getArmy()!=1){
-                    int advantage = srcCountry.getArmy()-dstCountry.getArmy();
-                    utility = advantage+dstCountry.getAdjacentOwnedCountries(this).length-1;
-                    if (utility>=2){
-                        actionContext.setSrcCountry(srcCountry);
-                        actionContext.setSrcArmy(srcCountry.getArmy()-1);
-                        actionContext.setDstCountry(dstCountry);
-                        utilities.add(utility);
-                        actions.add(actionContext);
-                    }
-                }
+                if(srcCountry.getArmy()>1){
+                utility = srcCountry.getArmy()-dstCountry.getArmy()+dstCountry.getAdjacentOwnedCountries(this).length-1;
+                actionContext.setSrcCountry(srcCountry);
+                actionContext.setSrcArmy(srcCountry.getArmy()-1);
+                actionContext.setDstCountry(dstCountry);
+                utilities.add(utility);
+                actions.add(actionContext);}
                 break;
         }
     }

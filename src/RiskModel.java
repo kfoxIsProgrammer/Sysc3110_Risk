@@ -361,7 +361,7 @@ public class RiskModel {
     /**
      * Method used to deal with when the user clicks the skip button
      */
-    public void menuSkip(){
+    public void menuSkip() {
         switch (this.actionContext.getPhase()){
             case DEPLOY_DST:
             case DEPLOY_ARMY:
@@ -451,6 +451,9 @@ public class RiskModel {
                 this.actionContext.setPlayer(actionContext.getDstCountry().getOwner());
                 break;
             case ATTACK_DST_CONFIRM:
+                if(this.actionContext.getDstCountry().getOwner().isAI){
+                    this.actionContext.setDstArmy(this.actionContext.getDstCountry().getArmy()>1? 2:1);
+                }
                 if(attack(this.actionContext.getPlayer(),
                         this.actionContext.getSrcCountry(),
                         this.actionContext.getDstCountry(),
