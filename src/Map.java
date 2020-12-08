@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Used to represent a Risk Map with the list of countries, continents and the image in memory
@@ -14,14 +16,21 @@ public class Map {
     /** The map image **/
     private transient BufferedImage mapImage;
     private String filename;
+    private ArrayList<Country> validCountries;
 
     public static Map Import(String filename){
         MapImport mapFileParser=new MapImport(filename);
         Map tmpMap=mapFileParser.getMapData();
         tmpMap.mapImage=mapFileParser.getMapImage();
         tmpMap.filename = filename;
+        if(tmpMap.checkValidMap()){
+            System.out.println("This is a valid map");
+        }
+        else{
+            System.out.println("This is an invalid map");
+        }
+            return tmpMap;
 
-        return tmpMap;
     }
 
     public String getFilename(){return filename;}
@@ -67,6 +76,45 @@ public class Map {
         for (Country country : countries) {
             System.out.printf("%s\n", country.getName());
         }
+    }
+
+    /**
+     * Used to check if data supplied will be able to be a valid map
+     * @return true : valid, False : invalid
+     */
+    public boolean checkValidMap(){
+        validCountries = new ArrayList<>();
+
+        Country startCountry = this.getCountries()[0];
+
+        if(startCountry!= null){
+            checkAdjacentCountryHelper(startCountry);
+        }
+        if(countries.length == validCountries.size() && countries.length > 6) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    /**
+     * This is a helper recursive function of DFS to check all countries
+     * @param country the country to check
+     */
+    private void checkAdjacentCountryHelper(Country country){
+        if (validCountries.size() <= countries.length  ) {
+            for (Country nextCountry : country.getAdjacentCountries()) {
+                if(!validCountries.contains(nextCountry)){
+                    validCountries.add(nextCountry);
+                    checkAdjacentCountryHelper(nextCountry);
+                }
+            }
+        }
+        return;
+
+
     }
     /**
      * Displays the continent information
