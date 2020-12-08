@@ -44,7 +44,6 @@ public class RiskModelTest extends TestCase {
         }
         return null;
     }
-
     /***
      *  Checks all the countries owned by the passed in user, and chooses any country with an army over 1 and with a
      *  adjacent country that is owned by an enemy so that it can attack.
@@ -77,7 +76,6 @@ public class RiskModelTest extends TestCase {
 
         }
     }
-
     /***
      * Checks all the adjacent countries of the passed in Country count and finds one that is not owned by the user.
      * @param count Passed in Country
@@ -94,11 +92,7 @@ public class RiskModelTest extends TestCase {
         }
         return validDstCountry;
     }
-
-
     @org.junit.Test
-
-
 /***
  * Tests that the correct map is being loaded in on startup by measuring country and continent array size.
  */
@@ -110,7 +104,6 @@ public class RiskModelTest extends TestCase {
 
         assertEquals(Phase.DEPLOY_DST, test.ac.getPhase());
     }
-
     /**
      * Confirms that for every country in the game there is at least one valid point that can be clicked in order to
      * access  it.
@@ -122,7 +115,6 @@ public class RiskModelTest extends TestCase {
         }
 
     }
-
     /***
      * Tests that the array of country objects in model is in the right order for the default map
      */
@@ -139,7 +131,6 @@ public class RiskModelTest extends TestCase {
         }
         // Not a big deal if fails, just should be fixed in order to help with testing
     }
-
     /***
      * Tests the getConnected method returns the correct countries
      */
@@ -205,7 +196,6 @@ public class RiskModelTest extends TestCase {
         test.getCountries()[0].setArmy(5);
         test.getCountries()[5].setArmy(5);
     }
-
     public void testDeployMethod(){
         RiskModel test = new RiskModel(twoPlayers);
         for(int i = 0; i < test.map.getCountries().length; i++){

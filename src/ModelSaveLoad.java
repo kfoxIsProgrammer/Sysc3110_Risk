@@ -11,8 +11,6 @@ import java.io.*;
  */
 
 public class ModelSaveLoad {
-
-
     /**
      * Inner class modelData that stores all the needed info from model.
      */
@@ -25,12 +23,7 @@ public class ModelSaveLoad {
             this.players = playerData;
             this.fileName = fileName;
         }
-
-
-
-
     }
-
     /**
      * inner Class for saving individual player data.
      */
@@ -57,9 +50,6 @@ public class ModelSaveLoad {
             this.troopsToDeploy = troopsToDeploy;
         }
     }
-
-
-
     /**
      * modelSave extracts all the needed information from given model and converts to json format and writes to file
      * @param model The game model
@@ -90,7 +80,6 @@ public class ModelSaveLoad {
             e.printStackTrace();
         }
     }
-
     /**
      * reads file and converts the json data gathered into a model
      * @return the model constructed.
@@ -148,8 +137,6 @@ public class ModelSaveLoad {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
 }
