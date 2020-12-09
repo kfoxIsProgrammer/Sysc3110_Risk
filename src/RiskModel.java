@@ -20,7 +20,6 @@ public class RiskModel {
     protected int numPlayers;
     protected int numHumans;
     protected int numAI;
-    private boolean AIWorking=false;
 
     /**
      * Constructor for testing purposes
@@ -170,33 +169,20 @@ public class RiskModel {
     }
     /**
      * Method to select the next player that still is in the game
-     * @param phase
-     * @param player the currentPlayer to determine position
+     * @param currentPlayer the currentPlayer to determine position
      */
-    private void nextPlayer(Phase phase, Player player){
-        int playerId = Arrays.asList(this.players).indexOf(player);
+    private Player nextPlayer(Player currentPlayer){
+        int i=(Arrays.asList(this.players).indexOf(currentPlayer)+1)%numPlayers;
 
-        for(int nextIndex = (playerId+1)%numPlayers;; nextIndex = (nextIndex+1)%numPlayers){
-            if(!players[nextIndex].getHasLost()){
-                if(players[nextIndex].isAI){
-                    updateViews(ac);
-                    ac=new ActionContext(phase,players[nextIndex]);
-                    AIMoves();
-                    nextPlayer(ac.getPhase(), ac.getPlayer());
-                }
-                else{
-                    ac=new ActionContext(phase,players[nextIndex]);
-                }
-                break;
+        while(players[i]!=currentPlayer){
+            if(!players[i].getHasLost()){
+                return players[i];
             }
-
-            //Error no more players call game is over
-            if(this.players[nextIndex].equals(player)){
-                gameIsOver();
-                updateViews(ac);
-                break;
-            }
+            i=(i+1)%numPlayers;
         }
+        gameIsOver();
+        updateViews(ac);
+        return null;
     }
     /**
      * Allocates troops for a player to deploy
@@ -212,70 +198,6 @@ public class RiskModel {
 
         player.troopsToDeploy+=Math.max(3,player.countryIndexes.size()/3);
     }
-    private void AIMoves(){
-        PlayerAI AI=(PlayerAI) ac.getPlayer();
-        ActionContext AIAction;
-
-        switch (ac.getPhase()){
-            case PLAYER_NAME:
-                String name=new String[]{"This Shouldn't be possible","Ripley APLU MK-II", "Clarke", "Odysseus", "Gygax", "Durand"}[ac.getPlayerIndex()];
-                playerName(name);
-                break;
-            case CLAIM_COUNTRY:
-                AIAction=AI.getMove(ac);
-                claim(AI,AIAction.getDstCountry());
-
-                int allocatedCountries=0;
-                for(Player player1: players) {
-                    allocatedCountries += player1.getCountries().length;
-                }
-                if (allocatedCountries == map.getCountries().length) {
-                    ac=new ActionContext(Phase.INITIAL_DEPLOY_DST,players[players.length-1]);
-                }
-
-                updateViewLogs(AI.getName()+" claimed "+AIAction.getDstCountry()+"\n");
-                break;
-            case INITIAL_DEPLOY_DST:
-                while(AI.troopsToDeploy>0){
-                    AIAction=AI.getMove(ac);
-                    deploy(AI,AIAction.getDstCountry(),AIAction.getDstArmy());
-                    updateViewLogs(AI.getName()+" deployed "+AIAction.getDstArmy()+" troops to "+AIAction.getDstCountry()+"\n");
-                }
-                break;
-            case DEPLOY_DST:
-                while(AI.troopsToDeploy>0){
-                    AIAction=AI.getMove(ac);
-                    deploy(AI,AIAction.getDstCountry(),AIAction.getDstArmy());
-                    updateViewLogs(AI.getName()+" deployed "+AIAction.getDstArmy()+" troops to "+AIAction.getDstCountry()+"\n");
-                }
-            case ATTACK_SRC:
-                AIAction=AI.getMove(ac);
-
-                updateViewLogs(AI.getName()+" engaged "+AIAction.getDstCountry()+"\n");
-                if(AIAction.getDstCountry().getOwner().isAI){
-                    ac=AIAction;
-                    attack(ac.getSrcCountry(),ac.getDstCountry(), ac.getSrcArmy(), Math.min(2,ac.getDstCountry().getArmy()));
-                }
-                else{
-                    AIAction.setPlayer(AIAction.getDstCountry().getOwner());
-                    ac=AIAction;
-                    updateViews(AIAction);
-                }
-                break;
-            case DEFEND_NUM_TROOPS:
-                ac.setPhase(Phase.FORTIFY_SRC);
-                break;
-            case RETREAT_NUM_TROOPS:
-                //updateViewLogs(AI.getName()+" retreated "+3+" troops\n");
-                retreat(ac.getSrcCountry(), ac.getDstCountry(),0);
-                ac.setPhase(Phase.FORTIFY_SRC);
-                break;
-            case FORTIFY_SRC:
-                //updateViewLogs(AI.getName()+" fortified "+"china"+"with"+3+" troops from "+"yaya\n");
-                ac.setPhase(Phase.DEPLOY_DST);
-                break;
-        }
-    }
 
     /****************************************  USER INPUT METHODS  ****************************************/
     public void countrySelected(Country country){
@@ -290,7 +212,8 @@ public class RiskModel {
                         allocatedCountries += player1.getCountries().length;
                     }
                     if(allocatedCountries<map.getCountries().length){
-                        nextPlayer(Phase.CLAIM_COUNTRY,ac.getPlayer());
+                        ac=new ActionContext(Phase.CLAIM_COUNTRY,nextPlayer(ac.getPlayer()));
+
                         for(Country country1: map.getCountries()){
                             if(country1.getOwner()!=null){
                                 ac.addHighlightedCountry(country1);
@@ -396,12 +319,10 @@ public class RiskModel {
             case FORTIFY_CONFIRM:
             case FORTIFY_NUM_TROOPS:
             case FORTIFY_DST:
+                ac.setPlayer(nextPlayer(ac.getPlayer()));
                 allocateBonusTroops(ac.getPlayer());
-                if(ac.getPlayer().getTroopsToDeploy()>0){
-                    nextPlayer(Phase.DEPLOY_DST,ac.getPlayer());
-                }else{
-                    nextPlayer(Phase.ATTACK_SRC,ac.getPlayer());
-                }
+                ac=new ActionContext(Phase.DEPLOY_DST,ac.getPlayer());
+
                 break;
         }
         updateViews(ac);
@@ -415,40 +336,46 @@ public class RiskModel {
                 deploy(this.ac.getPlayer(),
                         this.ac.getDstCountry(),
                         this.ac.getDstArmy());
-                if (ac.getPlayer().getTroopsToDeploy() == 0) {
-                    nextPlayer(Phase.INITIAL_DEPLOY_DST,ac.getPlayer());
-                    if(ac.getPlayer().getTroopsToDeploy()==0){
-                        this.ac = new ActionContext(Phase.ATTACK_SRC, players[0]);
+                for(Player player: players){
+                    if(player.troopsToDeploy>0){
+                        ac=new ActionContext(Phase.INITIAL_DEPLOY_DST,player);
+                        updateViews(ac);
+                        return;
                     }
-                }else{
-                    this.ac = new ActionContext(Phase.INITIAL_DEPLOY_DST, ac.getPlayer());
                 }
+                ac = new ActionContext(Phase.ATTACK_SRC, ac.getPlayer());
                 break;
             case DEPLOY_CONFIRM:
                 deploy(ac.getPlayer(),
                         ac.getDstCountry(),
                         ac.getDstArmy());
                 if (ac.getPlayer().getTroopsToDeploy() == 0) {
-                    this.ac = new ActionContext(Phase.ATTACK_SRC, this.ac.getPlayer());
+                    ac=new ActionContext(Phase.ATTACK_SRC, ac.getPlayer());
                 }else{
-                    this.ac = new ActionContext(Phase.DEPLOY_DST, this.ac.getPlayer());
+                    ac=new ActionContext(Phase.DEPLOY_DST, ac.getPlayer());
                 }
                 break;
             case ATTACK_CONFIRM:
                 ac.setPhase(Phase.DEFEND_NUM_TROOPS);
-                this.ac.setPlayer(ac.getDstCountry().getOwner());
+                ac.setPlayer(ac.getDstCountry().getOwner());
                 if(ac.getPlayer().isAI){
-                    ac.setDstArmy(Math.min(2,ac.getDstCountry().getArmy()));
                     ac.setPlayer(ac.getSrcCountry().getOwner());
+                    ac.setDstArmy(Math.min(2,ac.getDstCountry().getArmy()));
                     attack(
                             ac.getSrcCountry(),
                             ac.getDstCountry(),
                             ac.getSrcArmy(),
                             ac.getDstArmy());
-                    ac.setPhase(Phase.RETREAT_NUM_TROOPS);
+                    if(ac.attackerVictory()){
+                        ac.setPhase(Phase.RETREAT_NUM_TROOPS);
+                    }else{
+                        //retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
+                        this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
+                    }
                 }
                 break;
             case DEFEND_CONFIRM:
+                ac.setPlayer(ac.getSrcCountry().getOwner());
                 attack(
                     ac.getSrcCountry(),
                     ac.getDstCountry(),
@@ -460,7 +387,6 @@ public class RiskModel {
                     retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
                     this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
                 }
-                ac.setPlayer(ac.getSrcCountry().getOwner());
                 break;
             case RETREAT_CONFIRM:
                 if(this.ac.getPlayer().isAI){
@@ -483,7 +409,8 @@ public class RiskModel {
                     ac.getDstCountry(),
                     ac.getSrcArmy());
                 updateViews(ac);
-                nextPlayer(Phase.DEPLOY_DST,ac.getPlayer());
+                allocateBonusTroops(ac.getPlayer());
+                ac=new ActionContext(Phase.DEPLOY_DST, ac.getPlayer());
                 break;
         }
         updateViews(ac);
@@ -520,6 +447,68 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+    public void menuOk(){
+        Phase tmpPhase=ac.getPhase();
+        Player tmpPlayer=ac.getPlayer();
+
+        ac=((PlayerAI) ac.getPlayer()).getMove(ac);
+        if(ac==null){
+            ac=new ActionContext(tmpPhase,tmpPlayer);
+            menuSkip();
+        }
+        switch(this.ac.getPhase()){
+            case CLAIM_COUNTRY:
+                countrySelected(ac.getDstCountry());
+                break;
+            case INITIAL_DEPLOY_DST:
+                countrySelected(ac.getDstCountry());
+                ac.setPhase(Phase.INITIAL_DEPLOY_NUM_TROOPS);
+                numTroops(ac.getDstArmy());
+                ac.setPhase(Phase.INITIAL_DEPLOY_CONFIRM);
+                menuConfirm();
+                break;
+            case DEPLOY_DST:
+                countrySelected(ac.getDstCountry());
+                ac.setPhase(Phase.DEPLOY_NUM_TROOPS);
+                numTroops(ac.getDstArmy());
+                ac.setPhase(Phase.DEPLOY_CONFIRM);
+                menuConfirm();
+                break;
+            case ATTACK_SRC:
+                if(ac.getSrcArmy()<ac.getDstArmy()){
+                    ac.setPhase(Phase.ATTACK_SRC);
+                    menuSkip();
+                    break;
+                }
+                countrySelected(ac.getSrcCountry());
+                ac.setPhase(Phase.ATTACK_DST);
+                countrySelected(ac.getDstCountry());
+                ac.setPhase(Phase.ATTACK_NUM_TROOPS);
+                numTroops(ac.getSrcArmy());
+                ac.setPhase(Phase.ATTACK_CONFIRM);
+                menuConfirm();
+                break;
+            case RETREAT_NUM_TROOPS:
+                numTroops(0);
+                ac.setPhase(Phase.RETREAT_CONFIRM);
+                menuConfirm();
+                break;
+            case FORTIFY_SRC:
+                if(ac.getSrcCountry()==null){
+                    ac.setPhase(Phase.FORTIFY_SRC);
+                    menuSkip();
+                    break;
+                }
+                countrySelected(ac.getSrcCountry());
+                ac.setPhase(Phase.FORTIFY_DST);
+                countrySelected(ac.getDstCountry());
+                ac.setPhase(Phase.FORTIFY_NUM_TROOPS);
+                numTroops(ac.getSrcArmy());
+                ac.setPhase(Phase.FORTIFY_CONFIRM);
+                menuConfirm();
+                break;
+        }
+    }
 
     /********************************************  PHASE METHODS  ********************************************/
     public void numHumans(int n){
@@ -544,8 +533,11 @@ public class RiskModel {
         numPlayers+=numAI;
         players=new Player[numPlayers];
 
-        ac =new ActionContext(Phase.PLAYER_NAME,null);
+        ac=new ActionContext(Phase.PLAYER_NAME,null);
         ac.setPlayerIndex(0);
+        if(numHumans==0){
+            playerName("H.O.N.K.");
+        }
         updateViews(ac);
     }
     public void playerName(String name){
@@ -573,7 +565,8 @@ public class RiskModel {
         updateViewLogs(name+" joined the game\n");
         ac.setPlayerIndex(i+1);
         if(ac.getPlayerIndex()>=numHumans && ac.getPlayerIndex()<numPlayers){
-            AIMoves();
+            String AIName=new String[]{"H.O.N.K.","Ripley", "Clarke", "Odysseus", "Gygax", "Durand"}[ac.getPlayerIndex()];
+            playerName(AIName);
             ac.setPlayerIndex(ac.getPlayerIndex()+1);
         }
 
@@ -594,6 +587,8 @@ public class RiskModel {
         country.setOwner(ac.getPlayer());
         country.setArmy(1);
         ac.addHighlightedCountry(country);
+
+        updateViewLogs(player+" claimed "+country+"\n");
     }
     /**
      * Method that performs the Deploy action
@@ -607,6 +602,8 @@ public class RiskModel {
 
         player.removeTroops(troopsToDeploy);
         destinationCountry.addArmy(troopsToDeploy);
+
+        updateViewLogs(player+" deployed "+troopsToDeploy+" troops to "+destinationCountry+"\n");
     }
     /**
      * This method is the attack phase controller for the game of risk
@@ -620,6 +617,8 @@ public class RiskModel {
         playSound("resources/grenade.wav");
         playSound("resources/punch.wav");
 
+        Player attacker=attackingCountry.getOwner();
+        Player defender=defendingCountry.getOwner();
 
         int defendingArmy = unitsToDefend;
         int attackingArmy = unitsToAttack;
@@ -678,32 +677,27 @@ public class RiskModel {
         //Send dice rolls
         ac.setDiceRolls(new Integer[][]{rollsAttackerMade.toArray(new Integer[rollsAttackerMade.size()]), rollsDefenderMade.toArray(new Integer[rollsDefenderMade.size()])});
 
-        this.ac.setSrcArmyDead(unitsToAttack - attackingArmy);
-        this.ac.setDstArmy(unitsToDefend);
-        this.ac.setDstArmyDead(unitsToDefend - defendingArmy);
-
+        ac.setSrcArmyDead(unitsToAttack - attackingArmy);
+        ac.setDstArmy(unitsToDefend);
+        ac.setDstArmyDead(unitsToDefend - defendingArmy);
 
         //Attacker wins
-        if(defendingArmy <= 0){
+        if(defendingCountry.getArmy()-ac.getDstArmyDead()==0) {
             defendingCountry.removeArmy(unitsToDefend);
             attackingCountry.removeArmy(ac.getSrcArmyDead());
-            if(defendingCountry.getArmy()==0) {
-                defendingCountry.getOwner().removeCountry(defendingCountry);
-                attackingCountry.getOwner().addCountry(defendingCountry);
-                defendingCountry.setOwner(attackingCountry.getOwner());
-                attackingCountry.removeArmy(attackingArmy);
-                defendingCountry.setArmy(attackingArmy);
-
-            }
-            this.ac.setAttackerVictory(true);
+            defendingCountry.getOwner().removeCountry(defendingCountry);
+            attackingCountry.getOwner().addCountry(defendingCountry);
+            defendingCountry.setOwner(attackingCountry.getOwner());
+            attackingCountry.removeArmy(attackingArmy);
+            defendingCountry.setArmy(attackingArmy);
+            ac.setAttackerVictory(true);
         }
         //Attacker lost
         else{
             attackingCountry.removeArmy(ac.getSrcArmyDead());
             defendingCountry.removeArmy(ac.getDstArmyDead());
-            this.ac.setAttackerVictory(false);
+            ac.setAttackerVictory(false);
         }
-
 
         if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
             if(gameIsOver()){
@@ -711,6 +705,8 @@ public class RiskModel {
                 updateViews(ac);
             }
         }
+
+        updateViewLogs(attacker+" lost "+ac.getSrcArmyDead()+" troops\n"+defender+" lost "+ac.getDstArmyDead()+" troops\n");
     }
     /**
      * Method to process a successful attack when sending units back to the attacking country
@@ -735,6 +731,8 @@ public class RiskModel {
 
         sourceCountry.removeArmy(unitsToSend);
         destinationCountry.addArmy(unitsToSend);
+
+        updateViewLogs(sourceCountry+" sent "+unitsToSend+" troops to "+destinationCountry);
     }
 
     public void importMap(String filename){

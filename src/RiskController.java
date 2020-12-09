@@ -33,12 +33,14 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     /** A button is clicked **/
     @Override
     public void actionPerformed(ActionEvent e){
-        System.out.printf("\t%s\n",e.getActionCommand());
         if(e.getActionCommand().equals("Skip")){
             skip();
         }
         else if(e.getActionCommand().equals("Confirm")){
             confirm();
+        }
+        else if(e.getActionCommand().equals("Ok")){
+            ok();
         }
         else if(e.getActionCommand().equals("Number Confirm")){
             number();
@@ -72,6 +74,9 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     }
     private void confirm(){
         model.menuConfirm();
+    }
+    private void ok(){
+        model.menuOk();
     }
     private void skip(){
         model.menuSkip();

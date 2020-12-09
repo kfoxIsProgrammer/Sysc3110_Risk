@@ -26,6 +26,7 @@ public class RiskGUI extends JFrame implements RiskView{
     private final JButton menuConfirm;
     private final JButton menuBack;
     private final JButton menuSkip;
+    private final JButton menuOk;
 
     RiskGUI(RiskModel model, Map map){
         setTitle("Risk - Global Domination");
@@ -98,16 +99,20 @@ public class RiskGUI extends JFrame implements RiskView{
         menuSkip=new JButton("Skip");
         menuSkip.addActionListener(controller);
 
+        menuOk=new JButton("Ok");
+        menuOk.addActionListener(controller);
+
         menuPanel=new JPanel(new GridBagLayout());
         menuPanel.setBorder(BorderFactory.createTitledBorder("Actions"));
         menuPanel.add(menuPlayerName,   constraintMaker(0,0,1,1));
         menuPanel.add(menuPhase,        constraintMaker(1,0,1,1));
-        menuPanel.add(menuPrompt,       constraintMaker(0,1,3,2));
-        menuPanel.add(menuText,         constraintMaker(0,3,3,1));
-        menuPanel.add(menuSlider,       constraintMaker(0,4,3,1));
+        menuPanel.add(menuPrompt,       constraintMaker(0,1,4,2));
+        menuPanel.add(menuText,         constraintMaker(0,3,4,1));
+        menuPanel.add(menuSlider,       constraintMaker(0,4,4,1));
         menuPanel.add(menuConfirm,      constraintMaker(0,5,1,1));
         menuPanel.add(menuBack,         constraintMaker(1,5,1,1));
         menuPanel.add(menuSkip,         constraintMaker(2,5,1,1));
+        menuPanel.add(menuOk,           constraintMaker(3,5,1,1));
 
         this.add(menuPanel,constraintMaker(1,2,1,1));
 
@@ -140,108 +145,157 @@ public class RiskGUI extends JFrame implements RiskView{
         controller.setPhase(ac.getPhase());
         updatePhase(ac);
         updatePlayerName(ac.getPlayer());
+
+        if(ac.getPlayer()!=null && ac.getPlayer().isAI){
+            updateAI(ac);
+        }else{
+            updateHuman(ac);
+        }
+
+    }
+    private void updateHuman(ActionContext ac){
         switch(ac.getPhase()){
             case NUM_HUMANS:
                 updatePrompt("Enter the number of players");
-                updateSlider(1,6);
-                updateMenuVisible(true, false, true,true,false,false);
+                updateSlider(0,6);
+                updateMenuVisible(true, false, true,true,false,false, false);
                 break;
             case NUM_AI:
                 updatePrompt("Enter the number of AI");
-                updateSlider(ac.getPlayerIndex()==1?1:0,6-ac.getPlayerIndex());
-                updateMenuVisible(true, false, true,true,false,false);
+                System.out.printf("\t%d\n",ac.getPlayerIndex());
+                if(ac.getPlayerIndex()==0) {
+                    updateSlider(2, 6);
+                }else if(ac.getPlayerIndex()==1){
+                    updateSlider(1,5);
+                }else{
+                    updateSlider(ac.getPlayerIndex(),6-ac.getPlayerIndex());
+                }
+                updateMenuVisible(true, false, true,true,false,false, false);
                 break;
             case PLAYER_NAME:
                 updatePrompt("Player "+(ac.getPlayerIndex()+1)+", enter you name");
-                updateMenuVisible(true, true, false,false,false,false);
+                updateMenuVisible(true, true, false,false,false,false, false);
                 break;
             case CLAIM_COUNTRY:
                 if(ac.getHighlightedCountries()!=null){
                     updateMap(ac.getHighlightedCountries());
                 }
                 updatePrompt(ac.getPlayer(),"claim a country");
-                updateMenuVisible(true,false,false,false,false,false);
+                updateMenuVisible(true,false,false,false,false,false, false);
                 break;
             case INITIAL_DEPLOY_DST:
             case DEPLOY_DST:
                 updateMap();
                 updatePrompt(ac.getPlayer(), "choose a country to deploy troops to");
-                updateMenuVisible(true, false, false, false, false, false);
+                updateMenuVisible(true, false, false, false, false, false, false);
                 break;
             case INITIAL_DEPLOY_NUM_TROOPS:
             case DEPLOY_NUM_TROOPS:
                 updatePrompt(ac.getPlayer(), "how many troops will you send to " + ac.getDstCountry().getName());
                 updateSlider(1, ac.getPlayer().getTroopsToDeploy());
-                updateMenuVisible(true, false, true, true, true, false);
+                updateMenuVisible(true, false, true, true, true, false, false);
                 break;
             case INITIAL_DEPLOY_CONFIRM:
             case DEPLOY_CONFIRM:
                 updatePrompt(ac.getPlayer(), "are you sure you want to send " + ac.getDstArmy() + " troops to " + ac.getDstCountry().getName());
-                updateMenuVisible(true, false, false, true, true, false);
+                updateMenuVisible(true, false, false, true, true, false, false);
                 break;
             case ATTACK_SRC:
                 updateMap();
                 updatePrompt(ac.getPlayer(), "select a country to attack from");
-                updateMenuVisible(true, false, false, false, false, true);
+                updateMenuVisible(true, false, false, false, false, true, false);
                 break;
             case ATTACK_DST:
                 updateMap(ac.getSrcCountry(),ac.getSrcCountry().getAdjacentUnownedCountries(ac.getPlayer()));
                 updatePrompt(ac.getPlayer(),"select a country to attack from "+ac.getSrcCountry().getName());
-                updateMenuVisible(true, false, false,false,true,true);
+                updateMenuVisible(true, false, false,false,true,true, false);
                 break;
             case ATTACK_NUM_TROOPS:
                 updatePrompt(ac.getPlayer(), "how many troops will you attack " + ac.getDstCountry().getName() + " with");
                 updateSlider(1, Math.min(ac.getSrcCountry().getArmy() - 1, 3));
-                updateMenuVisible(true, false, true, true, true, true);
+                updateMenuVisible(true, false, true, true, true, true, false);
                 break;
             case ATTACK_CONFIRM:
                 updatePrompt(ac.getPlayer(), "are you sure you want to attack " + ac.getDstCountry().getName() + " with " + ac.getSrcArmy() + " troops from " + ac.getSrcCountry().getName());
-                updateMenuVisible(true, false, false, true, true, true);
+                updateMenuVisible(true, false, false, true, true, true, false);
                 break;
             case DEFEND_NUM_TROOPS:
                 updatePrompt(ac.getDstCountry().getOwner(), "how many troops will you defend with " + ac.getDstCountry().getName() + " with");
                 updateSlider(1, Math.min(ac.getDstCountry().getArmy(), 2));
-                updateMenuVisible(true, false, true, true, false, false);
+                updateMenuVisible(true, false, true, true, false, false, false);
                 break;
             case DEFEND_CONFIRM:
                 updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 updatePrompt(ac.getPlayer(), "are you sure you want to defend " + ac.getDstCountry().getName() + " from " + ac.getSrcCountry().getName() + " with " + ac.getDstArmy() + " troops");
-                updateMenuVisible(true, false, false, true, true, false);
+                updateMenuVisible(true, false, false, true, true, false, false);
                 break;
             case RETREAT_NUM_TROOPS:
                 updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 displayRolls(ac);
                 if (!ac.attackerVictory() || ac.getSrcArmy() - ac.getSrcArmyDead() < 2) {
-                    updateMenuVisible(true, false, false, false, true, false);
+                    updateMenuVisible(true, false, false, false, true, false, false);
                 } else {
                     updateSlider(0, ac.getSrcArmy() - ac.getSrcArmyDead() - 1);
-                    updateMenuVisible(true, false, true, true, false, false);
+                    updateMenuVisible(true, false, true, true, false, false, false);
                 }
                 break;
             case RETREAT_CONFIRM:
                 updatePrompt(ac.getPlayer(), "are you sure you want to send " + ac.getDstArmy() + " troops back to " + ac.getSrcCountry().getName());
-                updateMenuVisible(true, false, false, true, true, true);
+                updateMenuVisible(true, false, false, true, true, true, false);
                 break;
             case FORTIFY_SRC:
                 updateMap();
                 updatePrompt(ac.getPlayer(), "select a country with 2+ troops to fortify from");
-                updateMenuVisible(true, false, false, false, false, true);
+                updateMenuVisible(true, false, false, false, false, true, false);
                 break;
             case FORTIFY_DST:
                 updateMap(ac.getSrcCountry(), ac.getSrcCountry().getConnectedOwnedCountries(ac.getPlayer()));
                 updatePrompt(ac.getPlayer(), "select a country to fortify");
-                updateMenuVisible(true, false, false, false, true, true);
+                updateMenuVisible(true, false, false, false, true, true, false);
                 break;
             case FORTIFY_NUM_TROOPS:
                 updatePrompt(ac.getPlayer(), "how many troops will you send from " + ac.getSrcCountry().getName() + " to " + ac.getDstCountry().getName());
                 updateSlider(1, ac.getSrcCountry().getArmy() - 1);
-                updateMenuVisible(true, false, true, true, true, true);
+                updateMenuVisible(true, false, true, true, true, true, false);
                 break;
             case FORTIFY_CONFIRM:
                 updatePrompt(ac.getPlayer(), "are you sure you want to transfer " + ac.getSrcArmy() + " troops from " + ac.getSrcCountry().getName() + " to " + ac.getDstCountry().getName());
-                updateMenuVisible(true, false, false, true, true, true);
+                updateMenuVisible(true, false, false, true, true, true, false);
                 break;
         }
+    }
+    private void updateAI(ActionContext ac){
+        ActionContext tmp=((PlayerAI)ac.getPlayer()).getMove(ac);
+        if(tmp==null){
+            updatePrompt(ac.getPlayer()," is ending the phase");
+            return;
+        }
+        switch(ac.getPhase()){
+            case CLAIM_COUNTRY:
+                if(ac.getHighlightedCountries()!=null){
+                    updateMap(ac.getHighlightedCountries());
+                }
+                updatePrompt(tmp.getPlayer()," claimed "+tmp.getDstCountry());
+                break;
+            case INITIAL_DEPLOY_DST:
+            case DEPLOY_DST:
+                updateMap(map.getCountries());
+                updatePrompt(tmp.getPlayer(), " deployed "+tmp.getDstArmy()+" troops to "+tmp.getDstCountry());
+                break;
+            case ATTACK_SRC:
+                updateMap(map.getCountries());
+                updatePrompt(tmp.getPlayer(), " attacked "+tmp.getDstCountry()+" from "+tmp.getSrcCountry()+" with "+tmp.getSrcArmy()+" troops");
+                break;
+            case RETREAT_NUM_TROOPS:
+                updateMap(map.getCountries());
+                displayRolls(ac);
+                break;
+            case FORTIFY_SRC:
+                updateMap(map.getCountries());
+                updatePrompt(tmp.getPlayer(), "fortified "+tmp.getDstCountry()+" with "+tmp.getSrcArmy()+" troops from "+tmp.getSrcCountry());
+                break;
+        }
+        updateMenuVisible(true,false,false,false,false,false,true);
     }
     @Override
     public void log(String message){
@@ -283,20 +337,6 @@ public class RiskGUI extends JFrame implements RiskView{
     }
 
     private void displayRolls(ActionContext ac){
-        if(ac.attackerVictory()){
-            eventLogText.append(ac.getPlayer().name+" Attacked "+
-                            ac.getDstCountry().getOwner().getName()+"\n"+
-                    ac.getSrcCountry().getName()+" Attacked "+ac.getDstCountry().getName()+"\n\t"+
-                    "Attacker lost "+ac.getSrcArmyDead()+" troops\n\t"+
-                    "Defender lost "+ac.getDstArmyDead()+" troops\n\n");
-        }else {
-            eventLogText.append(ac.getPlayer().name+" Attacked "+
-                    ac.getDstCountry().getOwner().getName()+"\n"+
-                    ac.getSrcCountry().getName()+" Attacked "+ac.getDstCountry().getName()+"\n\t"+
-                    "Attacker lost "+ac.getSrcArmyDead()+" troops\n\t"+
-                    "Defender lost "+ac.getDstArmyDead()+" troops\n\n");
-        }
-
         String diceStr="Attacker rolls: [";
         for(int i=0;i<ac.getDiceRolls()[0].length;i++){
             diceStr+=ac.getDiceRolls()[0][i];
@@ -421,7 +461,7 @@ public class RiskGUI extends JFrame implements RiskView{
     }
     private void updatePrompt(Player player, String prompt){
         menuPrompt.getHighlighter().removeAllHighlights();
-        menuPrompt.setText(" "+player.name+", "+prompt);
+        menuPrompt.setText(" "+player.name+" "+prompt);
         try{
             menuPrompt.getHighlighter().addHighlight(0,player.getName().length()+2, new DefaultHighlighter.DefaultHighlightPainter(player.getColor()));
         }catch(BadLocationException e){}
@@ -443,7 +483,7 @@ public class RiskGUI extends JFrame implements RiskView{
             menuSlider.setMajorTickSpacing(5);
         }
     }
-    private void updateMenuVisible(boolean prompt, boolean text, boolean slider, boolean confirm, boolean back, boolean skip){
+    private void updateMenuVisible(boolean prompt, boolean text, boolean slider, boolean confirm, boolean back, boolean skip, boolean ok){
         menuPrompt.setVisible(prompt);
         menuText.setText("");
         menuText.setVisible(text);
@@ -457,6 +497,7 @@ public class RiskGUI extends JFrame implements RiskView{
         menuConfirm.setVisible(confirm);
         menuBack.setVisible(back);
         menuSkip.setVisible(skip);
+        menuOk.setVisible(ok);
     }
 
     public String saveGame(){
