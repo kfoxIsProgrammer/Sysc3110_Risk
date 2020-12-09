@@ -1,9 +1,6 @@
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
-
+import javax.sound.sampled.*;
 import java.awt.*;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.File;
 import java.util.*;
 
 /**
@@ -738,11 +735,13 @@ public class RiskModel {
         updateViews(ac);
     }
     public void playSound(String filename){
-        AudioStream audioStream;
-        try {
-            audioStream = new AudioStream(new FileInputStream(filename));
-            AudioPlayer.player.start(audioStream);
-        } catch (IOException e) {
+        try{
+            AudioInputStream audioStream=AudioSystem.getAudioInputStream(new File(filename));
+
+            Clip clip=AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        }catch (Exception e) {
             e.printStackTrace();
         }
     }
