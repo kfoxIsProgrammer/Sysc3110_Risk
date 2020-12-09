@@ -54,7 +54,7 @@ public class ModelSaveLoad extends RiskModel{
      * modelSave extracts all the needed information from given model and converts to json format and writes to file
      * @param model The game model
      */
-    public static void Save(RiskModel model, String filename){
+    public static boolean Save(RiskModel model, String filename){
         PlayerData[] players;
         ModelData modelData;
         players = new PlayerData[model.players.length];
@@ -72,14 +72,18 @@ public class ModelSaveLoad extends RiskModel{
         modelData = new ModelData(model.ac,players,model.map.getFilename());
 
         try {
+            File file = new File(filePath);
+            file.mkdir();
             Writer writer = new FileWriter(filePath+filename+".RiskGame");
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(modelData,writer);
             writer.flush();
             writer.close();
+            return  true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
     /**
      * reads file and converts the json data gathered into a model

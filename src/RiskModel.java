@@ -747,6 +747,7 @@ public class RiskModel {
         updateViews(ac);
     }
     public void exportGame(String filename){
+        Boolean succeeded;
         if(
             ac.getPhase()==Phase.NUM_HUMANS||
             ac.getPhase()==Phase.NUM_AI||
@@ -755,13 +756,19 @@ public class RiskModel {
             ac.getPhase()==Phase.INITIAL_DEPLOY_NUM_TROOPS||
             ac.getPhase()==Phase.INITIAL_DEPLOY_CONFIRM
         ){
+            updateViewLogs("Saving to \"" + filename + "\" Failed\n");
             return;
         }
 
-        ModelSaveLoad.Save(this,filename);
+        succeeded = ModelSaveLoad.Save(this,filename);
         updateMapFiles();
         updateSaveFiles();
-        updateViewLogs("Game saved to \""+filename+"\"successfully\n");
+        if (succeeded){
+            updateViewLogs("Game saved to \""+filename+"\"successfully\n");
+        }
+        else {
+            updateViewLogs("Saving to \"" + filename + "\" Failed\n");
+        }
     }
     public void importGame(String filename){
         ModelSaveLoad.Load(this,filename);
@@ -810,5 +817,6 @@ public class RiskModel {
         RiskModel game=new RiskModel();
         game.importMap("maps/demo.zip");
         game.addView(new RiskGUI(game,game.map));
+
     }
 }
