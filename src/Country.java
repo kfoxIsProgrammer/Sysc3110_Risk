@@ -270,18 +270,21 @@ public class Country {
         return adjacentUnownedCountries;
     }
     public Country[] getConnectedOwnedCountries(Player player){
-        return getConnectedOwnedCountries(this,this,player,new Stack<Country>());
+        Stack toTest = new Stack<Country>();
+        toTest = getConnectedOwnedCountries(this,this,player,toTest);
+        Country[] tmp= new Country[toTest.size()];
+        tmp = (Country[]) toTest.toArray(tmp);
+        return tmp;
     }
-    private Country[] getConnectedOwnedCountries(Country sourceCountry, Country root, Player player, Stack<Country> toTest){
+    private Stack<Country> getConnectedOwnedCountries(Country sourceCountry, Country root, Player player, Stack<Country> toTest){
         for(Country count: sourceCountry.getAdjacentCountries()){
             if(count.getOwner() == player && !toTest.contains(count) && count != root){
                 toTest.add(count);
-                return(getConnectedOwnedCountries(count,root, player, toTest));
+               getConnectedOwnedCountries(count,root, player, toTest);
             }
         }
-        Country[] tmp=new Country[toTest.size()];
-        tmp=toTest.toArray(tmp);
-        return tmp;
+
+        return toTest;
     }
     /**
      * @return A list of adjacent country IDs

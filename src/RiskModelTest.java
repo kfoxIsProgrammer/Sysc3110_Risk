@@ -88,7 +88,7 @@ public class RiskModelTest extends TestCase {
     /***
      * Tests the getConnected method returns the correct countries
      */
-    public void testGetConnectedCountries(){
+    public void testGetConnectedOwnedCountries(){
         RiskModel test = new RiskModel(twoPlayers);
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
@@ -124,6 +124,7 @@ public class RiskModelTest extends TestCase {
         assertEquals(0, toTest.size());
 
     }
+
     public void testAllocateBonusUnits() {
         RiskModel test = new RiskModel(twoPlayers);
         for(int i = 0; i < test.map.getCountries().length; i++){
