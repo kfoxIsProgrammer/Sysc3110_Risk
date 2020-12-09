@@ -139,6 +139,7 @@ public class RiskGUI extends JFrame implements RiskView{
     @Override
     public void update(ActionContext ac){
         controller.setPhase(ac.getPhase());
+        controller.setPlayer(ac.getPlayer());
         updatePhase(ac);
         updatePlayerName(ac.getPlayer());
 

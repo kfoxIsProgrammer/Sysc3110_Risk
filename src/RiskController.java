@@ -13,6 +13,7 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     private final RiskModel model;
     private final RiskGUI view;
     private Phase phase;
+    private Player player;
     private Map map;
     private int numBuffer;
 
@@ -25,6 +26,9 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
 
     public void setPhase(Phase phase) {
         this.phase = phase;
+    }
+    public void setPlayer(Player player){
+        this.player=player;
     }
     public void setMap(Map map){
         this.map=map;
@@ -120,6 +124,10 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     /** Handles events when the map is clicked **/
     @Override
     public void mouseClicked(MouseEvent e){
+        if(player.isAI){
+            return;
+        }
+
         Point point=new Point(e.getX(),e.getY());
 
         Country clickedCountry=map.pointToCountry(point);
