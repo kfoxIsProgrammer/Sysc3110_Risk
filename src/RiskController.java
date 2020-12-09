@@ -13,7 +13,7 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     private final RiskModel model;
     private final RiskGUI view;
     private Phase phase;
-    private final Map map;
+    private Map map;
     private int numBuffer;
 
     /** Constructor for RiskController **/
@@ -26,10 +26,14 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     public void setPhase(Phase phase) {
         this.phase = phase;
     }
+    public void setMap(Map map){
+        this.map=map;
+    }
 
     /** A button is clicked **/
     @Override
     public void actionPerformed(ActionEvent e){
+        System.out.printf("\t%s\n",e.getActionCommand());
         if(e.getActionCommand().equals("Skip")){
             skip();
         }
@@ -49,22 +53,22 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
         else if(e.getActionCommand().equals("Save Game")){
             saveGame();
         }
-        else if(e.getActionCommand().equals("Load Game")){
-            loadGame();
+        else if(e.getActionCommand().split("/")[0].equals("saves")){
+            loadGame(e.getActionCommand());
         }
-        else if(e.getActionCommand().equals("Load Map")){
-            loadMap();
+        else if(e.getActionCommand().split("/")[0].equals("maps")){
+            loadMap(e.getActionCommand());
         }
     }
 
     private void saveGame(){
-        model.exportToJson(view.saveGame());
+        model.exportGame(view.saveGame());
     }
-    private void loadGame(){
-        model.importFromJson(view.loadGame());
+    private void loadGame(String filename){
+        model.importGame(filename);
     }
-    private void loadMap(){
-        model.importFromJson(view.loadMap());
+    private void loadMap(String filename){
+        model.importMap(filename);
     }
     private void confirm(){
         model.menuConfirm();
@@ -119,7 +123,6 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
         System.out.printf("(%d,%d):\t",point.x,point.y);
         if(clickedCountry==null){
             System.out.printf("No Country\n");
-            return;
         }
         else{
             System.out.printf("%s\n",clickedCountry.getName());
@@ -135,4 +138,5 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     public void mouseEntered(MouseEvent e){}
     @Override
     public void mouseExited(MouseEvent e){}
+
 }

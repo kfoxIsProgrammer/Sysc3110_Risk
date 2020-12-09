@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
@@ -133,5 +134,16 @@ public class MapImport {
     }
     public BufferedImage getMapImage(){
         return mapImage;
+    }
+    /**
+     * a method that returns every save file in the saves directory
+     * @return returns an array of file names
+     */
+    public static String[] getMaps(){
+        String[] saves;
+
+        File savesDirectory = new File("maps/");
+        saves = savesDirectory.list();
+        return saves;
     }
 }

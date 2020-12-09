@@ -4,15 +4,15 @@ import java.awt.*;
 
 public class RiskGUI extends JFrame implements RiskView{
     private final RiskController controller;
-    private final Map map;
+    private Map map;
 
     private final JMenuBar menuBar;
     private final JMenuItem saveGame;
-    private final JMenuItem loadGame;
-    private final JMenuItem loadMap;
+    private final JMenu loadGame;
+    private final JMenu loadMap;
 
     private final JLayeredPane mapPane;
-    private final JLabel mapImage;
+    private JLabel mapImage;
 
     private final JScrollPane eventLogPane;
     private final JTextArea eventLogText;
@@ -42,10 +42,8 @@ public class RiskGUI extends JFrame implements RiskView{
         menuBar=new JMenuBar();
         saveGame=new JMenuItem("Save Game");
         saveGame.addActionListener(controller);
-        loadGame=new JMenuItem("Load Game");
-        loadGame.addActionListener(controller);
-        loadMap=new JMenuItem("Load Map");
-        loadMap.addActionListener(controller);
+        loadGame=new JMenu("Load Game");
+        loadMap=new JMenu("Load Map");
         menuBar.add(saveGame);
         menuBar.add(loadGame);
         menuBar.add(loadMap);
@@ -73,6 +71,7 @@ public class RiskGUI extends JFrame implements RiskView{
 
         //Initialize menu
         menuPlayerName=new JLabel("Player: ");
+        menuPlayerName.setVisible(false);
         menuPhase=new JLabel("Phase: ");
 
         menuPrompt=new JTextArea();
@@ -116,6 +115,27 @@ public class RiskGUI extends JFrame implements RiskView{
         this.setVisible(true);
     }
 
+    @Override
+    public void updateMap(Map map){
+        this.map=map;
+        controller.setMap(map);
+        int mapHeight=map.getMapImage().getHeight();
+        int mapWidth=map.getMapImage().getWidth();
+
+        mapImage.removeAll();
+        mapImage=new JLabel(new ImageIcon(map.getMapImage()));
+        mapImage.setBounds(0,0, mapWidth, mapHeight);
+        mapImage.addMouseListener(controller);
+        mapPane.removeAll();
+        mapPane.add(mapImage);
+
+        eventLogText.setText("");
+
+        menuPlayerName.setVisible(false);
+        menuPhase.setVisible(false);
+
+    }
+    @Override
     public void update(ActionContext ac){
         controller.setPhase(ac.getPhase());
         updatePhase(ac);
@@ -223,10 +243,45 @@ public class RiskGUI extends JFrame implements RiskView{
                 break;
         }
     }
-
+    @Override
     public void log(String message){
         eventLogText.append(message);
     }
+    @Override
+    public void updateSaveFileList(String[] saves) {
+        if(saves==null || saves.length==0) {
+            loadGame.setText("");
+            return;
+        }else{
+            loadGame.setText("Load Game");
+        }
+
+        loadGame.removeAll();
+        for(String filename: saves){
+            JMenuItem item=new JMenuItem(filename);
+            item.setActionCommand("saves/"+filename);
+            item.addActionListener(controller);
+            loadGame.add(item);
+        }
+    }
+    @Override
+    public void updateMapFileList(String[] maps) {
+        if(maps==null || maps.length==0) {
+            loadMap.setText("");
+            return;
+        }else{
+            loadMap.setText("Load Map");
+        }
+
+        loadMap.removeAll();
+        for(String filename: maps){
+            JMenuItem item=new JMenuItem(filename);
+            item.setActionCommand("maps/"+filename);
+            item.addActionListener(controller);
+            loadMap.add(item);
+        }
+    }
+
     private void displayRolls(ActionContext ac){
         if(ac.attackerVictory()){
             eventLogText.append(ac.getPlayer().name+" Attacked "+
@@ -318,12 +373,25 @@ public class RiskGUI extends JFrame implements RiskView{
         if(player==null){
             return;
         }
+        menuPlayerName.setVisible(true);
         menuPlayerName.setOpaque(true);
         menuPlayerName.setBackground(player.getColor());
         menuPlayerName.setText("   "+player.getName()+"   ");
     }
     private void updatePhase(ActionContext ac){
         switch (ac.getPhase()){
+            case NUM_HUMANS:
+            case NUM_AI:
+            case PLAYER_NAME:
+                menuPhase.setVisible(false);
+                break;
+            case CLAIM_COUNTRY:
+                menuPhase.setVisible(true);
+                menuPhase.setText("Claim");
+                break;
+            case INITIAL_DEPLOY_DST:
+            case INITIAL_DEPLOY_NUM_TROOPS:
+            case INITIAL_DEPLOY_CONFIRM:
             case DEPLOY_DST:
             case DEPLOY_NUM_TROOPS:
             case DEPLOY_CONFIRM:
@@ -392,12 +460,6 @@ public class RiskGUI extends JFrame implements RiskView{
     }
 
     public String saveGame(){
-        return JOptionPane.showInputDialog("Enter the filename");
-    }
-    public String loadGame(){
-        return JOptionPane.showInputDialog("Enter the filename");
-    }
-    public String loadMap(){
         return JOptionPane.showInputDialog("Enter the filename");
     }
 

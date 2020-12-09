@@ -237,10 +237,10 @@ public class RiskModelTest extends TestCase {
             test.map.getCountries()[x].setArmy(x + 1);
         }
 
-        test.exportToJson("Save.txt");
+        test.exportGame("Save");
         RiskModel imported = new RiskModel();
         imported.importMap("maps/demo.zip");
-        imported.importFromJson("Save.txt");
+        imported.importGame("saves/Save.RiskGame");
         //checking players
         for(int x = 0; x < test.players.length; x++) {
             assertEquals(test.players[x].name, imported.players[x].name);

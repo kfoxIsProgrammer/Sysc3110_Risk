@@ -20,6 +20,7 @@ public class RiskModel {
     protected int numPlayers;
     protected int numHumans;
     protected int numAI;
+    private boolean AIWorking=false;
 
     /**
      * Constructor for testing purposes
@@ -50,7 +51,6 @@ public class RiskModel {
         ac=new ActionContext(Phase.NUM_HUMANS,null);
         views=new ArrayList<>();
         playSound("resources/risk.wav");
-
     }
     private void allocateCountries(){
         Random rand = new Random(System.currentTimeMillis());
@@ -102,6 +102,16 @@ public class RiskModel {
     private void updateViewLogs(String message){
         for(RiskView view: this.views){
             view.log(message);
+        }
+    }
+    public void updateSaveFiles(){
+        for(RiskView view: this.views){
+            view.updateSaveFileList(ModelSaveLoad.getSaves());
+        }
+    }
+    public void updateMapFiles(){
+        for(RiskView view: this.views){
+            view.updateMapFileList(MapImport.getMaps());
         }
     }
     /**
@@ -729,10 +739,39 @@ public class RiskModel {
 
     public void importMap(String filename){
         map=Map.Import(filename);
+
+        for(RiskView view: views){
+            view.updateMap(map);
+        }
+        ac=new ActionContext(Phase.NUM_HUMANS,null);
+        updateViews(ac);
+    }
+    public void exportGame(String filename){
+        if(
+            ac.getPhase()==Phase.NUM_HUMANS||
+            ac.getPhase()==Phase.NUM_AI||
+            ac.getPhase()==Phase.CLAIM_COUNTRY||
+            ac.getPhase()==Phase.INITIAL_DEPLOY_DST||
+            ac.getPhase()==Phase.INITIAL_DEPLOY_NUM_TROOPS||
+            ac.getPhase()==Phase.INITIAL_DEPLOY_CONFIRM
+        ){
+            return;
+        }
+
+        ModelSaveLoad.Save(this,filename);
+        updateMapFiles();
+        updateSaveFiles();
+        updateViewLogs("Game saved to \""+filename+"\"successfully\n");
+    }
+    public void importGame(String filename){
+        ModelSaveLoad.Load(this,filename);
+        updateViews(ac);
     }
     public void addView(RiskView view){
         views.add(view);
         updateViews(ac);
+        updateMapFiles();
+        updateSaveFiles();
     }
     public void playSound(String filename){
         try{
@@ -758,24 +797,6 @@ public class RiskModel {
         };
         new Thread(runnable).start();
     }
-    public void exportToJson(String filename){
-        if(
-            ac.getPhase()==Phase.NUM_HUMANS||
-            ac.getPhase()==Phase.NUM_AI||
-            ac.getPhase()==Phase.CLAIM_COUNTRY||
-            ac.getPhase()==Phase.INITIAL_DEPLOY_DST||
-            ac.getPhase()==Phase.INITIAL_DEPLOY_NUM_TROOPS||
-            ac.getPhase()==Phase.INITIAL_DEPLOY_CONFIRM
-        ){
-            return;
-        }
-
-        ModelSaveLoad.Save(this,filename);
-    }
-    public void importFromJson(String filename){
-        ModelSaveLoad.Load(this,filename);
-        updateViews(ac);
-    }
 
     /**************************************************  GETTERS  **************************************************/
     public Map getMap() {
@@ -785,7 +806,7 @@ public class RiskModel {
         return map.getCountries();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         RiskModel game=new RiskModel();
         game.importMap("maps/demo.zip");
         game.addView(new RiskGUI(game,game.map));
