@@ -58,6 +58,7 @@ public class ModelSaveLoad extends RiskModel{
         PlayerData[] players;
         ModelData modelData;
         players = new PlayerData[model.players.length];
+        String filePath = "save/";
 
         for (int x = 0; x < players.length; x ++){
             int [] indexes = new int[model.players[x].countryIndexes.size()];
@@ -71,7 +72,7 @@ public class ModelSaveLoad extends RiskModel{
         modelData = new ModelData(model.ac,players,model.map.getFilename());
 
         try {
-            Writer writer = new FileWriter(filename);
+            Writer writer = new FileWriter(filePath+filename);
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(modelData,writer);
             writer.flush();
@@ -137,6 +138,12 @@ public class ModelSaveLoad extends RiskModel{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public String[] getSaves(){
+        String[] saves;
+        File savesDirectory = new File("/saves");
+        saves = savesDirectory.list();
+        return saves;
     }
 
 }
