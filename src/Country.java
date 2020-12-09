@@ -18,6 +18,8 @@ public class Country {
     private transient Point centerCoordinates;
     /** Array of countries that lie adjacent to the current country **/
     private transient Country[] adjacentCountries;
+    /** Array of country Ids that lie adjacent to the current country **/
+    private int[] adjacentCountriesIDs;
     /** Name of the owner **/
     private Player owner;
     /** Army currently occupying this country **/
@@ -234,6 +236,13 @@ public class Country {
     public Country[] getAdjacentCountries() {
         return adjacentCountries;
     }
+    public int[] getAdjacentCountryIDs() {
+        if(adjacentCountriesIDs==null){
+            adjacentCountriesIDs=new int[]{0};
+        }
+
+        return adjacentCountriesIDs;
+    }
     /**
      * @return A list of adjacent countries not owned by player
      */
@@ -280,4 +289,5 @@ public class Country {
     public String toString(){
         return name;
     }
+
 }
