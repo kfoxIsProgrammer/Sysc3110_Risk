@@ -55,6 +55,11 @@ public class ModelSaveLoad extends RiskModel{
      * @param model The game model
      */
     public static boolean Save(RiskModel model, String filename){
+        for(Player player: model.players){
+            if(player == model.ac.getPlayer()){
+                model.ac.setPlayerIndex(player.playerId);
+            }
+        }
         PlayerData[] players;
         ModelData modelData;
         players = new PlayerData[model.players.length];
