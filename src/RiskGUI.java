@@ -1,9 +1,6 @@
-import com.sun.jmx.mbeanserver.JmxMBeanServer;
-
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.io.PrintStream;
 
 public class RiskGUI extends JFrame implements RiskView{
     private final RiskController controller;
