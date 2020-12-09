@@ -374,7 +374,9 @@ public class RiskModel {
                         }
                     }else{
                         //retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
+                        Integer[][] temp = ac.getDiceRolls();
                         this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
+                        this.ac.setDiceRolls(temp);
                     }
                 }
                 break;
@@ -395,8 +397,10 @@ public class RiskModel {
                         ac.setPhase(Phase.RETREAT_NUM_TROOPS);
                     }
                 }else{
-                    retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
+                   //retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
+                    Integer[][] temp = ac.getDiceRolls();
                     this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
+                    this.ac.setDiceRolls(temp);
                 }
 
                 break;
@@ -422,7 +426,7 @@ public class RiskModel {
                     ac.getSrcArmy());
                 updateViews(ac);
                 allocateBonusTroops(ac.getPlayer());
-                ac=new ActionContext(Phase.DEPLOY_DST, ac.getPlayer());
+                ac=new ActionContext(Phase.DEPLOY_DST, nextPlayer(ac.getPlayer()));
                 break;
         }
         updateViews(ac);

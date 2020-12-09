@@ -190,7 +190,7 @@ public class RiskGUI extends JFrame implements RiskView{
                 break;
             case INITIAL_DEPLOY_DST:
             case DEPLOY_DST:
-                updateMap();
+                updateMap(map.getCountries());
                 updatePrompt(ac.getPlayer(), "choose a country to deploy troops to");
                 updateMenuVisible(false, false, false, false, false, false);
                 break;
@@ -202,11 +202,12 @@ public class RiskGUI extends JFrame implements RiskView{
                 break;
             case INITIAL_DEPLOY_CONFIRM:
             case DEPLOY_CONFIRM:
+                updateMap(map.getCountries());
                 updatePrompt(ac.getPlayer(), "are you sure you want to send " + ac.getDstArmy() + " troops to " + ac.getDstCountry().getName());
                 updateMenuVisible(false, false, true, true, false, false);
                 break;
             case ATTACK_SRC:
-                updateMap();
+                updateMap(map.getCountries());
                 updatePrompt(ac.getPlayer(), "select a country to attack from");
                 updateMenuVisible(false, false, false, false, true, false);
                 break;
@@ -225,6 +226,7 @@ public class RiskGUI extends JFrame implements RiskView{
                 updateMenuVisible(false, false, true, true, true, false);
                 break;
             case DEFEND_NUM_TROOPS:
+                updateMap(map.getCountries());
                 updatePrompt(ac.getDstCountry().getOwner(), "how many troops will you defend with " + ac.getDstCountry().getName() + " with");
                 updateSlider(1, Math.min(ac.getDstCountry().getArmy(), 2));
                 updateMenuVisible(false, true, true, false, false, false);
@@ -245,11 +247,12 @@ public class RiskGUI extends JFrame implements RiskView{
                 }
                 break;
             case RETREAT_CONFIRM:
+                updateMap(map.getCountries());
                 updatePrompt(ac.getPlayer(), "are you sure you want to send " + ac.getDstArmy() + " troops back to " + ac.getSrcCountry().getName());
                 updateMenuVisible(false, false, true, true, true, false);
                 break;
             case FORTIFY_SRC:
-                updateMap();
+                updateMap(map.getCountries());
                 updatePrompt(ac.getPlayer(), "select a country with 2+ troops to fortify from");
                 updateMenuVisible(false, false, false, false, true, false);
                 break;
@@ -264,6 +267,7 @@ public class RiskGUI extends JFrame implements RiskView{
                 updateMenuVisible(false, true, true, true, true, false);
                 break;
             case FORTIFY_CONFIRM:
+                updateMap();
                 updatePrompt(ac.getPlayer(), "are you sure you want to transfer " + ac.getSrcArmy() + " troops from " + ac.getSrcCountry().getName() + " to " + ac.getDstCountry().getName());
                 updateMenuVisible(false, false, true, true, true, false);
                 break;
@@ -272,6 +276,7 @@ public class RiskGUI extends JFrame implements RiskView{
     private void updateAI(ActionContext ac){
         ActionContext tmp=((PlayerAI)ac.getPlayer()).getMove(ac);
         if(tmp==null){
+            updateMap(map.getCountries());
             updatePrompt(ac.getPlayer()," is ending the phase");
             updateMenuVisible(false,false,false,false,false,true);
             return;
@@ -289,8 +294,12 @@ public class RiskGUI extends JFrame implements RiskView{
                 updatePrompt(tmp.getPlayer(), " deployed "+tmp.getDstArmy()+" troops to "+tmp.getDstCountry());
                 break;
             case ATTACK_SRC:
+
                 updateMap(map.getCountries());
                 updatePrompt(tmp.getPlayer(), " attacked "+tmp.getDstCountry()+" from "+tmp.getSrcCountry()+" with "+tmp.getSrcArmy()+" troops");
+                if(ac.getDiceRolls()!=null){
+                    displayRolls(ac);
+                }
                 break;
             case RETREAT_NUM_TROOPS:
                 updateMap(map.getCountries());
