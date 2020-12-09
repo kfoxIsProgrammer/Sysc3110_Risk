@@ -20,26 +20,22 @@ __Deliverables:__
 
 __Changes from previous iteration:__
 
-This is the second iteration of the project. The Graphical User Interface was implemented to interact with the user.
-We have incorporated a map/data loader in anticipation for milestone 4. 
-The model sends tranactional State information to the view using a Context class.
+This is the last and final iteration of our risk project. We had missed a lot of deliverable from milestone 3. 
+The following list is all major additions and changes.
+1. Added AI to work
+2. Allow single player with AI
+3. Fixed Attack(), Deploy() and Fortify() to work with AI
+4. Added a save / load from a text file
+5. Updated our MapImport to work with a zip file containing a png(map image) and json(country info and adjacenies)
+6. Added sequence diagrams for Deploy, Attack, Fortify, save/load
+7. Moved a lot of model's responsibility to Controller.
 
 __Known issues:__
 
-Bug 1. When the user is prompted to enter player names, if any of the inputs are left blank you will crash. Sorry :D
-
-Potential Bug 1. Could you make sure that the attack algorithm is correct. I might have misunderstood the rule for risk.
-
-Class Cohesion isn't the best. RiskModel still has the map in it's components, while the map holds the same data.
-
-Make sure that the maps folder is in the same directory as the jar 
-
-When testing you must always press enter when anything pops up
+To Add today
 
 __Roadmap:__
 
-The next goal for our game is to introduce the playable Deploy and Fortify phases.
-As well we want to further refine our design based on TA feedback to increase class cohesion.
-The final milestone is to add a save feature and a method to import custom maps.
+As this is our final submission. We hope to have finished our project with a working/playable game. Even with a bumpy middle section, we hope to end strong.
 
 
