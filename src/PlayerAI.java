@@ -5,7 +5,6 @@ public class PlayerAI extends Player {
     private ArrayList<ActionContext> actions;
     private ArrayList<Integer> utilities;
     private int maxUtilityIndex;
-    private int attackCounter = 0;
 
     public PlayerAI(String name, Color color, int armiesToAllocate, int playerId, Map map) {
         super(name, color, true, playerId, map);
@@ -41,15 +40,12 @@ public class PlayerAI extends Player {
             case DEPLOY_CONFIRM:
                 maxUtility = Integer.MIN_VALUE;
 
-                for (int index : countryIndexes) {
-                    Country[] dstCountries = map.getCountries()[index].getAdjacentOwnedCountries(this);
-                    for (int j = 0; j < dstCountries.length; j++) {
-                        deployUtility(map.getCountries()[index], dstCountries[j]);
+                for (Country country: this.getCountries()) {
+                    deployUtility(country);
 
-                        if (utilities.get(utilities.size() - 1) > maxUtility) {
-                            maxUtility = utilities.get(utilities.size()-1);
-                            this.maxUtilityIndex = utilities.size() - 1;
-                        }
+                    if (utilities.get(utilities.size() - 1) > maxUtility) {
+                        maxUtility = utilities.get(utilities.size()-1);
+                        this.maxUtilityIndex = utilities.size() - 1;
                     }
                 }
                 return actions.get(maxUtilityIndex);
@@ -68,14 +64,6 @@ public class PlayerAI extends Player {
                             this.maxUtilityIndex = utilities.size() - 1;
                         }
                     }
-                }
-                if(attackCounter< 3 && attackCounter < actions.size()) {
-                    this.attackCounter++;
-                    return actions.get(maxUtilityIndex);
-                }
-                else {
-                    this.attackCounter=0;
-                    return new ActionContext(Phase.FORTIFY_SRC, this);
                 }
             case DEFEND_NUM_TROOPS:
             case DEFEND_CONFIRM:
@@ -125,24 +113,30 @@ public class PlayerAI extends Player {
                 utility-=1;
             }
         }
+
         ActionContext ac=new ActionContext(Phase.CLAIM_COUNTRY,this);
         ac.setDstCountry(country);
         actions.add(ac);
         utilities.add(utility);
 
     }
-    private void deployUtility(Country srcCountry, Country dstCountry) {
-        int utility;
-        ActionContext actionContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
-        utility = 0;
-        for(Country count: dstCountry.getAdjacentCountries()){
-            if(count.getOwner() != this){utility += 1; }
-        }
+    private void deployUtility(Country dstCountry) {
+        int utility = 0;
 
-        actionContext.setDstArmy(1);
+        for(Country country: dstCountry.getAdjacentCountries()){
+            if(country.getOwner()!=this){
+                utility += country.getArmy();
+            }
+            else{
+                utility-=(country.getArmy())/2;
+            }
+        }
+        utility-=dstCountry.getArmy();
+
+        ActionContext actionContext = new ActionContext(Phase.DEPLOY_CONFIRM, this);
         actionContext.setDstCountry(dstCountry);
-        actionContext.setSrcCountry(srcCountry);
-        System.out.printf("\t\t\t%s\t%s\n", actionContext.getSrcCountry().getName(),actionContext.getDstCountry().getName());
+        actionContext.setDstArmy(1);
+
         utilities.add(utility);
         actions.add(actionContext);
     }

@@ -3,9 +3,6 @@ import junit.framework.TestCase;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Stack;
-
-import static org.junit.Assert.*;
 //Tests applicable for milestone 2
 
 
@@ -100,7 +97,6 @@ public class RiskModelTest extends TestCase {
         RiskModel test = new RiskModel(twoPlayers);
         assertEquals(42, test.map.getCountries().length);
         assertEquals(6,test.map.getContinents().length);
-        assertNotEquals(null, test.controller);
 
         assertEquals(Phase.DEPLOY_DST, test.ac.getPhase());
     }
@@ -220,7 +216,7 @@ public class RiskModelTest extends TestCase {
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
         test.getCountries()[0].setArmy(10);
         test.getCountries()[8].setArmy(0);
-        test.fortify(test.players[0],test.getCountries()[0],test.getCountries()[8],9);
+        test.fortify(test.getCountries()[0],test.getCountries()[8],9);
         assertEquals(9,test.getCountries()[8].getArmy());
     }
     public void testFortifyWrongMethod(){
@@ -241,9 +237,10 @@ public class RiskModelTest extends TestCase {
             test.map.getCountries()[x].setArmy(x + 1);
         }
 
-        test.exportToJson();
+        test.exportToJson("Save.txt");
         RiskModel imported = new RiskModel();
-        imported.importFromJson();
+        imported.importMap("maps/demo.zip");
+        imported.importFromJson("Save.txt");
         //checking players
         for(int x = 0; x < test.players.length; x++) {
             assertEquals(test.players[x].name, imported.players[x].name);

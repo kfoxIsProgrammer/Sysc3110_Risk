@@ -13,7 +13,6 @@ public class ActionContext {
     private transient Player player;
     /** The index of the current player **/
     private int playerIndex;
-    private boolean isAI;
     /** The countries on the map that should be highlighted **/
     private Country[] highlightedCountries;
     /** Source country **/
@@ -56,9 +55,6 @@ public class ActionContext {
     /** Setter for current Player **/
     public void setPlayerIndex(int playerIndex) {
         this.playerIndex = playerIndex;
-    }
-    public void setAI(boolean AI) {
-        isAI = AI;
     }
     /**
      * Setter for countries for the view to highlight
@@ -149,7 +145,6 @@ public class ActionContext {
     public int getPlayerIndex() {
         return playerIndex;
     }
-    public boolean isAI(){return isAI;}
     public Country[] getHighlightedCountries() {
         return highlightedCountries;
     }

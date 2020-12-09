@@ -10,7 +10,7 @@ import java.io.*;
  * @version 12.04.2020
  */
 
-public class ModelSaveLoad {
+public class ModelSaveLoad extends RiskModel{
     /**
      * Inner class modelData that stores all the needed info from model.
      */
@@ -54,7 +54,7 @@ public class ModelSaveLoad {
      * modelSave extracts all the needed information from given model and converts to json format and writes to file
      * @param model The game model
      */
-    public static void modelSave(RiskModel model){
+    public static void Save(RiskModel model, String filename){
         PlayerData[] players;
         ModelData modelData;
         players = new PlayerData[model.players.length];
@@ -71,7 +71,7 @@ public class ModelSaveLoad {
         modelData = new ModelData(model.ac,players,model.map.getFilename());
 
         try {
-            Writer writer = new FileWriter("Save.txt");
+            Writer writer = new FileWriter(filename);
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(modelData,writer);
             writer.flush();
@@ -84,7 +84,7 @@ public class ModelSaveLoad {
      * reads file and converts the json data gathered into a model
      * @return the model constructed.
      */
-    public static void modelLoad(RiskModel riskModel){
+    public static void Load(RiskModel riskModel, String filename){
         ModelData modelData;
         Color[] playerColors={
                 new Color(255, 102, 0),
@@ -99,7 +99,7 @@ public class ModelSaveLoad {
         try {
             int numHumans = 0;
             int numAi = 0;
-            Reader reader = new FileReader("Save.txt");
+            Reader reader = new FileReader(filename);
             modelData = new Gson().fromJson(reader, ModelData.class);
             reader.close();
             riskModel.ac=modelData.ac;

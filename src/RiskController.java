@@ -11,13 +11,15 @@ import java.awt.event.*;
 public class RiskController implements ActionListener, ChangeListener, MouseListener {
     /** The model to send commands to **/
     private final RiskModel model;
+    private final RiskGUI view;
     private Phase phase;
     private final Map map;
     private int numBuffer;
 
     /** Constructor for RiskController **/
-    public RiskController(RiskModel model, Map map){
-        this.model = model;
+    public RiskController(RiskGUI view,RiskModel model, Map map){
+        this.view=view;
+        this.model=model;
         this.map=map;
     }
 
@@ -44,8 +46,26 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
         else if(e.getActionCommand().equals("Back")){
             back();
         }
+        else if(e.getActionCommand().equals("Save Game")){
+            saveGame();
+        }
+        else if(e.getActionCommand().equals("Load Game")){
+            loadGame();
+        }
+        else if(e.getActionCommand().equals("Load Map")){
+            loadMap();
+        }
     }
 
+    private void saveGame(){
+        model.exportToJson(view.saveGame());
+    }
+    private void loadGame(){
+        model.importFromJson(view.loadGame());
+    }
+    private void loadMap(){
+        model.importFromJson(view.loadMap());
+    }
     private void confirm(){
         model.menuConfirm();
     }
@@ -58,10 +78,10 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     private void number(){
         switch(phase){
             case NUM_HUMANS:
-                model.setNumHumans(numBuffer);
+                model.numHumans(numBuffer);
                 break;
             case NUM_AI:
-                model.setNumAI(numBuffer);
+                model.numAI(numBuffer);
                 break;
             case INITIAL_DEPLOY_NUM_TROOPS:
             case DEPLOY_NUM_TROOPS:
@@ -76,7 +96,7 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
     private void text(String text){
         switch(phase){
             case PLAYER_NAME:
-                model.setPlayerName(text);
+                model.playerName(text);
                 break;
         }
     }

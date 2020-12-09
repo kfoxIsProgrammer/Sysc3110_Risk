@@ -92,7 +92,7 @@ Command Parser:
                 
    2.newGameStart:
            We decided to implement milestone4s import function and we now import a map and json data about the map with a map importer
-           Once the map is imported, it then creates a RiskController that is put in the RiskView Constructor. This ensures that the model is connected to the view and the                  controller is connected to the view.
+           Once the map is imported, it then creates a RiskController that is put in the RiskGUI Constructor. This ensures that the model is connected to the view and the                  controller is connected to the view.
            
    3. newGameCreator:
             This is the old random game maker. It has been updated to assign players with a color. 
@@ -120,8 +120,8 @@ valid and then send units from source country to destination country.
 
 10. Deploy method will simply sends unit a player has to allocate and adds it to selected owned country
          
-   RiskView:
-        RiskView is a GUI based class that extends JFrame and Implements ActionLister. It is driven by MouseClick events and ButtonClick.
+   RiskGUI:
+        RiskGUI is a GUI based class that extends JFrame and Implements ActionLister. It is driven by MouseClick events and ButtonClick.
         The MouseClicks are used only on the map to get a position to send to the controller. These MouseClicks are to represent if you clicked a country's hitbox.
         It uses a combination of LayeredPanes, and a CardLayout to display all the information from the game at every Phase. Your name is color matched to the labels of the 
         countries you own and enemy neighbours get highlighted. You also get to select the number of troops to send to attack/retreat/deploy via a slider popup.
