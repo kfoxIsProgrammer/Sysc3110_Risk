@@ -178,3 +178,56 @@ Sequence Diagram:
    
    
    -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   
+  Milestone4
+  
+  ActionContext:
+      We have added more phases to handle AI and Claiming countries.
+      
+  Map:
+      We had already an import function but we have added a way to check if a map is playable. A Depth First Search method was implemented to check if there were more than 6           countries and if they are all connected.
+      
+  ModelSaveLoad:
+      This is a new class to help facilitate the saving and loading of current games. The use of plain text documents to save was used so we could test easily. 
+      It saves the game in JSON notation.
+      
+  Phase: 
+      Added 6 more phases to handles AI and claiming countries as per the initial phase of risk.
+      
+  Player:
+      Made Player an abstract class to create the common features between and AI and human player.
+      
+  PlayerHuman:
+      Extends from Player and gives all the functionality of a human player.
+      
+  PlayerAI:
+       Extends from player and implements utiliy functions to perform actions without human intervention.
+       
+  RiskController:
+        As per your feedback, we have added a lot of the models functionality into the controller. The country selection and unit selection are intially determined in the               controller and then sent to the model.
+        
+  RiskGUI:
+      Implements the interface RiskView.
+      Added a menuBar to handle the file load,save and new game functions. Quality of life info about the game status has been added for players to easily review what has             happened. The gui will also display countries that are affected by a change for easy identification.
+      
+  RiskModel:
+      Changed the model to have a list of RiskView interfaces. Instead of having a dedicated view. This is to represent our game with the MVC Observer pattern.
+      
+  RiskModelTests: 
+       Made the tests only act with the model and does not interact with the view. The tests are also indepent of the current games settings.
+       
+  RiskView:
+       This is the view interface, which is then used as the Observer in the Oberser/Obseravable pattern.
+       
+       
+  UML: 
+      Redone the UML with proper compostion and inheritance.
+      
+  Sequence Diagrams:
+       Added the missing diagrams from Milestone 3. Added Attack, Fortify, Deploy and Save/Load sequence Diagrams.
+        
+        
+  
+  
+  
+  
