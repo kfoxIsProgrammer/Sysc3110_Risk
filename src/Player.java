@@ -30,7 +30,7 @@ public abstract class Player{
         this.name = name;
         this.playerColor = color;
         this.map = map;
-        countryIndexes = new ArrayList<Integer>();
+        countryIndexes = new ArrayList<>();
     }
     /**
      * Used to decrement armiesToAllocate
@@ -56,7 +56,7 @@ public abstract class Player{
      * @param country the owned country to remove
      */
     public void removeCountry(Country country){
-        countryIndexes.removeAll(Collections.singleton(Integer.valueOf(map.getIndexOfCountry(country))));
+        countryIndexes.removeAll(Collections.singleton(map.getIndexOfCountry(country)));
 
     }
 

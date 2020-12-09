@@ -675,7 +675,7 @@ public class RiskModel {
         }
 
         //Send dice rolls
-        ac.setDiceRolls(new Integer[][]{rollsAttackerMade.toArray(new Integer[rollsAttackerMade.size()]), rollsDefenderMade.toArray(new Integer[rollsDefenderMade.size()])});
+        ac.setDiceRolls(new Integer[][]{rollsAttackerMade.toArray(new Integer[0]), rollsDefenderMade.toArray(new Integer[0])});
 
         ac.setSrcArmyDead(unitsToAttack - attackingArmy);
         ac.setDstArmy(unitsToDefend);
@@ -745,7 +745,7 @@ public class RiskModel {
         updateViews(ac);
     }
     public void exportGame(String filename){
-        Boolean succeeded;
+        boolean succeeded;
         if(
             ac.getPhase()==Phase.NUM_HUMANS||
             ac.getPhase()==Phase.NUM_AI||

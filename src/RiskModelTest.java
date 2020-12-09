@@ -25,12 +25,11 @@ public class RiskModelTest extends TestCase {
      * @return Point that is contained in the param country
      */
     public Point getValidPoint(Country country){
-        Boolean isValidPoint = false;
         Point toTest;
         //[0] = minX, [1] = maxX, [2] = min Y, [4] = max Y
-        int[] arrayofMinMaxValues = country.getMinMaxValues();
-        for(int x = arrayofMinMaxValues[0]; x < arrayofMinMaxValues[1]; x++){
-            for(int y = arrayofMinMaxValues[2]; y < arrayofMinMaxValues[3]; y++){
+        int[] arrayMinMaxValues = country.getMinMaxValues();
+        for(int x = arrayMinMaxValues[0]; x < arrayMinMaxValues[1]; x++){
+            for(int y = arrayMinMaxValues[2]; y < arrayMinMaxValues[3]; y++){
                 toTest = new Point(x,y);
                 if(country.containsPoint(toTest)){
                     return toTest;
@@ -41,31 +40,6 @@ public class RiskModelTest extends TestCase {
         }
         return null;
     }
-    /***
-     *  Checks all the countries owned by the passed in user, and chooses any country with an army over 1 and with a
-     *  adjacent country that is owned by an enemy so that it can attack.
-     * @param playerOwnedCountries
-     * @param currentUser
-     * @return A valid Country object
-     */
-    public Country getValidSrcCountryForAttack(Country[] playerOwnedCountries, Player currentUser){
-        Country ValidSrcCountry = null;
-        boolean thereIsAnEnemyAdjacentCountry;
-        for(Country coucountry: playerOwnedCountries){
-            thereIsAnEnemyAdjacentCountry = false;
-            Country[] adjacentCountries = coucountry.getAdjacentCountries();
-            for(int i = 0; i < adjacentCountries.length; i++){
-                if (adjacentCountries[i].getOwner() != currentUser){
-                    thereIsAnEnemyAdjacentCountry = true;
-                }
-            }
-            if(coucountry.getArmy() >1 && thereIsAnEnemyAdjacentCountry){
-                ValidSrcCountry = coucountry;
-                break;
-            }
-        }
-        return(ValidSrcCountry);
-    }
     public void setCountriesToPlayer(RiskModel model, int user, int[] countryIndexes){
         for(int index : countryIndexes){
             model.players[user].addCountry(model.map.getCountries()[index]);
@@ -73,26 +47,10 @@ public class RiskModelTest extends TestCase {
 
         }
     }
+
     /***
-     * Checks all the adjacent countries of the passed in Country count and finds one that is not owned by the user.
-     * @param count Passed in Country
-     * @param currentUser user that the passed in country belongs too.
-     * @return
+     * Tests that the correct map is being loaded in on startup by measuring country and continent array size.
      */
-    public Country getValidDstCountryForAttack(Country count, Player currentUser){
-        Country validDstCountry = null;
-        for(int i = 0; i < count.getAdjacentCountries().length; i++){
-            if (count.getAdjacentCountries()[i].getOwner() != currentUser){
-                validDstCountry= count.getAdjacentCountries()[i];
-                break;
-            }
-        }
-        return validDstCountry;
-    }
-    @org.junit.Test
-/***
- * Tests that the correct map is being loaded in on startup by measuring country and continent array size.
- */
     public void testInitialDefaultMap() {
         RiskModel test = new RiskModel(twoPlayers);
         assertEquals(42, test.map.getCountries().length);
@@ -135,8 +93,8 @@ public class RiskModelTest extends TestCase {
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].countryIndexes = new ArrayList<Integer>();
-        test.players[1].countryIndexes = new ArrayList<Integer>();
+        test.players[0].countryIndexes = new ArrayList<>();
+        test.players[1].countryIndexes = new ArrayList<>();
         int[] countries = {0,1,5,6,7,8,3,27};
         setCountriesToPlayer(test, 0,countries);
 
@@ -171,8 +129,8 @@ public class RiskModelTest extends TestCase {
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].countryIndexes = new ArrayList<Integer>();
-        test.players[1].countryIndexes = new ArrayList<Integer>();
+        test.players[0].countryIndexes = new ArrayList<>();
+        test.players[1].countryIndexes = new ArrayList<>();
         int[] countries = {0,1,2,3,4,5,6,7,8};
         setCountriesToPlayer(test,0,countries);
         test.players[0].removeTroops(test.players[0].troopsToDeploy);
@@ -184,8 +142,8 @@ public class RiskModelTest extends TestCase {
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].countryIndexes = new ArrayList<Integer>();
-        test.players[1].countryIndexes = new ArrayList<Integer>();
+        test.players[0].countryIndexes = new ArrayList<>();
+        test.players[1].countryIndexes = new ArrayList<>();
         setCountriesToPlayer(test, 0, new int[]{0,7});
         setCountriesToPlayer(test, 1, new int[]{5,3});
         assertEquals(test.players[0],test.map.getCountries()[7].getOwner());
@@ -197,8 +155,8 @@ public class RiskModelTest extends TestCase {
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].countryIndexes = new ArrayList<Integer>();
-        test.players[1].countryIndexes = new ArrayList<Integer>();
+        test.players[0].countryIndexes = new ArrayList<>();
+        test.players[1].countryIndexes = new ArrayList<>();
         setCountriesToPlayer(test, 0, new int[]{0});
         test.players[0].removeTroops(test.players[0].troopsToDeploy);
         test.players[0].troopsToDeploy=5;
@@ -211,8 +169,8 @@ public class RiskModelTest extends TestCase {
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].countryIndexes = new ArrayList<Integer>();
-        test.players[1].countryIndexes = new ArrayList<Integer>();
+        test.players[0].countryIndexes = new ArrayList<>();
+        test.players[1].countryIndexes = new ArrayList<>();
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
         test.getCountries()[0].setArmy(10);
         test.getCountries()[8].setArmy(0);
@@ -224,8 +182,8 @@ public class RiskModelTest extends TestCase {
         for(int i = 0; i < test.map.getCountries().length; i++){
             test.map.getCountries()[i].setOwner(null);
         }
-        test.players[0].countryIndexes = new ArrayList<Integer>();
-        test.players[1].countryIndexes = new ArrayList<Integer>();
+        test.players[0].countryIndexes = new ArrayList<>();
+        test.players[1].countryIndexes = new ArrayList<>();
         setCountriesToPlayer(test, 0, new int[]{0,5,1,6,8,22});
         test.getCountries()[0].setArmy(10);
         test.getCountries()[22].setArmy(0);

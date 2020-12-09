@@ -103,10 +103,8 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
         }
     }
     private void text(String text){
-        switch(phase){
-            case PLAYER_NAME:
-                model.playerName(text);
-                break;
+        if (phase == Phase.PLAYER_NAME) {
+            model.playerName(text);
         }
     }
 

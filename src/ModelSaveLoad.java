@@ -15,9 +15,9 @@ public class ModelSaveLoad extends RiskModel{
      * Inner class modelData that stores all the needed info from model.
      */
     static class ModelData {
-        private ActionContext ac;
-        private PlayerData[] players;
-        private String fileName;
+        private final ActionContext ac;
+        private final PlayerData[] players;
+        private final String fileName;
         public ModelData(ActionContext ac, PlayerData[] playerData, String fileName){
             this.ac = ac;
             this.players = playerData;
@@ -73,7 +73,9 @@ public class ModelSaveLoad extends RiskModel{
 
         try {
             File file = new File(filePath);
-            file.mkdir();
+            if(file.mkdir()){
+                System.out.printf("Directory made\n");
+            }
             Writer writer = new FileWriter(filePath+filename+".RiskGame");
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(modelData,writer);
@@ -87,7 +89,6 @@ public class ModelSaveLoad extends RiskModel{
     }
     /**
      * reads file and converts the json data gathered into a model
-     * @return the model constructed.
      */
     public static void Load(RiskModel riskModel, String filename){
         ModelData modelData;
@@ -108,7 +109,7 @@ public class ModelSaveLoad extends RiskModel{
             modelData = new Gson().fromJson(reader, ModelData.class);
             reader.close();
             riskModel.ac=modelData.ac;
-            riskModel.map.Import(modelData.fileName);
+            Map.Import(modelData.fileName);
             riskModel.players = new Player[modelData.players.length];
             riskModel.numPlayers = modelData.players.length;
             for (int x = 0; x < modelData.players.length; x++){
@@ -123,7 +124,7 @@ public class ModelSaveLoad extends RiskModel{
                 }
                 riskModel.players[x].troopsToDeploy = modelData.players[x].troopsToDeploy;
                 for(int i = 0; i < modelData.players[x].countryIDs.length; i++){
-                    riskModel.players[x].countryIndexes.add((Integer) modelData.players[x].countryIDs[i]);
+                    riskModel.players[x].countryIndexes.add(modelData.players[x].countryIDs[i]);
                     riskModel.getCountries()[modelData.players[x].countryIDs[i]].setArmy(modelData.players[x].countryTroops[i]);
                     riskModel.getCountries()[modelData.players[x].countryIDs[i]].setOwner(riskModel.players[x]);
                 }
@@ -137,9 +138,7 @@ public class ModelSaveLoad extends RiskModel{
                 }
             }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
