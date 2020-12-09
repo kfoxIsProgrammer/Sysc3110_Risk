@@ -272,6 +272,7 @@ public class RiskGUI extends JFrame implements RiskView{
         ActionContext tmp=((PlayerAI)ac.getPlayer()).getMove(ac);
         if(tmp==null){
             updatePrompt(ac.getPlayer()," is ending the phase");
+            updateMenuVisible(false,false,false,false,false,true);
             return;
         }
         switch(ac.getPhase()){
