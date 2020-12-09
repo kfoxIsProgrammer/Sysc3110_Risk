@@ -142,10 +142,18 @@ public class RiskGUI extends JFrame implements RiskView{
         updatePhase(ac);
         updatePlayerName(ac.getPlayer());
 
-        if(ac.getPlayer()!=null && ac.getPlayer().isAI){
-            updateAI(ac);
-        }else{
-            updateHuman(ac);
+        if(ac.getPhase().equals(Phase.GAME_OVER)){
+            updateMap();
+            updatePrompt(ac.getPlayer(), " has won!");
+            updateMenuVisible(false,false,false,false,false,false);
+        }
+        else {
+
+            if (ac.getPlayer() != null && ac.getPlayer().isAI) {
+                updateAI(ac);
+            } else {
+                updateHuman(ac);
+            }
         }
 
     }

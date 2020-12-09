@@ -148,19 +148,16 @@ public class RiskModel {
         Player[] playersToCheck = {attacker,defender};
 
         for(Player player : playersToCheck){
+            int ownedCountries =0;
+
             //If they do not own anymore countries they lose
-            if(player.getCountries().length==0){
-                player.setHasLost(true);
-                return true;
+            for(Country country: map.getCountries()){
+                if(country.getOwner().equals(player)){
+
+                    ownedCountries++;
+                }
             }
-            //If they have no more available attacking units, they lose as well
-            //If sum of total units = sum of all countries, you can't make a turn
-            //and you lose.
-            int sumOfUnits = 0;
-            for(Country country: player.getCountries()){
-                sumOfUnits += country.getArmy();
-            }
-            if(sumOfUnits == player.getCountries().length){
+            if(ownedCountries==0){
                 player.setHasLost(true);
                 return true;
             }
@@ -358,6 +355,7 @@ public class RiskModel {
             case ATTACK_CONFIRM:
                 ac.setPhase(Phase.DEFEND_NUM_TROOPS);
                 ac.setPlayer(ac.getDstCountry().getOwner());
+                Player defender = ac.getDstCountry().getOwner();
                 if(ac.getPlayer().isAI){
                     ac.setPlayer(ac.getSrcCountry().getOwner());
                     ac.setDstArmy(Math.min(2,ac.getDstCountry().getArmy()));
@@ -367,7 +365,13 @@ public class RiskModel {
                             ac.getSrcArmy(),
                             ac.getDstArmy());
                     if(ac.attackerVictory()){
-                        ac.setPhase(Phase.RETREAT_NUM_TROOPS);
+                        if(hasAnyoneLost(ac.getPlayer(), defender)){
+                            if(gameIsOver()){
+                                //Do nothing gameIsOver changes ActionContext to GameOver
+                            }
+                        }else {
+                            ac.setPhase(Phase.RETREAT_NUM_TROOPS);
+                        }
                     }else{
                         //retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
                         this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
@@ -376,17 +380,25 @@ public class RiskModel {
                 break;
             case DEFEND_CONFIRM:
                 ac.setPlayer(ac.getSrcCountry().getOwner());
+                 defender = ac.getDstCountry().getOwner();
                 attack(
-                    ac.getSrcCountry(),
-                    ac.getDstCountry(),
-                    ac.getSrcArmy(),
-                    ac.getDstArmy());
+                        ac.getSrcCountry(),
+                        ac.getDstCountry(),
+                        ac.getSrcArmy(),
+                        ac.getDstArmy());
                 if(ac.attackerVictory()){
-                    ac.setPhase(Phase.RETREAT_NUM_TROOPS);
+                    if(hasAnyoneLost(ac.getPlayer(), defender)){
+                        if(gameIsOver()){
+                            //Do nothing gameIsOver changes ActionContext to GameOver
+                        }
+                    }else {
+                        ac.setPhase(Phase.RETREAT_NUM_TROOPS);
+                    }
                 }else{
                     retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
                     this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
                 }
+
                 break;
             case RETREAT_CONFIRM:
                 if(this.ac.getPlayer().isAI){
@@ -697,13 +709,6 @@ public class RiskModel {
             attackingCountry.removeArmy(ac.getSrcArmyDead());
             defendingCountry.removeArmy(ac.getDstArmyDead());
             ac.setAttackerVictory(false);
-        }
-
-        if(hasAnyoneLost(attackingCountry.getOwner(), defendingCountry.getOwner())){
-            if(gameIsOver()){
-                //Force game over here
-                updateViews(ac);
-            }
         }
 
         updateViewLogs(attacker+" lost "+ac.getSrcArmyDead()+" troops\n"+defender+" lost "+ac.getDstArmyDead()+" troops\n");
