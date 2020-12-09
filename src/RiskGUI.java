@@ -164,7 +164,7 @@ public class RiskGUI extends JFrame implements RiskView{
                 }else if(ac.getPlayerIndex()==1){
                     updateSlider(1,5);
                 }else{
-                    updateSlider(ac.getPlayerIndex(),6-ac.getPlayerIndex());
+                    updateSlider(0,6-ac.getPlayerIndex());
                 }
                 updateMenuVisible(false, true,true,false,false, false);
                 break;
