@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 //Tests applicable for milestone 2
-
+import static org.junit.Assert.*;
 
 /**
  * Tests the risk model
