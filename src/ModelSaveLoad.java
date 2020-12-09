@@ -139,6 +139,11 @@ public class ModelSaveLoad extends RiskModel{
             e.printStackTrace();
         }
     }
+
+    /***
+     * a method that returns every save file in the saves directory
+     * @return retruns an array of file names
+     */
     public String[] getSaves(){
         String[] saves;
         File savesDirectory = new File("/saves");
