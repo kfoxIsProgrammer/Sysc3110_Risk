@@ -52,7 +52,7 @@ public class RiskModel {
     public RiskModel(){
         ac=new ActionContext(Phase.NUM_HUMANS,null);
         views=new ArrayList<>();
-        //playSound("resources/risk.wav");
+        playSound("resources/risk.wav");
 
     }
     private void allocateCountries(){
