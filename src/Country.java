@@ -24,7 +24,6 @@ public class Country {
     private Player owner;
     /** Army currently occupying this country **/
     private int army;
-    private int continentId;
 
     /**
      * Constructor for Country
@@ -184,10 +183,6 @@ public class Country {
     }
 
     /**
-     * @return Continent ID
-     */
-    public int getContinentId(){return continentId;}
-    /**
      * @return The Name of the country
      */
     public int[] getMinMaxValues(){
@@ -241,19 +236,12 @@ public class Country {
     public Country[] getAdjacentCountries() {
         return adjacentCountries;
     }
-    /**
-     * @return A list of adjacent countries owned by player
-     */
-    public Country[] getAdjacentOwnedCountries(Player player) {
-        ArrayList<Country> adjacentOwnedCountriesList=new ArrayList<>();
-        for(Country country: adjacentCountries){
-            if(country.getOwner()==player){
-                adjacentOwnedCountriesList.add(country);
-            }
+    public int[] getAdjacentCountryIDs() {
+        if(adjacentCountriesIDs==null){
+            adjacentCountriesIDs=new int[]{0};
         }
-        Country[] adjacentOwnedCountries=new Country[adjacentOwnedCountriesList.size()];
-        adjacentOwnedCountries=adjacentOwnedCountriesList.toArray(adjacentOwnedCountries);
-        return adjacentOwnedCountries;
+
+        return adjacentCountriesIDs;
     }
     /**
      * @return A list of adjacent countries not owned by player
@@ -270,24 +258,20 @@ public class Country {
         return adjacentUnownedCountries;
     }
     public Country[] getConnectedOwnedCountries(Player player){
-        return getConnectedOwnedCountries(this,this,player,new Stack<Country>());
+        Stack<Country> toTest = getConnectedOwnedCountries(this,this,player,new Stack<>());
+        Country[] tmp= new Country[toTest.size()];
+        tmp = toTest.toArray(tmp);
+        return tmp;
     }
-    private Country[] getConnectedOwnedCountries(Country sourceCountry, Country root, Player player, Stack<Country> toTest){
+    private Stack<Country> getConnectedOwnedCountries(Country sourceCountry, Country root, Player player, Stack<Country> toTest){
         for(Country count: sourceCountry.getAdjacentCountries()){
             if(count.getOwner() == player && !toTest.contains(count) && count != root){
                 toTest.add(count);
-                return(getConnectedOwnedCountries(count,root, player, toTest));
+               getConnectedOwnedCountries(count,root, player, toTest);
             }
         }
-        Country[] tmp=new Country[toTest.size()];
-        tmp=toTest.toArray(tmp);
-        return tmp;
-    }
-    /**
-     * @return A list of adjacent country IDs
-     */
-    public int[] getAdjacentCountryIDs() {
-        return adjacentCountriesIDs;
+
+        return toTest;
     }
     /**
      * @return The country's owner
@@ -302,20 +286,8 @@ public class Country {
         return army;
     }
 
-    public boolean isConnected(Country country) {
-        return getConnectedCountries(this,this,new Stack<Country>()).contains(country);
-    }
-    public Stack<Country> getConnectedCountries(Country sourceCountry,Country root, Stack<Country> toTest){
-        for(Country count: sourceCountry.getAdjacentCountries()){
-            if(toTest.contains(count) && count != root){
-                toTest.add(count);
-                return(getConnectedCountries(count,root,toTest));
-            }
-        }
-        return toTest;
-    }
-
     public String toString(){
         return name;
     }
+
 }

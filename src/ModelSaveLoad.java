@@ -10,14 +10,14 @@ import java.io.*;
  * @version 12.04.2020
  */
 
-public class ModelSaveLoad {
+public class ModelSaveLoad extends RiskModel{
     /**
      * Inner class modelData that stores all the needed info from model.
      */
     static class ModelData {
-        private ActionContext ac;
-        private PlayerData[] players;
-        private String fileName;
+        private final ActionContext ac;
+        private final PlayerData[] players;
+        private final String fileName;
         public ModelData(ActionContext ac, PlayerData[] playerData, String fileName){
             this.ac = ac;
             this.players = playerData;
@@ -54,10 +54,16 @@ public class ModelSaveLoad {
      * modelSave extracts all the needed information from given model and converts to json format and writes to file
      * @param model The game model
      */
-    public static void modelSave(RiskModel model){
+    public static boolean Save(RiskModel model, String filename){
+        for(Player player: model.players){
+            if(player == model.ac.getPlayer()){
+                model.ac.setPlayerIndex(player.playerId);
+            }
+        }
         PlayerData[] players;
         ModelData modelData;
         players = new PlayerData[model.players.length];
+        String filePath = "saves/";
 
         for (int x = 0; x < players.length; x ++){
             int [] indexes = new int[model.players[x].countryIndexes.size()];
@@ -71,20 +77,25 @@ public class ModelSaveLoad {
         modelData = new ModelData(model.ac,players,model.map.getFilename());
 
         try {
-            Writer writer = new FileWriter("Save.txt");
+            File file = new File(filePath);
+            if(file.mkdir()){
+                System.out.printf("Directory made\n");
+            }
+            Writer writer = new FileWriter(filePath+filename+".RiskGame");
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(modelData,writer);
             writer.flush();
             writer.close();
+            return  true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
     /**
      * reads file and converts the json data gathered into a model
-     * @return the model constructed.
      */
-    public static void modelLoad(RiskModel riskModel){
+    public static void Load(RiskModel riskModel, String filename){
         ModelData modelData;
         Color[] playerColors={
                 new Color(255, 102, 0),
@@ -99,11 +110,11 @@ public class ModelSaveLoad {
         try {
             int numHumans = 0;
             int numAi = 0;
-            Reader reader = new FileReader("Save.txt");
+            Reader reader = new FileReader(filename);
             modelData = new Gson().fromJson(reader, ModelData.class);
             reader.close();
             riskModel.ac=modelData.ac;
-            riskModel.map.Import(modelData.fileName);
+            Map.Import(modelData.fileName);
             riskModel.players = new Player[modelData.players.length];
             riskModel.numPlayers = modelData.players.length;
             for (int x = 0; x < modelData.players.length; x++){
@@ -118,7 +129,7 @@ public class ModelSaveLoad {
                 }
                 riskModel.players[x].troopsToDeploy = modelData.players[x].troopsToDeploy;
                 for(int i = 0; i < modelData.players[x].countryIDs.length; i++){
-                    riskModel.players[x].countryIndexes.add((Integer) modelData.players[x].countryIDs[i]);
+                    riskModel.players[x].countryIndexes.add(modelData.players[x].countryIDs[i]);
                     riskModel.getCountries()[modelData.players[x].countryIDs[i]].setArmy(modelData.players[x].countryTroops[i]);
                     riskModel.getCountries()[modelData.players[x].countryIDs[i]].setOwner(riskModel.players[x]);
                 }
@@ -132,11 +143,20 @@ public class ModelSaveLoad {
                 }
             }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * a method that returns every save file in the saves directory
+     * @return returns an array of file names
+     */
+    public static String[] getSaves(){
+        String[] saves;
+        File savesDirectory = new File("saves/");
+        saves = savesDirectory.list();
+        return saves;
     }
 
 }

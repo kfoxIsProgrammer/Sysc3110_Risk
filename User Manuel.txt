@@ -59,5 +59,22 @@ milestone 2---------------------------------------------------------------------
 13. after a game ends the user will be prompted to start again.
 
 
+MileStone3 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+Flop
+
+
+MileStone4 -----------------------------------------------------------------------------------------------------------------------------------------------------------
+1.
+2. When the program starts, a scroll bar will prompt the user to enter the amount of players and AI that will be playing.
+3. After the amount of players are selected the user will be prompted to enter the names of all the players.
+4. Next the main game will start. Each Player will select a country until all are claimed.
+5. After all countries are claimed, the first player will start their deploy phase. Select a country to add units to.
+6. Next is the Attack phase. Select a country to attack from and then select a country to attack. A slider will show how many units you can attack with.
+7. The defending country will then select how many units to defend with.
+8. You can continue attacking or skip to fortify phase.
+9. In the fortify phase, you select a country to move units from then select a connecting country to fortify.
+10. A save and load function will let you save the state of the game and replay it later.
+
+
 
  

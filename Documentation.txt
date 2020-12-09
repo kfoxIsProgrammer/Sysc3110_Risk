@@ -92,7 +92,7 @@ Command Parser:
                 
    2.newGameStart:
            We decided to implement milestone4s import function and we now import a map and json data about the map with a map importer
-           Once the map is imported, it then creates a RiskController that is put in the RiskView Constructor. This ensures that the model is connected to the view and the                  controller is connected to the view.
+           Once the map is imported, it then creates a RiskController that is put in the RiskGUI Constructor. This ensures that the model is connected to the view and the                  controller is connected to the view.
            
    3. newGameCreator:
             This is the old random game maker. It has been updated to assign players with a color. 
@@ -120,8 +120,8 @@ valid and then send units from source country to destination country.
 
 10. Deploy method will simply sends unit a player has to allocate and adds it to selected owned country
          
-   RiskView:
-        RiskView is a GUI based class that extends JFrame and Implements ActionLister. It is driven by MouseClick events and ButtonClick.
+   RiskGUI:
+        RiskGUI is a GUI based class that extends JFrame and Implements ActionLister. It is driven by MouseClick events and ButtonClick.
         The MouseClicks are used only on the map to get a position to send to the controller. These MouseClicks are to represent if you clicked a country's hitbox.
         It uses a combination of LayeredPanes, and a CardLayout to display all the information from the game at every Phase. Your name is color matched to the labels of the 
         countries you own and enemy neighbours get highlighted. You also get to select the number of troops to send to attack/retreat/deploy via a slider popup.
@@ -178,3 +178,57 @@ Sequence Diagram:
    
    
    -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   
+  Milestone4
+  
+  ActionContext:
+      We have added more phases to handle AI and Claiming countries.
+      
+  Map:
+      We had already an import function but we have added a way to check if a map is playable. A Depth First Search method was implemented to check if there were more than 6           countries and if they are all connected.
+      
+  ModelSaveLoad:
+      This is a new class to help facilitate the saving and loading of current games. The use of plain text documents to save was used so we could test easily. 
+      It saves the game in JSON notation.
+      
+  Phase: 
+      Added 6 more phases to handles AI and claiming countries as per the initial phase of risk.
+      
+  Player:
+      Made Player an abstract class to create the common features between and AI and human player.
+      
+  PlayerHuman:
+      Extends from Player and gives all the functionality of a human player.
+      
+  PlayerAI:
+       Extends from player and implements utiliy functions to perform actions without human intervention.
+       
+  RiskController:
+        As per your feedback, we have added a lot of the models functionality into the controller. The country selection and unit selection are intially determined in the               controller and then sent to the model.
+        
+  RiskGUI:
+      Implements the interface RiskView.
+      Added a menuBar to handle the file load,save and new game functions. Quality of life info about the game status has been added for players to easily review what has             happened. The gui will also display countries that are affected by a change for easy identification.
+      The introduction of music to the game. Please do not copy right strike us.
+      
+  RiskModel:
+      Changed the model to have a list of RiskView interfaces. Instead of having a dedicated view. This is to represent our game with the MVC Observer pattern.
+      
+  RiskModelTests: 
+       Made the tests only act with the model and does not interact with the view. The tests are also indepent of the current games settings.
+       
+  RiskView:
+       This is the view interface, which is then used as the Observer in the Oberser/Obseravable pattern.
+       
+       
+  UML: 
+      Redone the UML with proper compostion and inheritance.
+      
+  Sequence Diagrams:
+       Added the missing diagrams from Milestone 3. Added Attack, Fortify, Deploy and Save/Load sequence Diagrams.
+        
+        
+  
+  
+  
+  
