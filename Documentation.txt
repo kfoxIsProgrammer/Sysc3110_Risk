@@ -209,6 +209,7 @@ Sequence Diagram:
   RiskGUI:
       Implements the interface RiskView.
       Added a menuBar to handle the file load,save and new game functions. Quality of life info about the game status has been added for players to easily review what has             happened. The gui will also display countries that are affected by a change for easy identification.
+      The introduction of music to the game. Please do not copy right strike us.
       
   RiskModel:
       Changed the model to have a list of RiskView interfaces. Instead of having a dedicated view. This is to represent our game with the MVC Observer pattern.
