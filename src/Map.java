@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Used to represent a Risk Map with the list of countries, continents and the image in memory
@@ -18,6 +17,11 @@ public class Map {
     private String filename;
     private ArrayList<Country> validCountries;
 
+    /**
+     * Static import for maps
+     * @param filename the name of map zip folder
+     * @return the map info
+     */
     public static Map Import(String filename){
         MapImport mapFileParser=new MapImport(filename);
         Map tmpMap=mapFileParser.getMapData();
@@ -34,6 +38,10 @@ public class Map {
 
     }
 
+    /**
+     * getter for The Filename
+     * @return the string filename
+     */
     public String getFilename(){return filename;}
 
     /**
@@ -128,6 +136,12 @@ public class Map {
             }
         }
     }
+
+    /**
+     * Gets the index of a country
+     * @param country the country to look for
+     * @return the index of the country
+     */
     public int getIndexOfCountry(Country country) {
         for (int x = 0; x < this.getCountries().length; x++) {
             if (country == this.getCountries()[x]) {

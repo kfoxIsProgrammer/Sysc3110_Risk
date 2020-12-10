@@ -12,6 +12,10 @@ public class Continent {
     /** Number of troops received as bonus for full ownership **/
     private int bonusTroops;
 
+    /**
+     * Convert array of countries to their IDs
+     * @param allCountries all Countries
+     */
     public void IDsToCountries(Country[] allCountries){
         countries=new Country[countryIDs.length];
 
@@ -20,6 +24,11 @@ public class Continent {
         }
     }
 
+    /**
+     * Tests if a player owns the all the countries in the continent
+     * @param player the player to test
+     * @return True = the player owns the continent, False = the player does not own the continent
+     */
     public boolean isOwnedBy(Player player){
         for(Country country: countries){
             if(country.getOwner()!=player){

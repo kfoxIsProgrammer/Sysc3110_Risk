@@ -3,6 +3,7 @@ This is used for our Sysc 3110 Project. The game of risk
 
 Team: Java Squad
 
+__WARNING Turn your volume down!__
 
 __Teammates:__
 1. Kevin Fox : kevinfox@cmail.carleton.ca
@@ -29,13 +30,16 @@ The following list is all major additions and changes.
 5. Updated our MapImport to work with a zip file containing a png(map image) and json(country info and adjacenies)
 6. Added sequence diagrams for Deploy, Attack, Fortify, save/load
 7. Moved a lot of model's responsibility to Controller.
+8. Added sounds.
 
 __Known issues:__
 
 1. When the game ends, you have to restart manually. 
 2. When a game that is deemed unplayable is loaded, you are prompted with a warning but you still can continue with the game.
-3. Displaying some dice rolls is missing.
-4. The maps folder must be present with the jar to start.
+3. Displaying dice rolls of lost attacks will not show.
+4. The maps and resources folder must be present with the jar to start.
+5. Game Saves are tied to Maps.
+6. You can only save after the Country claim and initial deploy phase.
 
 __Roadmap:__
 

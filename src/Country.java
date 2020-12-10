@@ -236,6 +236,11 @@ public class Country {
     public Country[] getAdjacentCountries() {
         return adjacentCountries;
     }
+
+    /**
+     * Getter for the Array of Adjacent countries ID
+     * @return int array of adjacent Countries ID's
+     */
     public int[] getAdjacentCountryIDs() {
         if(adjacentCountriesIDs==null){
             adjacentCountriesIDs=new int[]{0};
@@ -257,12 +262,27 @@ public class Country {
         adjacentUnownedCountries=adjacentUnownedCountriesList.toArray(adjacentUnownedCountries);
         return adjacentUnownedCountries;
     }
+
+    /**
+     * Get all Connected Countries that a player owns
+     * @param player the player to get countries from
+     * @return country array of Connected owned Countries
+     */
     public Country[] getConnectedOwnedCountries(Player player){
         Stack<Country> toTest = getConnectedOwnedCountries(this,this,player,new Stack<>());
         Country[] tmp= new Country[toTest.size()];
         tmp = toTest.toArray(tmp);
         return tmp;
     }
+
+    /**
+     * Recursive Helper to get connected owned Countries
+     * @param sourceCountry the source country to look from
+     * @param root the original country to look from
+     * @param player the player to test countries by
+     * @param toTest the stack of countries that have been tested
+     * @return the tested stack of countries
+     */
     private Stack<Country> getConnectedOwnedCountries(Country sourceCountry, Country root, Player player, Stack<Country> toTest){
         for(Country count: sourceCountry.getAdjacentCountries()){
             if(count.getOwner() == player && !toTest.contains(count) && count != root){

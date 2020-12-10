@@ -1,16 +1,40 @@
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * PlayerAI is a Risk PLayer that plays autonomously
+ * Extends Player
+ * @author Omar Hashmi
+ * @version 12-09-2020
+ */
 public class PlayerAI extends Player {
+    /** List of possible Action Contexts that the AI will use  */
     private ArrayList<ActionContext> actions;
+    /** List of value each action context has */
     private ArrayList<Integer> utilities;
+    /** The index of the action context with the largest utility */
     private int maxUtilityIndex;
+    /** The value of the maximum utility Action Context*/
     private int maxUtility;
 
+    /**
+     * 5 param constructor
+     * @param name name of the AI
+     * @param color color of the AI
+     * @param armiesToAllocate the number of armies to deploy
+     * @param playerId the id of the AI
+     * @param map the current game map
+     */
     public PlayerAI(String name, Color color, int armiesToAllocate, int playerId, Map map) {
         super(name, color, true, playerId, map);
         this.troopsToDeploy = armiesToAllocate;
     }
+
+    /**
+     * Function to initialize the Action Contexts and returning the largest valued Action Context
+     * @param actionContext the current Action Context to determine next Action Context
+     * @return the highest utility Action Context
+     */
     public ActionContext getMove(ActionContext actionContext) {
         this.actions = new ArrayList<>();
         this.utilities = new ArrayList<>();
@@ -75,6 +99,9 @@ public class PlayerAI extends Player {
         }
     }
 
+    /**
+     * Updates the max utility
+     */
     private void updateMaxUtility(){
         if (utilities.get(utilities.size() - 1) > maxUtility) {
             maxUtility = utilities.get(utilities.size()-1);
@@ -82,6 +109,10 @@ public class PlayerAI extends Player {
         }
     }
 
+    /**
+     * Utility to help AI choose the best Country
+     * @param country Country to test
+     */
     private void claimUtility(Country country){
         int utility=0;
 
@@ -101,6 +132,11 @@ public class PlayerAI extends Player {
         utilities.add(utility);
 
     }
+
+    /**
+     * Utility to help deploy initial Armies
+     * @param dstCountry the country to test
+     */
     private void initialDeployUtility(Country dstCountry) {
         int utility = 0;
 
@@ -121,6 +157,11 @@ public class PlayerAI extends Player {
         utilities.add(utility);
         actions.add(actionContext);
     }
+
+    /**
+     * Utility to help during the Deploy Phase
+     * @param dstCountry the Country to test
+     */
     private void deployUtility(Country dstCountry) {
         int utility = 0;
         for(Country country: dstCountry.getAdjacentCountries()){
@@ -140,6 +181,12 @@ public class PlayerAI extends Player {
         utilities.add(utility);
         actions.add(actionContext);
     }
+
+    /**
+     * Utility to help during the Attack Phase
+     * @param srcCountry the source country to attack from
+     * @param dstCountry the destination country to attack
+     */
     private void attackUtility(Country srcCountry, Country dstCountry){
         int utility;
         ActionContext actionContext = new ActionContext(Phase.ATTACK_SRC, this);
@@ -166,6 +213,12 @@ public class PlayerAI extends Player {
             actions.add(actionContext);
         }
     }
+
+    /**
+     * Utility to help during Fortify Phase
+     * @param srcCountry the Source Country to fortify from
+     * @param dstCountry the destination Country to fortify to
+     */
     private void fortifyUtility(Country srcCountry, Country dstCountry) {
         int srcPower=0;
         int dstPower=0;

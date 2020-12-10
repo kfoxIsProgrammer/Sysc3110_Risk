@@ -224,7 +224,7 @@ public class RiskModel {
 
     /****************************************  USER INPUT METHODS  ****************************************/
     /**
-     * mtehod for dealing with the user clicking on a country
+     * method for dealing with the user clicking on a country
      * @param country country clicked
      */
     public void countrySelected(Country country){
@@ -295,7 +295,7 @@ public class RiskModel {
 
     /**
      * method fo dealing with the user selecting a number of troops
-     * @param numTroops
+     * @param numTroops the number of troops from the view
      */
     public void numTroops(int numTroops){
         switch (this.ac.getPhase()) {
@@ -403,7 +403,7 @@ public class RiskModel {
                             ac.setPhase(Phase.RETREAT_NUM_TROOPS);
                         if(hasAnyoneLost(ac.getPlayer(), defender)){
                             if(gameIsOver()){
-
+                                //gameIsOver changes the state
                             }
                         }
                     }else{
@@ -424,7 +424,7 @@ public class RiskModel {
                         ac.setPhase(Phase.RETREAT_NUM_TROOPS);
                     if(hasAnyoneLost(ac.getPlayer(), defender)){
                         if(gameIsOver()){
-
+                            //gameIsOver changes the state
                         }
                     }
                 }else{
