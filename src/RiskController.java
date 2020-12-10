@@ -5,8 +5,8 @@ import java.awt.event.*;
 
 /**
  * Controller class to receive events from the view and send it to the Model
- * @author Kevin Fox
- * @version 11.09.2020
+ * @author Kevin Fox, Omar Hashmi
+ * @version 12.09.2020
  */
 public class RiskController implements ActionListener, ChangeListener, MouseListener {
     /** The model to send commands to **/
@@ -24,9 +24,18 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
         this.map=map;
     }
 
+    /**
+     * Setter for Phase
+     * @param phase the phase to the set to
+     */
     public void setPhase(Phase phase) {
         this.phase = phase;
     }
+
+    /**
+     * Setter for player
+     * @param player the player
+     */
     public void setPlayer(Player player){
         this.player=player;
     }
@@ -66,28 +75,35 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
             loadMap(e.getActionCommand());
         }
     }
-
+    /** Save game button is pressed*/
     private void saveGame(){
         model.exportGame(view.saveGame());
     }
+    /** Load game button is pressed*/
     private void loadGame(String filename){
         model.importGame(filename);
     }
+    /** Load Map is pressed*/
     private void loadMap(String filename){
         model.importMap(filename);
     }
+    /** confirm button is pressed*/
     private void confirm(){
         model.menuConfirm();
     }
+    /** ok button is pressed*/
     private void ok(){
         model.menuOk();
     }
+    /** skip button pressed*/
     private void skip(){
         model.menuSkip();
     }
+    /** back button pressed*/
     private void back(){
         model.menuBack();
     }
+    /** The slider is used*/
     private void number(){
         switch(phase){
             case NUM_HUMANS:
@@ -106,6 +122,7 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
                 break;
         }
     }
+    /** Player entered text */
     private void text(String text){
         if (phase == Phase.PLAYER_NAME) {
             model.playerName(text);
@@ -140,7 +157,7 @@ public class RiskController implements ActionListener, ChangeListener, MouseList
             model.countrySelected(clickedCountry);
         }
     }
-    /** Poopy methods I need to implement otherwise java cries **/
+    /** Methods I need to implement otherwise java cries **/
     @Override
     public void mousePressed(MouseEvent e){}
     @Override

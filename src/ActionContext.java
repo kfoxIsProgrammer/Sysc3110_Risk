@@ -136,6 +136,7 @@ public class ActionContext {
         this.diceRolls = diceRolls;
     }
 
+    /** Getters*/
     public Phase getPhase() {
         return phase;
     }

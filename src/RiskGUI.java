@@ -2,6 +2,11 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 
+/**
+ * Risk Gui acts as the view for the RISK GAME
+ * Extends JFrame
+ * Implement RiskView
+ */
 public class RiskGUI extends JFrame implements RiskView{
     private final RiskController controller;
     private Map map;
@@ -24,6 +29,11 @@ public class RiskGUI extends JFrame implements RiskView{
     private final JButton menuSkip;
     private final JButton menuOk;
 
+    /**
+     * Risk GUI constructor
+     * @param model the model of the game
+     * @param map the map of the game
+     */
     RiskGUI(RiskModel model, Map map){
         setTitle("Risk - Global Domination");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -116,6 +126,10 @@ public class RiskGUI extends JFrame implements RiskView{
         this.setVisible(true);
     }
 
+    /**
+     * Update the whole map
+     * @param map the map of the game
+     */
     @Override
     public void updateMap(Map map){
         if(map == null){
@@ -142,6 +156,11 @@ public class RiskGUI extends JFrame implements RiskView{
         }
 
     }
+
+    /**
+     * Update the game based on the incoming Action Context
+     * @param ac Action Context from the Model
+     */
     @Override
     public void update(ActionContext ac){
         controller.setPhase(ac.getPhase());
@@ -164,6 +183,11 @@ public class RiskGUI extends JFrame implements RiskView{
         }
 
     }
+
+    /**
+     * Update the game when it's a human player
+     * @param ac the current Action COntext
+     */
     private void updateHuman(ActionContext ac){
         switch(ac.getPhase()){
             case NUM_HUMANS:
@@ -279,6 +303,11 @@ public class RiskGUI extends JFrame implements RiskView{
                 break;
         }
     }
+
+    /**
+     * Update the map when it's an AI's turn
+     * @param ac the current Action COntext
+     */
     private void updateAI(ActionContext ac){
         ActionContext tmp=((PlayerAI)ac.getPlayer()).getMove(ac);
         if(tmp==null){
@@ -314,10 +343,20 @@ public class RiskGUI extends JFrame implements RiskView{
         }
         updateMenuVisible(false,false,false,false,false,true);
     }
+
+    /**
+     * Logging info to the log box
+     * @param message the message to log
+     */
     @Override
     public void log(String message){
         eventLogText.append(message);
     }
+
+    /**
+     * Update the list of save files directory "saves"
+     * @param saves the names of the save files
+     */
     @Override
     public void updateSaveFileList(String[] saves) {
         if(saves==null || saves.length==0) {
@@ -335,6 +374,11 @@ public class RiskGUI extends JFrame implements RiskView{
             loadGame.add(item);
         }
     }
+
+    /**
+     * Update the map file list directory "maps"
+     * @param maps list of available maps
+     */
     @Override
     public void updateMapFileList(String[] maps) {
         if(maps==null || maps.length==0) {
@@ -353,6 +397,10 @@ public class RiskGUI extends JFrame implements RiskView{
         }
     }
 
+    /**
+     * Display rolls to the screen
+     * @param ac the current action context
+     */
     private void displayRolls(ActionContext ac){
         StringBuilder diceStr= new StringBuilder("Attacker rolls: [");
         for(int i=0;i<ac.getDiceRolls()[0].length;i++){
@@ -383,9 +431,18 @@ public class RiskGUI extends JFrame implements RiskView{
         }
     }
 
+    /**
+     * update the map
+     */
     private void updateMap(){
         updateMap(map.getCountries());
     }
+
+    /**
+     * Update sub section of the map
+     * @param country initial country
+     * @param countries countries to also highlight
+     */
     private void updateMap(Country country, Country[] countries){
         Country[] tmp=new Country[countries.length+1];
         System.arraycopy(countries, 0, tmp, 0, countries.length);
@@ -393,6 +450,11 @@ public class RiskGUI extends JFrame implements RiskView{
 
         updateMap(tmp);
     }
+
+    /**
+     * Update map from array of countries
+     * @param countries
+     */
     private void updateMap(Country[] countries){
         mapPane.removeAll();
         mapPane.add(mapImage);
@@ -422,6 +484,11 @@ public class RiskGUI extends JFrame implements RiskView{
             mapPane.add(countryLabel, Integer.valueOf(2));
         }
     }
+
+    /**
+     * Set the players name for current turn
+     * @param player
+     */
     private void updatePlayerName(Player player){
         if(player==null){
             return;
@@ -431,6 +498,11 @@ public class RiskGUI extends JFrame implements RiskView{
         menuPlayerName.setBackground(player.getColor());
         menuPlayerName.setText("   "+player.getName()+"   ");
     }
+
+    /**
+     * Display what phase the current player is in
+     * @param ac
+     */
     private void updatePhase(ActionContext ac){
         switch (ac.getPhase()){
             case NUM_HUMANS:
@@ -472,6 +544,12 @@ public class RiskGUI extends JFrame implements RiskView{
                 break;
         }
     }
+
+    /**
+     * Update the prompt info
+     * @param player the current player
+     * @param prompt the prompt
+     */
     private void updatePrompt(Player player, String prompt){
         menuPrompt.getHighlighter().removeAllHighlights();
         menuPrompt.setText(" "+player.name+" "+prompt);
@@ -481,9 +559,20 @@ public class RiskGUI extends JFrame implements RiskView{
             e.printStackTrace();
         }
     }
+
+    /**
+     * Update prompt with no player info
+     * @param prompt
+     */
     private void updatePrompt(String prompt){
         menuPrompt.setText(prompt);
     }
+
+    /**
+     * Update the slider info
+     * @param min minimum unit number
+     * @param max maximum unit number
+     */
     private void updateSlider(int min, int max){
         menuSlider.setMinimum(min);
         menuSlider.setMaximum(max);
@@ -498,6 +587,16 @@ public class RiskGUI extends JFrame implements RiskView{
             menuSlider.setMajorTickSpacing(5);
         }
     }
+
+    /**
+     * updates what buttons and texts are visible
+     * @param text Boolean: true = visable, False = invisible
+     * @param slider Boolean: true = visable, False = invisible
+     * @param confirm Boolean: true = visable, False = invisible
+     * @param back Boolean: true = visable, False = invisible
+     * @param skip Boolean: true = visable, False = invisible
+     * @param ok Boolean: true = visable, False = invisible
+     */
     private void updateMenuVisible(boolean text, boolean slider, boolean confirm, boolean back, boolean skip, boolean ok){
         menuPrompt.setVisible(true);
         menuText.setText("");
@@ -515,10 +614,15 @@ public class RiskGUI extends JFrame implements RiskView{
         menuOk.setVisible(ok);
     }
 
+    /**
+     * For entering the save game name
+     * @return the name of the file
+     */
     public String saveGame(){
         return JOptionPane.showInputDialog("Enter the filename");
     }
 
+    /** The size of the grab bag*/
     private GridBagConstraints constraintMaker(int x, int y, int w, int h){
         GridBagConstraints constraints=new GridBagConstraints();
         constraints.insets=new Insets(5,5,5,5);

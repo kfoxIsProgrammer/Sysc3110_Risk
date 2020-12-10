@@ -1,4 +1,8 @@
+/**
+ * Interface of a RiskView
+ */
 public interface RiskView {
+    /** Methods to be implemented*/
     void update(ActionContext ac);
     void log(String message);
     void updateSaveFileList(String[] saves);
