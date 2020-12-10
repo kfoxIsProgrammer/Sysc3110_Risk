@@ -4,7 +4,7 @@ import java.util.ArrayList;
 /**
  * PlayerAI is a Risk PLayer that plays autonomously
  * Extends Player
- * @auother Omar Hashmi
+ * @author Omar Hashmi
  * @version 12-09-2020
  */
 public class PlayerAI extends Player {
@@ -33,7 +33,7 @@ public class PlayerAI extends Player {
     /**
      * Function to initialize the Action Contexts and returning the largest valued Action Context
      * @param actionContext the current Action Context to determine next Action Context
-     * @return the highest utilitied Action Context
+     * @return the highest utility Action Context
      */
     public ActionContext getMove(ActionContext actionContext) {
         this.actions = new ArrayList<>();

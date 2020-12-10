@@ -239,7 +239,7 @@ public class Country {
 
     /**
      * Getter for the Array of Adjacent countries ID
-     * @return
+     * @return int array of adjacent Countries ID's
      */
     public int[] getAdjacentCountryIDs() {
         if(adjacentCountriesIDs==null){
@@ -266,7 +266,7 @@ public class Country {
     /**
      * Get all Connected Countries that a player owns
      * @param player the player to get countries from
-     * @return
+     * @return country array of Connected owned Countries
      */
     public Country[] getConnectedOwnedCountries(Player player){
         Stack<Country> toTest = getConnectedOwnedCountries(this,this,player,new Stack<>());
@@ -276,7 +276,7 @@ public class Country {
     }
 
     /**
-     * Recursive Helper to get connected owned COuntries
+     * Recursive Helper to get connected owned Countries
      * @param sourceCountry the source country to look from
      * @param root the original country to look from
      * @param player the player to test countries by

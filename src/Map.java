@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Used to represent a Risk Map with the list of countries, continents and the image in memory

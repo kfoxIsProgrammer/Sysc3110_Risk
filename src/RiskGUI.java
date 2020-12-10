@@ -186,7 +186,7 @@ public class RiskGUI extends JFrame implements RiskView{
 
     /**
      * Update the game when it's a human player
-     * @param ac the current Action COntext
+     * @param ac the current Action Context
      */
     private void updateHuman(ActionContext ac){
         switch(ac.getPhase()){
@@ -306,7 +306,7 @@ public class RiskGUI extends JFrame implements RiskView{
 
     /**
      * Update the map when it's an AI's turn
-     * @param ac the current Action COntext
+     * @param ac the current Action Context
      */
     private void updateAI(ActionContext ac){
         ActionContext tmp=((PlayerAI)ac.getPlayer()).getMove(ac);
@@ -453,7 +453,7 @@ public class RiskGUI extends JFrame implements RiskView{
 
     /**
      * Update map from array of countries
-     * @param countries
+     * @param countries array of countries
      */
     private void updateMap(Country[] countries){
         mapPane.removeAll();
@@ -487,7 +487,7 @@ public class RiskGUI extends JFrame implements RiskView{
 
     /**
      * Set the players name for current turn
-     * @param player
+     * @param player the current player
      */
     private void updatePlayerName(Player player){
         if(player==null){
@@ -501,7 +501,7 @@ public class RiskGUI extends JFrame implements RiskView{
 
     /**
      * Display what phase the current player is in
-     * @param ac
+     * @param ac current action context
      */
     private void updatePhase(ActionContext ac){
         switch (ac.getPhase()){
@@ -562,7 +562,7 @@ public class RiskGUI extends JFrame implements RiskView{
 
     /**
      * Update prompt with no player info
-     * @param prompt
+     * @param prompt the prompt text
      */
     private void updatePrompt(String prompt){
         menuPrompt.setText(prompt);
@@ -590,12 +590,12 @@ public class RiskGUI extends JFrame implements RiskView{
 
     /**
      * updates what buttons and texts are visible
-     * @param text Boolean: true = visable, False = invisible
-     * @param slider Boolean: true = visable, False = invisible
-     * @param confirm Boolean: true = visable, False = invisible
-     * @param back Boolean: true = visable, False = invisible
-     * @param skip Boolean: true = visable, False = invisible
-     * @param ok Boolean: true = visable, False = invisible
+     * @param text Boolean: true = visible, False = invisible
+     * @param slider Boolean: true = visible, False = invisible
+     * @param confirm Boolean: true = visible, False = invisible
+     * @param back Boolean: true = visible, False = invisible
+     * @param skip Boolean: true = visible, False = invisible
+     * @param ok Boolean: true = visible, False = invisible
      */
     private void updateMenuVisible(boolean text, boolean slider, boolean confirm, boolean back, boolean skip, boolean ok){
         menuPrompt.setVisible(true);

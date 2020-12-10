@@ -1,5 +1,5 @@
 /**
- * Contains all possible phases and subphases
+ * Contains all possible phases and sub-phases
  *
  * @author Omar Hashmi
  * @version 11.07.2020
@@ -16,7 +16,7 @@ public enum Phase {
     PLAYER_NAME,
     /** Claiming countries at the start*/
     CLAIM_COUNTRY,
-    /** Deploy intial units Destination*/
+    /** Deploy initial units Destination*/
     INITIAL_DEPLOY_DST,
     /** Deploy initial units selecting*/
     INITIAL_DEPLOY_NUM_TROOPS,

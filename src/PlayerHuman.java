@@ -4,7 +4,7 @@ import java.awt.*;
  * Player class for human risk players
  * Extends the Player Abstract class
  * @author Omar Hashmi
- * @verson 12-09-2020
+ * @version 12-09-2020
  */
 public class PlayerHuman extends Player{
     /**
