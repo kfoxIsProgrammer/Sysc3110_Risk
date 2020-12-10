@@ -32,7 +32,10 @@ The following list is all major additions and changes.
 
 __Known issues:__
 
-To Add today
+1. When the game ends, you have to restart manually. 
+2. When a game that is deemed unplayable is loaded, you are prompted with a warning but you still can continue with the game.
+3. Displaying some dice rolls is missing.
+4. The maps folder must be present with the jar to start.
 
 __Roadmap:__
 
