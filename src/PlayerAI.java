@@ -129,7 +129,7 @@ public class PlayerAI extends Player {
                 utility += country.getArmy();
             }
             else{
-                utility-=(country.getArmy())/3;
+                utility-=(country.getArmy()*0.6);
             }
         }
         utility-=dstCountry.getArmy();
