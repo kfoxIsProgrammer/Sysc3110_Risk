@@ -240,7 +240,7 @@ public class RiskGUI extends JFrame implements RiskView{
             case DEFEND_CONFIRM:
                 updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});
                 updatePrompt(ac.getPlayer(), "are you sure you want to defend " + ac.getDstCountry().getName() + " from " + ac.getSrcCountry().getName() + " with " + ac.getDstArmy() + " troops");
-                updateMenuVisible(false, false, true, true, false, false);
+                updateMenuVisible(false, false, true, false, false, false);
                 break;
             case RETREAT_NUM_TROOPS:
                 updateMap(new Country[]{ac.getSrcCountry(),ac.getDstCountry()});

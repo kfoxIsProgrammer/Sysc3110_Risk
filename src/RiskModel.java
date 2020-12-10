@@ -709,8 +709,6 @@ public class RiskModel {
             ac.setAttackerVictory(false);
         }
 
-
-
         updateViewLogs(attacker+" lost "+ac.getSrcArmyDead()+" troops\n"+defender+" lost "+ac.getDstArmyDead()+" troops\n");
     }
     /**
