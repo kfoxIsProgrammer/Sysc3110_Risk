@@ -30,7 +30,7 @@ The following list is all major additions and changes.
 5. Updated our MapImport to work with a zip file containing a png(map image) and json(country info and adjacenies)
 6. Added sequence diagrams for Deploy, Attack, Fortify, save/load
 7. Moved a lot of model's responsibility to Controller.
-8. Added sounds but the files were too large. Dimitry has uploaded the resources.
+8. Added sounds but the files were too large.
 
 __Known issues:__
 
