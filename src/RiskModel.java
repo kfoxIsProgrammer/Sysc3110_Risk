@@ -51,6 +51,10 @@ public class RiskModel {
         views=new ArrayList<>();
         playSound("resources/risk.wav");
     }
+
+    /**
+     * randomly allocates countries to the players
+     */
     private void allocateCountries(){
         Random rand = new Random(System.currentTimeMillis());
 
@@ -74,6 +78,11 @@ public class RiskModel {
         }
         this.ac =new ActionContext(Phase.DEPLOY_DST, this.players[0]);
     }
+
+    /**
+     *a method for allocating troops to players, the number is equal to total countries divided by 3, with a minimum of
+     * 3 troops per turn. there is also a bonus amount if you hold an entire continent.
+     */
     private void allocateArmies(){
         Random rand = new Random(System.currentTimeMillis());
 
@@ -738,6 +747,10 @@ public class RiskModel {
         updateViewLogs(sourceCountry+" sent "+unitsToSend+" troops to "+destinationCountry);
     }
 
+    /**
+     * Method that imports the map that will be used
+     * @param filename string that represents the name of the file
+     */
     public void importMap(String filename){
         map=Map.Import(filename);
 
@@ -748,6 +761,11 @@ public class RiskModel {
         ac=new ActionContext(Phase.NUM_HUMANS,null);
         updateViews(ac);
     }
+
+    /**
+     * Will save the current state of the game to a file in the saves directory
+     * @param filename string that represents the name of the file
+     */
     public void exportGame(String filename){
         boolean succeeded;
         if(
@@ -772,16 +790,30 @@ public class RiskModel {
             updateViewLogs("Saving to \"" + filename + "\" Failed\n");
         }
     }
+
+    /**
+     *  will load the state of model from a save file
+     * @param filename string that represents the name of the file
+     */
     public void importGame(String filename){
         ModelSaveLoad.Load(this,filename);
         updateViews(ac);
     }
+
+    /**
+     * adds view to model
+     * @param view a view object
+     */
     public void addView(RiskView view){
         views.add(view);
         updateViews(ac);
         updateMapFiles();
         updateSaveFiles();
     }
+    /**
+     * method for playing sound files
+     * @param filename name of file containing sound
+     */
     public void playSound(String filename){
         try{
             AudioInputStream audioStream=AudioSystem.getAudioInputStream(new File(filename));
@@ -793,6 +825,13 @@ public class RiskModel {
             e.printStackTrace();
         }
     }
+
+    /**
+     * method for playing sound files
+     * @param filename name of file containing sound
+     * @param loops number of times sound will loop
+     * @param delay how long will the sound be delayed
+     */
     public void playSound(String filename, int loops, int delay){
         Runnable runnable=()->{
             for(int i=0;i<loops;i++){
