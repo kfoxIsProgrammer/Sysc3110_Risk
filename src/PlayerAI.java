@@ -166,11 +166,11 @@ public class PlayerAI extends Player {
         int utility = 0;
 
         for(Country country: dstCountry.getAdjacentCountries()){
-            if(country.getOwner()!=this){
+            if(country.getOwner()!=this&& country.getAdjacentUnownedCountries(this).length!=0){
                 utility += country.getArmy();
             }
             else{
-                utility-=(country.getArmy())/2;
+                utility-=(country.getArmy()*0.6);
             }
         }
         utility-=dstCountry.getArmy();
