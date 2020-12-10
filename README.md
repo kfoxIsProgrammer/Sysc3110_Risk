@@ -38,7 +38,8 @@ __Known issues:__
 2. When a game that is deemed unplayable is loaded, you are prompted with a warning but you still can continue with the game.
 3. Displaying dice rolls of lost attacks will not show.
 4. The maps folder must be present with the jar to start.
-5. Game Saves are tied to Maps 
+5. Game Saves are tied to Maps.
+6. You can only save after the Country claim and initial deploy phase.
 
 __Roadmap:__
 
