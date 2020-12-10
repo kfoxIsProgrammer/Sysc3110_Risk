@@ -223,6 +223,10 @@ public class RiskModel {
     }
 
     /****************************************  USER INPUT METHODS  ****************************************/
+    /**
+     * mtehod for dealing with the user clicking on a country
+     * @param country country clicked
+     */
     public void countrySelected(Country country){
         playSound("resources/bite.wav");
         switch (ac.getPhase()){
@@ -288,6 +292,11 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+
+    /**
+     * method fo dealing with the user selecting a number of troops
+     * @param numTroops
+     */
     public void numTroops(int numTroops){
         switch (this.ac.getPhase()) {
             case INITIAL_DEPLOY_NUM_TROOPS:
@@ -483,6 +492,10 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+
+    /**
+     * method dealing with users hitting ok
+     */
     public void menuOk(){
         Phase tmpPhase=ac.getPhase();
         Player tmpPlayer=ac.getPlayer();
@@ -547,6 +560,10 @@ public class RiskModel {
     }
 
     /********************************************  PHASE METHODS  ********************************************/
+    /**
+     * method for setting the number of human players in the game
+     * @param n the number of humans
+     */
     public void numHumans(int n){
         numHumans=n;
         numPlayers=numHumans;
@@ -564,6 +581,11 @@ public class RiskModel {
 
         updateViews(ac);
     }
+
+    /**
+     * method for setting the number of ai players in the game
+     * @param n number of ai players
+     */
     public void numAI(int n){
         numAI=n;
         numPlayers+=numAI;
@@ -576,6 +598,11 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+
+    /**
+     * method for setting up a player objects
+     * @param name name of player
+     */
     public void playerName(String name){
         Color[] playerColors={
                 new Color(255, 150, 0),
@@ -617,6 +644,12 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+
+    /**
+     * method used to set a country to a player
+     * @param player player that claimed country
+     * @param country country player claimed
+     */
     private void claim(Player player, Country country){
         player.addCountry(country);
         player.removeTroops(1);
@@ -864,9 +897,18 @@ public class RiskModel {
     }
 
     /**************************************************  GETTERS  **************************************************/
+    /**
+     * getter for map object
+     * @return map object
+     */
     public Map getMap() {
         return map;
     }
+
+    /**
+     * getter for the array of countries in the game
+     * @return array of country objects
+     */
     public Country[] getCountries(){
         return map.getCountries();
     }
