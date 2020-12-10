@@ -2,7 +2,7 @@
 This is used for our Sysc 3110 Project. The game of risk
 
 Team: Java Squad
-
+__WARNING Turn your volume down!__
 
 __Teammates:__
 1. Kevin Fox : kevinfox@cmail.carleton.ca
@@ -29,6 +29,7 @@ The following list is all major additions and changes.
 5. Updated our MapImport to work with a zip file containing a png(map image) and json(country info and adjacenies)
 6. Added sequence diagrams for Deploy, Attack, Fortify, save/load
 7. Moved a lot of model's responsibility to Controller.
+8. Added sounds.
 
 __Known issues:__
 
