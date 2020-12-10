@@ -51,6 +51,10 @@ public class RiskModel {
         views=new ArrayList<>();
         playSound("resources/risk.wav");
     }
+
+    /**
+     * randomly allocates countries to the players
+     */
     private void allocateCountries(){
         Random rand = new Random(System.currentTimeMillis());
 
@@ -74,6 +78,11 @@ public class RiskModel {
         }
         this.ac =new ActionContext(Phase.DEPLOY_DST, this.players[0]);
     }
+
+    /**
+     *a method for allocating troops to players, the number is equal to total countries divided by 3, with a minimum of
+     * 3 troops per turn. there is also a bonus amount if you hold an entire continent.
+     */
     private void allocateArmies(){
         Random rand = new Random(System.currentTimeMillis());
 
@@ -93,21 +102,38 @@ public class RiskModel {
     }
 
     /********************************************  UTILITY METHODS  ********************************************/
+    /**
+     * updates the view with info found in the action context
+     * @param actionContext object containing the state of the game
+     */
     private void updateViews(ActionContext actionContext){
         for(RiskView view: this.views){
             view.update(actionContext);
         }
     }
+
+    /**
+     * method that sends a string for the log section of the view to display
+     * @param message string to display
+     */
     private void updateViewLogs(String message){
         for(RiskView view: this.views){
             view.log(message);
         }
     }
+
+    /**
+     * updates the list of saves in the view
+     */
     public void updateSaveFiles(){
         for(RiskView view: this.views){
             view.updateSaveFileList(ModelSaveLoad.getSaves());
         }
     }
+
+    /**
+     * updates the list of map files in the view
+     */
     public void updateMapFiles(){
         for(RiskView view: this.views){
             view.updateMapFileList(MapImport.getMaps());
@@ -197,6 +223,10 @@ public class RiskModel {
     }
 
     /****************************************  USER INPUT METHODS  ****************************************/
+    /**
+     * mtehod for dealing with the user clicking on a country
+     * @param country country clicked
+     */
     public void countrySelected(Country country){
         playSound("resources/bite.wav");
         switch (ac.getPhase()){
@@ -262,6 +292,11 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+
+    /**
+     * method fo dealing with the user selecting a number of troops
+     * @param numTroops
+     */
     public void numTroops(int numTroops){
         switch (this.ac.getPhase()) {
             case INITIAL_DEPLOY_NUM_TROOPS:
@@ -457,6 +492,10 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+
+    /**
+     * method dealing with users hitting ok
+     */
     public void menuOk(){
         Phase tmpPhase=ac.getPhase();
         Player tmpPlayer=ac.getPlayer();
@@ -521,6 +560,10 @@ public class RiskModel {
     }
 
     /********************************************  PHASE METHODS  ********************************************/
+    /**
+     * method for setting the number of human players in the game
+     * @param n the number of humans
+     */
     public void numHumans(int n){
         numHumans=n;
         numPlayers=numHumans;
@@ -538,6 +581,11 @@ public class RiskModel {
 
         updateViews(ac);
     }
+
+    /**
+     * method for setting the number of ai players in the game
+     * @param n number of ai players
+     */
     public void numAI(int n){
         numAI=n;
         numPlayers+=numAI;
@@ -550,6 +598,11 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+
+    /**
+     * method for setting up a player objects
+     * @param name name of player
+     */
     public void playerName(String name){
         Color[] playerColors={
                 new Color(255, 150, 0),
@@ -591,6 +644,12 @@ public class RiskModel {
         }
         updateViews(ac);
     }
+
+    /**
+     * method used to set a country to a player
+     * @param player player that claimed country
+     * @param country country player claimed
+     */
     private void claim(Player player, Country country){
         player.addCountry(country);
         player.removeTroops(1);
@@ -738,6 +797,10 @@ public class RiskModel {
         updateViewLogs(sourceCountry+" sent "+unitsToSend+" troops to "+destinationCountry);
     }
 
+    /**
+     * Method that imports the map that will be used
+     * @param filename string that represents the name of the file
+     */
     public void importMap(String filename){
         map=Map.Import(filename);
 
@@ -748,6 +811,11 @@ public class RiskModel {
         ac=new ActionContext(Phase.NUM_HUMANS,null);
         updateViews(ac);
     }
+
+    /**
+     * Will save the current state of the game to a file in the saves directory
+     * @param filename string that represents the name of the file
+     */
     public void exportGame(String filename){
         boolean succeeded;
         if(
@@ -772,16 +840,30 @@ public class RiskModel {
             updateViewLogs("Saving to \"" + filename + "\" Failed\n");
         }
     }
+
+    /**
+     *  will load the state of model from a save file
+     * @param filename string that represents the name of the file
+     */
     public void importGame(String filename){
         ModelSaveLoad.Load(this,filename);
         updateViews(ac);
     }
+
+    /**
+     * adds view to model
+     * @param view a view object
+     */
     public void addView(RiskView view){
         views.add(view);
         updateViews(ac);
         updateMapFiles();
         updateSaveFiles();
     }
+    /**
+     * method for playing sound files
+     * @param filename name of file containing sound
+     */
     public void playSound(String filename){
         try{
             AudioInputStream audioStream=AudioSystem.getAudioInputStream(new File(filename));
@@ -793,6 +875,13 @@ public class RiskModel {
             e.printStackTrace();
         }
     }
+
+    /**
+     * method for playing sound files
+     * @param filename name of file containing sound
+     * @param loops number of times sound will loop
+     * @param delay how long will the sound be delayed
+     */
     public void playSound(String filename, int loops, int delay){
         Runnable runnable=()->{
             for(int i=0;i<loops;i++){
@@ -808,9 +897,18 @@ public class RiskModel {
     }
 
     /**************************************************  GETTERS  **************************************************/
+    /**
+     * getter for map object
+     * @return map object
+     */
     public Map getMap() {
         return map;
     }
+
+    /**
+     * getter for the array of countries in the game
+     * @return array of country objects
+     */
     public Country[] getCountries(){
         return map.getCountries();
     }
