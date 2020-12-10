@@ -27,6 +27,7 @@ public class Map {
             System.out.println("This is a valid map");
         }
         else{
+            tmpMap = null;
             System.out.println("This is an invalid map");
         }
             return tmpMap;

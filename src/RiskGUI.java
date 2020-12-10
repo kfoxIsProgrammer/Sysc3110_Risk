@@ -118,22 +118,28 @@ public class RiskGUI extends JFrame implements RiskView{
 
     @Override
     public void updateMap(Map map){
-        this.map=map;
-        controller.setMap(map);
-        int mapHeight=map.getMapImage().getHeight();
-        int mapWidth=map.getMapImage().getWidth();
+        if(map == null){
+            JOptionPane.showMessageDialog(this, "Error this map is unplayable", "Error",
+                    JOptionPane.ERROR_MESSAGE);
 
-        mapImage.removeAll();
-        mapImage=new JLabel(new ImageIcon(map.getMapImage()));
-        mapImage.setBounds(0,0, mapWidth, mapHeight);
-        mapImage.addMouseListener(controller);
-        mapPane.removeAll();
-        mapPane.add(mapImage);
+        }else {
+            this.map = map;
+            controller.setMap(map);
+            int mapHeight = map.getMapImage().getHeight();
+            int mapWidth = map.getMapImage().getWidth();
 
-        eventLogText.setText("");
+            mapImage.removeAll();
+            mapImage = new JLabel(new ImageIcon(map.getMapImage()));
+            mapImage.setBounds(0, 0, mapWidth, mapHeight);
+            mapImage.addMouseListener(controller);
+            mapPane.removeAll();
+            mapPane.add(mapImage);
 
-        menuPlayerName.setVisible(false);
-        menuPhase.setVisible(false);
+            eventLogText.setText("");
+
+            menuPlayerName.setVisible(false);
+            menuPhase.setVisible(false);
+        }
 
     }
     @Override
@@ -294,12 +300,8 @@ public class RiskGUI extends JFrame implements RiskView{
                 updatePrompt(tmp.getPlayer(), " deployed "+tmp.getDstArmy()+" troops to "+tmp.getDstCountry());
                 break;
             case ATTACK_SRC:
-
                 updateMap(map.getCountries());
                 updatePrompt(tmp.getPlayer(), " attacked "+tmp.getDstCountry()+" from "+tmp.getSrcCountry()+" with "+tmp.getSrcArmy()+" troops");
-                if(ac.getDiceRolls()!=null){
-                    displayRolls(ac);
-                }
                 break;
             case RETREAT_NUM_TROOPS:
                 updateMap(map.getCountries());

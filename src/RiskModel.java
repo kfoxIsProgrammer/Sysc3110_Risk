@@ -365,18 +365,15 @@ public class RiskModel {
                             ac.getSrcArmy(),
                             ac.getDstArmy());
                     if(ac.attackerVictory()){
+                            ac.setPhase(Phase.RETREAT_NUM_TROOPS);
                         if(hasAnyoneLost(ac.getPlayer(), defender)){
                             if(gameIsOver()){
-                                //Do nothing gameIsOver changes ActionContext to GameOver
+
                             }
-                        }else {
-                            ac.setPhase(Phase.RETREAT_NUM_TROOPS);
                         }
                     }else{
                         //retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
-                        Integer[][] temp = ac.getDiceRolls();
                         this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
-                        this.ac.setDiceRolls(temp);
                     }
                 }
                 break;
@@ -389,18 +386,15 @@ public class RiskModel {
                         ac.getSrcArmy(),
                         ac.getDstArmy());
                 if(ac.attackerVictory()){
+                        ac.setPhase(Phase.RETREAT_NUM_TROOPS);
                     if(hasAnyoneLost(ac.getPlayer(), defender)){
                         if(gameIsOver()){
-                            //Do nothing gameIsOver changes ActionContext to GameOver
+
                         }
-                    }else {
-                        ac.setPhase(Phase.RETREAT_NUM_TROOPS);
                     }
                 }else{
                    //retreat(ac.getSrcCountry(),ac.getDstCountry(),ac.getSrcArmy()-ac.getSrcArmyDead());
-                    Integer[][] temp = ac.getDiceRolls();
-                    this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
-                    this.ac.setDiceRolls(temp);
+                   this.ac=new ActionContext(Phase.ATTACK_SRC,this.ac.getPlayer());
                 }
 
                 break;
@@ -715,6 +709,8 @@ public class RiskModel {
             ac.setAttackerVictory(false);
         }
 
+
+
         updateViewLogs(attacker+" lost "+ac.getSrcArmyDead()+" troops\n"+defender+" lost "+ac.getDstArmyDead()+" troops\n");
     }
     /**
@@ -750,6 +746,7 @@ public class RiskModel {
         for(RiskView view: views){
             view.updateMap(map);
         }
+
         ac=new ActionContext(Phase.NUM_HUMANS,null);
         updateViews(ac);
     }
