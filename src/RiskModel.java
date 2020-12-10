@@ -552,12 +552,12 @@ public class RiskModel {
     }
     public void playerName(String name){
         Color[] playerColors={
-                new Color(255, 102, 0),
+                new Color(255, 150, 0),
                 new Color(81, 119, 241),
                 new Color(255, 0  , 0),
                 new Color(0  , 255, 0),
                 new Color(255, 0, 255),
-                new Color(0, 255, 255)
+                new Color(150, 100, 100)
         };
 
         int startingArmySize=
