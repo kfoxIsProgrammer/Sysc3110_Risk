@@ -36,6 +36,7 @@ __Known issues:__
 2. When a game that is deemed unplayable is loaded, you are prompted with a warning but you still can continue with the game.
 3. Displaying some dice rolls is missing.
 4. The maps folder must be present with the jar to start.
+5. Game Saves are tied to Maps 
 
 __Roadmap:__
 
