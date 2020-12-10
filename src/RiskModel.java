@@ -102,21 +102,38 @@ public class RiskModel {
     }
 
     /********************************************  UTILITY METHODS  ********************************************/
+    /**
+     * updates the view with info found in the action context
+     * @param actionContext object containing the state of the game
+     */
     private void updateViews(ActionContext actionContext){
         for(RiskView view: this.views){
             view.update(actionContext);
         }
     }
+
+    /**
+     * method that sends a string for the log section of the view to display
+     * @param message string to display
+     */
     private void updateViewLogs(String message){
         for(RiskView view: this.views){
             view.log(message);
         }
     }
+
+    /**
+     * updates the list of saves in the view
+     */
     public void updateSaveFiles(){
         for(RiskView view: this.views){
             view.updateSaveFileList(ModelSaveLoad.getSaves());
         }
     }
+
+    /**
+     * updates the list of map files in the view
+     */
     public void updateMapFiles(){
         for(RiskView view: this.views){
             view.updateMapFileList(MapImport.getMaps());
