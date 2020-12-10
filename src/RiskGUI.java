@@ -191,7 +191,7 @@ public class RiskGUI extends JFrame implements RiskView{
     private void updateHuman(ActionContext ac){
         switch(ac.getPhase()){
             case NUM_HUMANS:
-                updatePrompt("Enter the number of players");
+                updatePrompt("Enter the number of human players");
                 updateSlider(0,6);
                 updateMenuVisible(false, true,true,false,false, false);
                 break;

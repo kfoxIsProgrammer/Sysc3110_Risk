@@ -65,8 +65,8 @@ Flop
 
 MileStone4 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 1. Use load map to select a playable and not playable map.
-2. When the program starts, a scroll bar will prompt the user to enter the amount of players and AI that will be playing.
-3. After the amount of players are selected the user will be prompted to enter the names of all the players.
+2. When the program starts, a slider will prompt the user to enter the number of players and AI that will be playing.
+3. After the number of players are selected the user will be prompted to enter the names of all humans.
 4. Next the main game will start. Each Player will select a country until all are claimed.
 5. After all countries are claimed, the first player will start their deploy phase. Select a country to add units to.
 6. Next is the Attack phase. Select a country to attack from and then select a country to attack. A slider will show how many units you can attack with.
@@ -75,6 +75,8 @@ MileStone4 ---------------------------------------------------------------------
 9. In the fortify phase, you select a country to move units from then select a connecting country to fortify.
 10. A save and load function will let you save the state of the game and replay it later.
 11. Only once a game is saved, then you can load.
+12. When you try to save a game, you are prompted to enter the name of the session.
+13. On trying to load a game, a dropdown will appear which will permit you to load from any of the saved zip files.
 
 
 
